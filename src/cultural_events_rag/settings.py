@@ -5,8 +5,9 @@ environment wins over the same line of ``.env``.
 """
 
 from functools import lru_cache
+from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import PositiveInt, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from cultural_events_rag.paths import ENV_FILE
@@ -27,6 +28,11 @@ class Settings(BaseSettings):
     # every repr and log line.
     openagenda_api_key: SecretStr | None = None
     mistral_api_key: SecretStr | None = None
+
+    # How many events `fetch` collects from the agendas of CITY: a number (a
+    # sample while developing), or all. No default: the collection refuses to
+    # run without one, a forgotten cap is not a choice.
+    max_events: PositiveInt | Literal["all"] | None = None
 
 
 @lru_cache

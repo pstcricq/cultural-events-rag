@@ -21,8 +21,10 @@ authors = [
 # The oldest Python accepted; .python-version names the one uv installs.
 requires-python = ">=3.12"
 dependencies = [
+    "httpx>=0.28",
     "pydantic>=2.14",
     "pydantic-settings>=2.16",
+    "tenacity>=9.1",
 ]
 
 # The links of the project and of its author.

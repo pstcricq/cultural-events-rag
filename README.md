@@ -26,9 +26,17 @@ make config
 
 The settings are what an environment sets: its secrets, where its services are, what its machine and its plans allow. They come from the environment, then from `.env`, then from their defaults; `.env.example` lists them all. `.env` holds the API keys and is never committed. `make config` (`cultural-events-rag config show`) prints the active settings, a key only shown as set or not.
 
+## Events
+
+```bash
+make fetch
+```
+
+`make fetch` (`cultural-events-rag fetch`) downloads the events of the cultural agendas of Toulouse, the upcoming ones first, then those of the last 365 days, into `data/raw/<source>.json`, as the API returns them. The source is the official [Open Agenda API](https://developers.openagenda.com/) with `OPENAGENDA_API_KEY`, the [OpenDataSoft dataset](https://public.opendatasoft.com/explore/dataset/evenements-publics-openagenda/) of the public agendas without. `MAX_EVENTS` in `.env` says how many: a number, a sample split between the agendas (200 is enough while developing), or `all`; it is required, a forgotten cap is not a choice. `ARGS="--max-events 200"` overrides it for one run.
+
 ## CI
 
-GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: each test sets its own settings. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
+GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: each test sets its own settings and fakes Open Agenda. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
 
 ## Test
 

@@ -8,3 +8,6 @@ ROOT = Path(__file__).resolve().parents[2]
 
 # The secrets and the local settings, never committed: see .env.example.
 ENV_FILE = ROOT / ".env"
+
+# The events as each API returns them, one file per source, never committed.
+RAW_DIR = ROOT / "data" / "raw"

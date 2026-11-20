@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install config test-unit coverage lint format typecheck pre-commit ci clean
+.PHONY: help install config fetch test-unit coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -31,6 +31,11 @@ install: ## Install the locked environment and the git hooks
 
 config: ## Show the active settings, secrets masked
 	$(call run,$(RUN) cultural-events-rag config show)
+
+##@ Events (cultural-events-rag fetch)
+
+fetch: ## Download the raw events, MAX_EVENTS of them (ARGS="--max-events 200")
+	$(call run,$(RUN) cultural-events-rag fetch $(ARGS))
 
 ##@ Tests
 

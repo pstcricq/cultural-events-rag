@@ -1,7 +1,7 @@
 # One job per make target of the same name, in parallel. Every job installs
 # with `uv sync --locked`, which fails when uv.lock no longer matches
 # pyproject.toml, and UV_LOCKED keeps every `uv run` on uv.lock. No secret is
-# needed: each test sets its own settings.
+# needed: each test sets its own settings and fakes Open Agenda.
 name: CI
 
 on:
