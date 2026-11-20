@@ -30,9 +30,12 @@ The settings are what an environment sets: its secrets, where its services are, 
 
 ```bash
 make fetch
+make process
 ```
 
 `make fetch` (`cultural-events-rag fetch`) downloads the events of the cultural agendas of Toulouse, the upcoming ones first, then those of the last 365 days, into `data/raw/<source>.json`, as the API returns them. The source is the official [Open Agenda API](https://developers.openagenda.com/) with `OPENAGENDA_API_KEY`, the [OpenDataSoft dataset](https://public.opendatasoft.com/explore/dataset/evenements-publics-openagenda/) of the public agendas without. `MAX_EVENTS` in `.env` says how many: a number, a sample split between the agendas (200 is enough while developing), or `all`; it is required, a forgotten cap is not a choice. `ARGS="--max-events 200"` overrides it for one run.
+
+`make process` (`cultural-events-rag process`) turns the raw events of that source into the events of the common format, in `data/processed/events.jsonl`: the fields kept, the HTML turned into text, whether the event is free read from its conditions, then the invalid events, those outside the city or finished before the period, and the duplicates dropped. The sessions of one activity, published as separate events, become one event. It calls no API: it can be run again on the same raw events.
 
 ## CI
 

@@ -11,3 +11,7 @@ ENV_FILE = ROOT / ".env"
 
 # The events as each API returns them, one file per source, never committed.
 RAW_DIR = ROOT / "data" / "raw"
+
+# The events of the common format, one per line, never committed.
+PROCESSED_DIR = ROOT / "data" / "processed"
+EVENTS_FILE = PROCESSED_DIR / "events.jsonl"

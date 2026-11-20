@@ -8,7 +8,11 @@ import httpx
 import pytest
 from pydantic import SecretStr
 
-from cultural_events_rag.collection.fetch import fetch_agendas, select_source
+from cultural_events_rag.collection.fetch import (
+    fetch_agendas,
+    select_source,
+    source_name,
+)
 from cultural_events_rag.collection.sources import OpenAgendaSource, OpenDataSoftSource
 from cultural_events_rag.models import Agenda, RawEvents
 from cultural_events_rag.settings import Settings
@@ -61,6 +65,7 @@ def test_without_key_the_source_falls_back_to_opendatasoft(
     with httpx.Client() as client:
         source = select_source(settings, client)
     assert isinstance(source, expected)
+    assert source_name(settings) == source.name
 
 
 def test_the_cap_is_split_between_the_agendas() -> None:

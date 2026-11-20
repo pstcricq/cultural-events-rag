@@ -33,6 +33,14 @@ def event_cap(max_events: int | Literal["all"] | None) -> int | None:
     return None if max_events == "all" else max_events
 
 
+def source_name(settings: Settings) -> str:
+    """The source ``select_source`` picks, by name: its raw file is named
+    after it."""
+    if settings.openagenda_api_key:
+        return OpenAgendaSource.name
+    return OpenDataSoftSource.name
+
+
 def select_source(settings: Settings, client: httpx.Client) -> EventSource:
     """The official API with a key, the OpenDataSoft dataset without."""
     if settings.openagenda_api_key:

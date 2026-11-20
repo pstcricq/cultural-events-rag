@@ -7,8 +7,9 @@ __pycache__/
 # The secrets and the local settings: .env.example shows them.
 .env
 
-# The events as each API returns them.
+# The events as each API returns them, and in the common format.
 data/raw/
+data/processed/
 
 # The HTML report of `make coverage ARGS="--cov-report=html"`.
 htmlcov/
