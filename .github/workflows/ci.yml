@@ -1,0 +1,68 @@
+# One job per make target of the same name, in parallel. Every job installs
+# with `uv sync --locked`, which fails when uv.lock no longer matches
+# pyproject.toml, and UV_LOCKED keeps every `uv run` on uv.lock.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Read-only, and every job inherits it.
+permissions:
+  contents: read
+
+# A new push stops the run still going on the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  UV_LOCKED: "1"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      # The packages uv downloads, kept between runs, one cache per job,
+      # keyed on uv.lock.
+      - &setup-uv
+        uses: astral-sh/setup-uv@v10.3.3
+        with:
+          enable-cache: true
+          cache-suffix: ${{ github.job }}
+      - &install
+        name: Install the locked environment
+        run: uv sync --locked
+      - name: Lint the Python
+        run: make lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - *setup-uv
+      - *install
+      - name: Check the types
+        run: make typecheck
+
+  pre-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - *setup-uv
+      - *install
+      # The environments of the hooks, built again only when their versions
+      # change.
+      - name: Cache the hooks
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+      - name: Every hook on every file
+        run: make pre-commit
