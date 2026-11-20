@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install config fetch process test-unit coverage lint format typecheck pre-commit ci clean
+.PHONY: help install config fetch process documents test-unit coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -39,6 +39,11 @@ fetch: ## Download the raw events, MAX_EVENTS of them (ARGS="--max-events 200")
 
 process: ## Turn the raw events into the events of the common format
 	$(call run,$(RUN) cultural-events-rag process)
+
+##@ Index (cultural-events-rag documents)
+
+documents: ## Show the documents of the index (ARGS="--uid 123")
+	$(call run,$(RUN) cultural-events-rag documents $(ARGS))
 
 ##@ Tests
 

@@ -37,6 +37,14 @@ make process
 
 `make process` (`cultural-events-rag process`) turns the raw events of that source into the events of the common format, in `data/processed/events.jsonl`: the fields kept, the HTML turned into text, whether the event is free read from its conditions, then the invalid events, those outside the city or finished before the period, and the duplicates dropped. The sessions of one activity, published as separate events, become one event. It calls no API: it can be run again on the same raw events.
 
+## Index
+
+```bash
+make documents
+```
+
+`make documents` (`cultural-events-rag documents`) shows the documents the events of `data/processed/events.jsonl` make, as the index will store them: a summary of them all, or with `ARGS="--uid 123"` every document of one event. Each event gives one document per chunk of its description, up to `CHUNK_SIZE` characters (1000), the last `CHUNK_OVERLAP` (150) repeated at the start of the next. Every chunk starts with the header of the event, its title, dates in Paris time, place, price, audience, so that each one stays tied to its event. The metadata (dates in UTC, district, age, price) will filter the search.
+
 ## CI
 
 GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: each test sets its own settings and fakes Open Agenda. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.

@@ -1,15 +1,20 @@
 """The choices of the project tied to its city, that no setting changes: the
-city and its cultural agendas. Another city: another version of this file.
+city, its timezone, its cultural agendas and its language. Another city:
+another version of this file.
 
 The settings (``settings.py``) hold what a user changes, in ``.env``; the
 values tied to one piece of code (a batch size, the type of the vector index)
 stay next to it.
 """
 
+from zoneinfo import ZoneInfo
+
 from cultural_events_rag.models import Agenda
 
 # The city whose events are collected.
 CITY = "Toulouse"
+# Its timezone: the dates of its events are written and read in it.
+TIMEZONE = ZoneInfo("Europe/Paris")
 
 # Its cultural agendas, picked by hand: agendas outside culture (France
 # Travail, local associations) are left out. Some agendas also publish
@@ -26,4 +31,23 @@ CULTURAL_AGENDAS: tuple[Agenda, ...] = (
     Agenda(27549140, "Quai des savoirs"),
     Agenda(93202109, "Monuments de Toulouse"),
     Agenda(30183287, "Théâtre Jules-Julien"),
+)
+
+# Its language, that of its events: the names of the days and months, written
+# in the documents, set here rather than read from a system locale, often
+# missing in a container.
+WEEKDAYS = ("lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche")
+MONTHS = (
+    "janvier",
+    "février",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "août",
+    "septembre",
+    "octobre",
+    "novembre",
+    "décembre",
 )
