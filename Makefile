@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install lint format typecheck pre-commit ci clean
+.PHONY: help install config test-unit coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -8,6 +8,9 @@ $(info )
 # Run a command followed by a blank line and keep its exit code.
 # Its argument holds no comma: $(call) splits its arguments on commas.
 run = $(1); status=$$?; echo; exit $$status
+
+# A section per group of the cultural-events-rag command, named after it:
+# `uv run cultural-events-rag --help` lists the commands.
 
 UV  := uv
 RUN := $(UV) run
@@ -23,6 +26,19 @@ help: ## Show this help
 install: ## Install the locked environment and the git hooks
 	$(call run,$(UV) sync)
 	$(call run,$(RUN) pre-commit install)
+
+##@ Config (cultural-events-rag config)
+
+config: ## Show the active settings, secrets masked
+	$(call run,$(RUN) cultural-events-rag config show)
+
+##@ Tests
+
+test-unit: ## Run the tests that need only the repository
+	$(call run,$(RUN) pytest tests/unit -q)
+
+coverage: ## Run the unit tests, list the lines left uncovered, fail under 95%
+	$(call run,$(RUN) pytest tests/unit -q --cov $(ARGS))
 
 ##@ Quality
 
@@ -42,10 +58,11 @@ pre-commit: ## Run every pre-commit hook on every file
 
 ##@ CI
 
-ci: lint typecheck pre-commit ## Everything the CI checks, in this order
+ci: lint typecheck pre-commit coverage ## Everything the CI checks, in this order
 
 ##@ Cleanup
 
-clean: ## Remove the Python caches (__pycache__)
+clean: ## Remove the Python caches (__pycache__) and the HTML report of the coverage (htmlcov/)
 	find . -type d -name __pycache__ -not -path "./.venv/*" -exec rm -rf {} +
+	rm -rf htmlcov
 	$(call run,echo "Cleaning done.")

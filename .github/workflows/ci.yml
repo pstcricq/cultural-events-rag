@@ -1,6 +1,7 @@
 # One job per make target of the same name, in parallel. Every job installs
 # with `uv sync --locked`, which fails when uv.lock no longer matches
-# pyproject.toml, and UV_LOCKED keeps every `uv run` on uv.lock.
+# pyproject.toml, and UV_LOCKED keeps every `uv run` on uv.lock. No secret is
+# needed: each test sets its own settings.
 name: CI
 
 on:
@@ -66,3 +67,25 @@ jobs:
           key: pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
       - name: Every hook on every file
         run: make pre-commit
+
+  test-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - *setup-uv
+      - *install
+      - name: The unit tests
+        run: make test-unit
+
+  # Every test and the coverage of the package, the coverage of each file also
+  # written in the summary of the run.
+  coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - *setup-uv
+      - *install
+      - name: Every test and the coverage
+        run: make coverage ARGS="--cov-report=term --cov-report=markdown-append:$GITHUB_STEP_SUMMARY"

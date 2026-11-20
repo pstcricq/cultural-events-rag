@@ -1,7 +1,11 @@
-# Hooks git runs on the files of each commit.
+# Hooks git runs on the files of each commit, and the unit tests before each
+# push.
 #
 # A hook that fixes a file (ruff, whitespace, end of file) stops the commit:
 # add the fixed file and commit again.
+default_install_hook_types: [pre-commit, pre-push]
+# A hook runs before each commit unless it names its own stages.
+default_stages: [pre-commit]
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -15,7 +19,14 @@ repos:
       - id: check-added-large-files
       - id: detect-private-key
 
-  # ruff through uv, the version of uv.lock, on the files of the commit.
+  # The API keys of .env, should one land in a committed file.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.0
+    hooks:
+      - id: gitleaks
+
+  # ruff through uv, the version of uv.lock, on the files of the commit. The
+  # tests through their make target, on every file.
   - repo: local
     hooks:
       - id: ruff-check
@@ -29,3 +40,11 @@ repos:
         entry: uv run ruff format
         language: system
         types: [python]
+
+      - id: test-unit
+        name: unit tests
+        entry: make test-unit
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]

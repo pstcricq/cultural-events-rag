@@ -4,6 +4,12 @@
 # The bytecode Python writes beside the modules.
 __pycache__/
 
+# The secrets and the local settings: .env.example shows them.
+.env
+
+# The HTML report of `make coverage ARGS="--cov-report=html"`.
+htmlcov/
+
 # The folder settings macOS Finder writes.
 .DS_Store
 

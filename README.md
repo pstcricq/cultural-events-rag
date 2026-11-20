@@ -15,22 +15,29 @@ RAG assistant recommending cultural events from [Open Agenda](https://openagenda
 make install
 ```
 
-`make install` sets up the locked environment in `.venv` and the git hooks. `make help` lists every target.
+`make install` sets up the locked environment in `.venv`, the `cultural-events-rag` command and the git hooks. `make help` lists every target, `uv run cultural-events-rag --help` every command.
+
+## Configuration
+
+```bash
+cp .env.example .env
+make config
+```
+
+The settings are what an environment sets: its secrets, where its services are, what its machine and its plans allow. They come from the environment, then from `.env`, then from their defaults; `.env.example` lists them all. `.env` holds the API keys and is never committed. `make config` (`cultural-events-rag config show`) prints the active settings, a key only shown as set or not.
 
 ## CI
 
-GitHub Actions runs one job per make target of the same name: `lint`, `typecheck` and `pre-commit`. `make ci` runs every check of the CI on this machine. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
+GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: each test sets its own settings. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
 
 ## Test
 
 ```bash
-make lint
-make format
-make typecheck
-make pre-commit
+make test-unit
+make coverage
 ```
 
-`make lint` checks the Python, `make format` fixes what it can, `make typecheck` checks the types, `make pre-commit` runs every hook on every file.
+`make test-unit` runs the tests that need only the repository, also before each `git push`. `make coverage` runs them and measures the lines of the package they run: it lists those left out, and fails below 95%. `make lint` checks the Python, `make format` fixes what it can, `make typecheck` checks the types, `make pre-commit` runs every hook on every file.
 
 ## Licence
 
