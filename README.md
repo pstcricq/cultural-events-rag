@@ -13,9 +13,10 @@ RAG assistant recommending cultural events from [Open Agenda](https://openagenda
 
 ```bash
 make install
+make models
 ```
 
-`make install` sets up the locked environment in `.venv`, the `cultural-events-rag` command and the git hooks. `make help` lists every target, `uv run cultural-events-rag --help` every command.
+`make install` sets up the locked environment in `.venv`, the `cultural-events-rag` command and the git hooks. `make models` (`cultural-events-rag models`) downloads once, into the cache of Hugging Face, the models run on this machine: the Mistral tokenizer (about 2 MB), that counts the tokens of each embedding request. Every other target runs Hugging Face offline (`HF_HUB_OFFLINE=1`): a model missing is reported, never downloaded on the way. `make help` lists every target, `uv run cultural-events-rag --help` every command.
 
 ## Configuration
 
@@ -51,13 +52,17 @@ make process
 
 ```bash
 make documents
+make index
+make status
 ```
 
 `make documents` (`cultural-events-rag documents`) shows the documents the events of `data/processed/events.jsonl` make, as the index will store them: a summary of them all, or with `ARGS="--uid 123"` every document of one event. Each event gives one document per chunk of its description, up to `CHUNK_SIZE` characters (1000), the last `CHUNK_OVERLAP` (150) repeated at the start of the next. Every chunk starts with the header of the event, its title, dates in Paris time, place, price, audience, so that each one stays tied to its event. The metadata (dates in UTC, district, age, price) will filter the search.
 
+`make index` (`cultural-events-rag index`) sends these documents to `mistral-embed` (`MISTRAL_API_KEY`) in batches of about 15k tokens, a batch retried on a rate limit or a server error, and writes them into Elasticsearch: each one with its text, analyzed in French for the lexical search (BM25), its vector, for the vector search (kNN, exact: the question is compared with every vector by cosine), and its metadata, as fields to filter on. Each build writes a new index, then moves the alias `events` (`ELASTICSEARCH_INDEX`) onto it once every event is in it, and deletes the one it served: a failed build leaves the served index as it was. The index records what it was built with, the embedding model, the chunking, the document format and the vector index type: `make status` (`cultural-events-rag status`) shows the index served, its documents, when it was built, and whether the code still builds it the same way.
+
 ## CI
 
-GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: the tests fake Open Agenda, and start their own Elasticsearch. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
+GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: the tests fake Mistral and Open Agenda, and start their own Elasticsearch. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
 
 ## Test
 

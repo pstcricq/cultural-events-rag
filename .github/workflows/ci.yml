@@ -1,7 +1,8 @@
 # One job per make target of the same name, in parallel. Every job installs
 # with `uv sync --locked`, which fails when uv.lock no longer matches
 # pyproject.toml, and UV_LOCKED keeps every `uv run` on uv.lock. No secret is
-# needed: the tests fake Open Agenda, and start their own Elasticsearch.
+# needed: the tests fake Mistral and Open Agenda, and start their own
+# Elasticsearch.
 name: CI
 
 on:

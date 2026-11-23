@@ -1,6 +1,6 @@
 """How the application reaches Elasticsearch, the search engine holding the
-index of the events: the URL of the settings, their user and password. Used to
-write the index and to search it."""
+index of the events: the URL of the settings, their user and password, and the
+alias the index is served under. Used to write the index and to search it."""
 
 from elasticsearch import Elasticsearch
 
@@ -25,3 +25,10 @@ def make_elastic_client(settings: Settings) -> Elasticsearch:
         ),
         request_timeout=30,
     )
+
+
+def index_alias(settings: Settings) -> str:
+    """The alias of the settings the index of the events is served under."""
+    if not settings.elasticsearch_index:
+        raise MissingSettingError("ELASTICSEARCH_INDEX is not set: add it to .env")
+    return settings.elasticsearch_index

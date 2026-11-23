@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -15,6 +15,10 @@ run = $(1); status=$$?; echo; exit $$status
 UV  := uv
 RUN := $(UV) run
 
+# Hugging Face offline for every command: `make models` alone downloads the
+# models run on this machine; a command missing one says so.
+export HF_HUB_OFFLINE := 1
+
 # docker compose reads compose.yaml and .env on its own.
 COMPOSE := docker compose
 
@@ -29,6 +33,9 @@ help: ## Show this help
 install: ## Install the locked environment and the git hooks
 	$(call run,$(UV) sync)
 	$(call run,$(RUN) pre-commit install)
+
+models: ## Download the models run on this machine (Mistral tokenizer)
+	$(call run,HF_HUB_OFFLINE=0 $(RUN) cultural-events-rag models)
 
 ##@ Config (cultural-events-rag config)
 
@@ -61,10 +68,16 @@ fetch: ## Download the raw events, MAX_EVENTS of them (ARGS="--max-events 200")
 process: ## Turn the raw events into the events of the common format
 	$(call run,$(RUN) cultural-events-rag process)
 
-##@ Index (cultural-events-rag documents)
+##@ Index (cultural-events-rag documents, index, status)
 
 documents: ## Show the documents of the index (ARGS="--uid 123")
 	$(call run,$(RUN) cultural-events-rag documents $(ARGS))
+
+index: ## Embed the documents and write their index into Elasticsearch
+	$(call run,$(RUN) cultural-events-rag index)
+
+status: ## Show the index served, and whether the code still builds it the same way
+	$(call run,$(RUN) cultural-events-rag status)
 
 ##@ Tests
 

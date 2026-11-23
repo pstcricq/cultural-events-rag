@@ -23,6 +23,9 @@ from cultural_events_rag.indexing.formatting import (
 )
 from cultural_events_rag.models import Event
 
+# Bumped when the text or the metadata of the documents change: an index built
+# before is then reported outdated, and built again.
+DOCUMENT_FORMAT = 1
 DEFAULT_STATUS = "Programmé"  # not worth mentioning in the text
 # The price, always written: free ("Entrée libre" reads as free), paid, or
 # unknown, which a free question keeps too.

@@ -1,5 +1,5 @@
 """The client of the search engine made from the settings: their URL, user and
-password, a missing one refused."""
+password, a missing one refused; and the alias of the index."""
 
 import base64
 
@@ -7,7 +7,7 @@ import pytest
 from elasticsearch import Elasticsearch
 from pydantic import SecretStr
 
-from cultural_events_rag.elastic import make_elastic_client
+from cultural_events_rag.elastic import index_alias, make_elastic_client
 from cultural_events_rag.errors import MissingSettingError
 from cultural_events_rag.settings import Settings
 
@@ -63,3 +63,14 @@ def test_the_client_reaches_the_url_of_the_settings_as_their_user() -> None:
     assert client.transport.node_pool.get().base_url == "http://search:9201"
     authorization = client._headers["authorization"]
     assert authorization == "Basic " + base64.b64encode(b"reader:secret").decode()
+
+
+def test_the_alias_of_the_index_is_that_of_the_settings() -> None:
+    settings = Settings(_env_file=None, elasticsearch_index="events-test")
+
+    assert index_alias(settings) == "events-test"
+
+
+def test_a_missing_alias_is_refused() -> None:
+    with pytest.raises(MissingSettingError, match="ELASTICSEARCH_INDEX"):
+        index_alias(Settings(_env_file=None))

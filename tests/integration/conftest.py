@@ -3,11 +3,12 @@ version of .env.example, started by testcontainers once per session on a free
 port of this machine, and removed at the end, even when pytest is killed.
 Security on, as in compose.yaml: the client signs in with a password. Without
 docker the tests are skipped, under CI they fail. ``settings`` points at it,
-and ``client`` reaches it.
+with an alias of its own per test, and ``client`` reaches it.
 """
 
 import os
 import shutil
+import uuid
 from collections.abc import Iterator
 
 import pytest
@@ -71,12 +72,13 @@ def elasticsearch_url() -> Iterator[str]:
 
 @pytest.fixture
 def settings(elasticsearch_url: str) -> Settings:
-    """The settings of the test Elasticsearch."""
+    """The settings of the test Elasticsearch, an alias of its own per test."""
     return Settings(
         _env_file=None,
         elasticsearch_url=elasticsearch_url,
         elastic_user="elastic",
         elastic_password=SecretStr(PASSWORD),
+        elasticsearch_index=f"events-test-{uuid.uuid4().hex[:8]}",
     )
 
 

@@ -37,6 +37,9 @@ class Settings(BaseSettings):
     elasticsearch_url: str | None = None
     elastic_user: str | None = None
     elastic_password: SecretStr | None = None
+    # The alias the index of the events is served under: each build writes a
+    # new index and moves the alias onto it.
+    elasticsearch_index: str | None = None
 
     # How many events `fetch` collects from the agendas of CITY: a number (a
     # sample while developing), or all. No default: the collection refuses to
