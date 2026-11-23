@@ -1,7 +1,8 @@
 # One job per make target of the same name, in parallel, and the image built,
-# started and checked. Every job installs with `uv sync --locked`, and
-# UV_LOCKED keeps every `uv run` on uv.lock. No secret: the tests fake Mistral
-# and Open Agenda and start their own Elasticsearch.
+# started and checked; from main, the image and the documentation published.
+# Every job installs with `uv sync --locked`, and UV_LOCKED keeps every `uv run`
+# on uv.lock. No secret: the tests fake Mistral and Open Agenda and start their
+# own Elasticsearch.
 name: CI
 
 on:
@@ -160,6 +161,50 @@ jobs:
       - name: The logs of the services, on failure
         if: failure()
         run: docker compose --profile search logs --no-color --tail 100
+
+  # The image of the application on GitHub Container Registry, from main once
+  # every check passes: ghcr.io/<owner>/cultural-events-rag, tagged
+  # sha-<commit> and latest, for amd64 and arm64, the arm64 half under
+  # emulation (QEMU). A server pulls it with compose.yaml alone.
+  image-publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint, typecheck, pre-commit, test-unit, coverage, docs-build, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - *free-disk
+      - uses: docker/setup-qemu-action@v4
+      - uses: docker/setup-buildx-action@v4
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/cultural-events-rag
+          tags: |
+            type=sha,prefix=sha-
+            type=raw,value=latest
+      # No provenance attestation: one image per platform, nothing else under
+      # the tag. The layers cached by GitHub, apart from those of the docker
+      # job, built for amd64 only.
+      - name: Build for amd64 and arm64, push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          provenance: false
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=publish
+          cache-to: type=gha,mode=max,scope=publish
 
   # The site of docs-build on GitHub Pages, from main once every check passes.
   docs-publish:

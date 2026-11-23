@@ -58,4 +58,6 @@ The choices of the project and their reasons. The code says what it does; this p
 
 **One compose file, one image.** The same `compose.yaml` serves every environment, its values from the environment; this machine only adds the build of the image. The three services of the application share one image, and PyTorch with it.
 
+**A published image, pinned by commit.** The CI publishes the image only from `main` and only once every check has passed, tagged with its commit. A server pins that tag rather than `latest`: it runs exactly the code the CI checked, and going back is choosing the previous tag. The image is built for arm64 too, so that it runs natively on an Apple Silicon Mac.
+
 **The interface as a client of the API.** The web interface goes through the API like any front end, with the schemas of the API as the contract. The API can serve another front end; the interface needs no secret.

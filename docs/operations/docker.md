@@ -50,9 +50,17 @@ The [`Dockerfile`](https://github.com/pstcricq/cultural-events-rag/blob/main/Doc
 | | On this machine (`make`) | On a server |
 |---|---|---|
 | Files | `compose.yaml` and `compose.dev.yaml` | `compose.yaml` alone |
-| Image | built from this checkout | pulled from a registry |
+| Image | built from this checkout | pulled from `ghcr.io/pstcricq/cultural-events-rag` |
 | Elasticsearch | in compose (profile `search`) | in compose, or external |
 | Command | `make docker-up` | `docker compose --profile search up -d` |
+
+On a server, the image is the one the CI publishes from `main` (see [CI](ci.md#the-published-image)), pinned to a commit:
+
+```bash
+export APP_IMAGE=ghcr.io/pstcricq/cultural-events-rag APP_TAG=sha-1a2b3c4
+docker compose pull
+docker compose --profile search up -d
+```
 
 `compose.dev.yaml` adds the build of the image to the `api` service; `make docker-up` builds it again when the code changed. A server with its own Elasticsearch starts compose without the profile and sets `API_ELASTICSEARCH_URL` to its address: neither Elasticsearch nor Kibana starts, and the API does not wait for them.
 

@@ -27,5 +27,5 @@
 - Keep the previous turns of a conversation, rewriting a follow-up question into a standalone one before the search.
 - Split the benchmark into questions to tune on and questions to measure on, and grow it.
 - Detect the out-of-scope questions before the search, with a threshold measured on the benchmark.
-- Publish the image to a registry from the CI, and deploy it.
+- Deploy the published image on a server from the CI, with its secrets from the environment of the server.
 - Monitor the API: latency, errors, the questions that find no event.

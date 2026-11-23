@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/pstcricq/cultural-events-rag/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pstcricq/cultural-events-rag/actions/workflows/ci.yml) [![Documentation](https://img.shields.io/badge/docs-MkDocs%20Material-C2410C?logo=materialformkdocs&logoColor=white)](https://pstcricq.github.io/cultural-events-rag/) [![Python 3.12](https://img.shields.io/badge/python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org) [![uv](https://img.shields.io/badge/uv-0.12.5-DE5FE9?logo=uv&logoColor=white)](https://docs.astral.sh/uv/) [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff) [![mypy strict](https://img.shields.io/badge/mypy-strict-1F5082)](https://mypy-lang.org) [![Coverage ≥ 95%](https://img.shields.io/badge/coverage-%E2%89%A595%25-2E8B57)](#test) [![License MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-[![Elasticsearch 9.5](https://img.shields.io/badge/Elasticsearch-9.5-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/elasticsearch) [![Mistral AI](https://img.shields.io/badge/Mistral%20AI-mistral--embed%20%C2%B7%20ministral--14b-FA520F)](https://mistral.ai) [![LangChain](https://img.shields.io/badge/LangChain-1.x-1C3C3C?logo=langchain&logoColor=white)](https://www.langchain.com) [![Ragas](https://img.shields.io/badge/Ragas-0.4-6A4C93)](https://docs.ragas.io) [![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com) [![Streamlit](https://img.shields.io/badge/Streamlit-web%20interface-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io) [![Docker Compose](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](compose.yaml) [![Data: Open Agenda, Licence Ouverte 2.0](https://img.shields.io/badge/data-Open%20Agenda%20%C2%B7%20Licence%20Ouverte%202.0-0B4F8A)](NOTICE)
+[![Elasticsearch 9.5](https://img.shields.io/badge/Elasticsearch-9.5-005571?logo=elasticsearch&logoColor=white)](https://www.elastic.co/elasticsearch) [![Mistral AI](https://img.shields.io/badge/Mistral%20AI-mistral--embed%20%C2%B7%20ministral--14b-FA520F)](https://mistral.ai) [![LangChain](https://img.shields.io/badge/LangChain-1.x-1C3C3C?logo=langchain&logoColor=white)](https://www.langchain.com) [![Ragas](https://img.shields.io/badge/Ragas-0.4-6A4C93)](https://docs.ragas.io) [![FastAPI](https://img.shields.io/badge/FastAPI-REST%20API-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com) [![Streamlit](https://img.shields.io/badge/Streamlit-web%20interface-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io) [![Docker Compose](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](compose.yaml) [![Image](https://img.shields.io/badge/image-ghcr.io%2Fpstcricq%2Fcultural--events--rag-2496ED?logo=docker&logoColor=white)](https://github.com/pstcricq/cultural-events-rag/pkgs/container/cultural-events-rag) [![Data: Open Agenda, Licence Ouverte 2.0](https://img.shields.io/badge/data-Open%20Agenda%20%C2%B7%20Licence%20Ouverte%202.0-0B4F8A)](NOTICE)
 
 A RAG assistant that recommends cultural events in Toulouse. It collects the events of the city's public cultural agendas from [Open Agenda](https://openagenda.com), indexes them in Elasticsearch, and answers a question in French with the events that fit it: the question is read for its period, place and price, the closest events are searched (lexical and vector search fused, then reranked by a cross-encoder), and a Mistral model writes the answer from those events only.
 
@@ -133,7 +133,16 @@ make docker-up S=elasticsearch # Elasticsearch alone, for make api on this machi
 | `make docker-down` | stop the services, keep their data |
 | `make docker-reset` | stop them and delete their volumes |
 
-[`compose.yaml`](compose.yaml) is the same file in every environment: every value comes from the environment or `.env`, and the application runs from one image, `APP_IMAGE:APP_TAG`. On this machine make adds [`compose.dev.yaml`](compose.dev.yaml), which builds that image, and the profile `search`, which runs Elasticsearch and Kibana. A server runs `docker compose --profile search up -d` on `compose.yaml` alone, or without the profile with `API_ELASTICSEARCH_URL` pointing at an external Elasticsearch. Kibana opens on http://127.0.0.1:5601.
+[`compose.yaml`](compose.yaml) is the same file in every environment: every value comes from the environment or `.env`, and the application runs from one image, `APP_IMAGE:APP_TAG`. On this machine make adds [`compose.dev.yaml`](compose.dev.yaml), which builds that image, and the profile `search`, which runs Elasticsearch and Kibana. Kibana opens on http://127.0.0.1:5601.
+
+A server runs `compose.yaml` alone, with the image the CI publishes, `APP_IMAGE=ghcr.io/pstcricq/cultural-events-rag` and `APP_TAG=sha-<commit>` (or `latest`), for amd64 and arm64:
+
+```bash
+docker compose pull
+docker compose --profile search up -d
+```
+
+Without the profile, with `API_ELASTICSEARCH_URL` pointing at an external Elasticsearch, neither Elasticsearch nor Kibana starts.
 
 ## Evaluation
 
@@ -150,7 +159,7 @@ The answers of the assistant ([`reports/generation.md`](reports/generation.md)):
 
 ## CI
 
-GitHub Actions runs one job per make target: `lint`, `typecheck`, `pre-commit`, `test-unit`, `coverage` and `docs-build`; `docker` builds the image, starts the API, the web interface and Elasticsearch on it with dummy secrets, and runs `make test-smoke`; `docs-publish` publishes the documentation on GitHub Pages from `main`. `make ci` runs every check on this machine. No secret is needed.
+GitHub Actions runs one job per make target: `lint`, `typecheck`, `pre-commit`, `test-unit`, `coverage` and `docs-build`; `docker` builds the image, starts the API, the web interface and Elasticsearch on it with dummy secrets, and runs `make test-smoke`; from `main`, once every check passes, `image-publish` pushes the image to `ghcr.io/pstcricq/cultural-events-rag` and `docs-publish` the documentation to GitHub Pages. `make ci` runs every check on this machine. No secret is needed.
 
 ## Test
 
