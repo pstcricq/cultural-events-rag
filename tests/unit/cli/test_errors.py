@@ -1,6 +1,6 @@
 """What each command says when a service fails, the services replaced: no
-Elasticsearch, a refused password, an embedding request refused by Mistral;
-and what index reports of the indices it replaced."""
+Elasticsearch, a refused password, an embedding request refused by Mistral,
+no index; and what index reports of the indices it replaced."""
 
 from pathlib import Path
 from typing import Any
@@ -15,11 +15,12 @@ from pydantic import SecretStr
 
 from cultural_events_rag.cli import main
 from cultural_events_rag.collection.files import save_events
-from cultural_events_rag.indexing.build import BuildReport
+from cultural_events_rag.indexing.build import BuildReport, index_signature
+from cultural_events_rag.indexing.store import IndexInfo
 from cultural_events_rag.models import Event
 from cultural_events_rag.settings import Settings
 
-COMMANDS = ("analyze", "status", "index")
+COMMANDS = ("analyze", "status", "index", "search")
 CONNECTION = EngineConnectionError("connection refused")
 REFUSED = AuthenticationException(
     "refused",
@@ -84,7 +85,10 @@ def services(tmp_path: Path, event: Event, monkeypatch: pytest.MonkeyPatch) -> N
             f"cultural_events_rag.cli.{command}.get_settings", lambda: SETTINGS
         )
     monkeypatch.setattr("cultural_events_rag.cli.index.EVENTS_FILE", events)
-    monkeypatch.setattr("cultural_events_rag.cli.index.make_embeddings", lambda _: fake)
+    for command in ("index", "search"):
+        monkeypatch.setattr(
+            f"cultural_events_rag.cli.{command}.make_embeddings", lambda _: fake
+        )
 
 
 def _client(monkeypatch: pytest.MonkeyPatch, command: str, client: object) -> None:
@@ -113,9 +117,11 @@ def test_each_command_explains_an_elasticsearch_failure(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     _client(monkeypatch, command, Failing(error))
-    question = ["Un concert ce soir ?"] if command == "analyze" else []
+    asked = command in ("analyze", "search")
+    question = ["Un concert ce soir ?"] if asked else []
+    mode = ["--mode", "hybrid"] if command == "search" else []
 
-    assert main([command, *question]) == 1
+    assert main([command, *question, *mode]) == 1
 
     assert message in capsys.readouterr().err
 
@@ -150,3 +156,35 @@ def test_index_reports_the_indices_it_replaced_and_left(
     out, err = capsys.readouterr()
     assert "Replaced: events-1" in out
     assert "WARN old indices not deleted: events-1" in err
+
+
+def test_search_without_index(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _client(monkeypatch, "search", Failing(CONNECTION))
+    monkeypatch.setattr(
+        "cultural_events_rag.retrieval.search.served_index", lambda *_: None
+    )
+
+    assert main(["search", "Un concert", "--mode", "hybrid"]) == 1
+
+    assert "FAIL no index behind events: run make index" in capsys.readouterr().err
+
+
+def test_search_explains_a_refused_embedding(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _client(monkeypatch, "search", Failing(CONNECTION))
+    served = IndexInfo(name="events-1", count=1, meta=index_signature())
+    monkeypatch.setattr(
+        "cultural_events_rag.retrieval.search.served_index", lambda *_: served
+    )
+
+    def refused(*args: Any, **kwargs: Any) -> None:
+        Refused(size=4).embed_documents(["Un concert"])
+
+    monkeypatch.setattr("cultural_events_rag.cli.search.retrieve", refused)
+
+    assert main(["search", "Un concert", "--mode", "hybrid"]) == 1
+
+    assert "FAIL embedding the question: " in capsys.readouterr().err

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -79,10 +79,13 @@ index: ## Embed the documents and write their index into Elasticsearch
 status: ## Show the index served, and whether the code still builds it the same way
 	$(call run,$(RUN) cultural-events-rag status)
 
-##@ Retrieval (cultural-events-rag analyze)
+##@ Retrieval (cultural-events-rag analyze, search)
 
 analyze: ## Show the filters of a question (Q="concert gratuit ce week-end")
 	$(call run,$(RUN) cultural-events-rag analyze "$(Q)" $(ARGS))
+
+search: ## Search the events of a question (Q="...", ARGS="--mode hybrid")
+	$(call run,$(RUN) cultural-events-rag search "$(Q)" $(ARGS))
 
 ##@ Tests
 

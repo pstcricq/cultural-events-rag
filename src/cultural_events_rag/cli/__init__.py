@@ -12,10 +12,11 @@ from cultural_events_rag.cli import (
     index,
     models,
     process,
+    search,
     status,
 )
 
-GROUPS = (config, models, fetch, process, documents, index, status, analyze)
+GROUPS = (config, models, fetch, process, documents, index, status, analyze, search)
 
 
 def _parser() -> argparse.ArgumentParser:
