@@ -29,9 +29,9 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      # The packages uv downloads, kept between runs, one cache per job (the
-      # typecheck installs the rerank extra), keyed on uv.lock. Not pruned:
-      # PyTorch, the largest, would be downloaded again at each run.
+      # The packages uv downloads, kept between runs, one cache per job (each
+      # installs its own extras), keyed on uv.lock. Not pruned: PyTorch, the
+      # largest, would be downloaded again at each run.
       - &setup-uv
         uses: astral-sh/setup-uv@v10.3.3
         with:
@@ -44,17 +44,17 @@ jobs:
       - name: Lint the Python
         run: make lint
 
-  # With the rerank extra (PyTorch for the CPU): mypy checks the calls of the
-  # reranker against sentence-transformers. The tests replace it: they need
-  # no extra.
+  # With the rerank extra (PyTorch for the CPU) and the eval extra (Ragas):
+  # mypy checks the calls of the reranker against sentence-transformers and
+  # those of the judge against Ragas. The tests need the eval extra only.
   typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - *setup-uv
-      - name: Install the locked environment and the rerank extra
-        run: uv sync --locked --extra rerank
+      - name: Install the locked environment, the rerank and eval extras
+        run: uv sync --locked --extra rerank --extra eval
       - name: Check the types
         run: make typecheck
 
@@ -77,11 +77,13 @@ jobs:
 
   test-unit:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - *setup-uv
-      - *install
+      - &install-eval
+        name: Install the locked environment and the eval extra
+        run: uv sync --locked --extra eval
       - name: The unit tests
         run: make test-unit
 
@@ -91,10 +93,10 @@ jobs:
   # run.
   coverage:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - *setup-uv
-      - *install
+      - *install-eval
       - name: Every test and the coverage
         run: make coverage ARGS="--cov-report=term --cov-report=markdown-append:$GITHUB_STEP_SUMMARY"

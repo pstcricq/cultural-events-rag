@@ -19,6 +19,10 @@ class RerankerError(RuntimeError):
     """The reranker cannot run: the rerank extra is not installed."""
 
 
+class JudgeError(RuntimeError):
+    """The judge of the answers cannot run: the eval extra is not installed."""
+
+
 class GenerationError(RuntimeError):
     """The model gave no usable answer."""
 

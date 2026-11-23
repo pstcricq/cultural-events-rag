@@ -1,17 +1,22 @@
 """The ``cultural-events-rag evaluate`` commands, their reports written into
 ``reports/``: ``retrieval``, the questions of the benchmark searched by each
-configuration, the events found compared with those judged relevant."""
+configuration, the events found compared with those judged relevant;
+``generation``, the questions answered by the configuration kept, the events
+the answers recommend compared with those judged relevant."""
 
 import argparse
+import asyncio
 import sys
 import time
 from datetime import UTC, date, datetime
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import httpx
 from elasticsearch import AuthenticationException, Elasticsearch
 from elasticsearch import ConnectionError as EngineConnectionError
 
+from cultural_events_rag.assistant import SEARCH_MODE, load_assistant, reranker_model
 from cultural_events_rag.cli.output import (
     aligned,
     confirm,
@@ -23,12 +28,26 @@ from cultural_events_rag.cli.search import load_reranker
 from cultural_events_rag.collection.files import load_events
 from cultural_events_rag.elastic import make_elastic_client
 from cultural_events_rag.errors import (
+    GenerationError,
+    JudgeError,
     MissingModelError,
     MissingSettingError,
     RerankerError,
 )
 from cultural_events_rag.evaluation.benchmark import BENCHMARK_ALIAS, rebuild_reason
 from cultural_events_rag.evaluation.dataset import load_dataset
+from cultural_events_rag.evaluation.generation import (
+    JUDGE_CALLS,
+    evaluate_answers,
+    judge_answers,
+)
+from cultural_events_rag.evaluation.generation_report import (
+    render as render_answers,
+)
+from cultural_events_rag.evaluation.generation_report import scores
+from cultural_events_rag.evaluation.generation_report import (
+    to_json as answers_json,
+)
 from cultural_events_rag.evaluation.retrieval import (
     CANDIDATES,
     CONFIGS,
@@ -43,15 +62,26 @@ from cultural_events_rag.evaluation.retrieval_report import (
     to_json,
 )
 from cultural_events_rag.indexing.chunking import CHUNK_OVERLAP, CHUNK_SIZE
-from cultural_events_rag.mistral import EMBEDDING_MODEL, make_embeddings
+from cultural_events_rag.mistral import (
+    EMBEDDING_MODEL,
+    JUDGE_MODEL,
+    LLM_MODEL,
+    Pacer,
+    make_embeddings,
+    requests_per_minute,
+)
 from cultural_events_rag.paths import (
     BENCHMARK_EVENTS,
     BENCHMARK_QUESTIONS,
     REPORTS_DIR,
 )
 from cultural_events_rag.retrieval.rerank import RERANK_MODEL
+from cultural_events_rag.retrieval.search import SEARCH_K
 from cultural_events_rag.retry import describe
 from cultural_events_rag.settings import Settings, get_settings
+
+if TYPE_CHECKING:  # Ragas, the eval extra, only to judge
+    from cultural_events_rag.evaluation.judge import RagasJudge
 
 
 def _benchmark(settings: Settings) -> tuple[Elasticsearch, str | None]:
@@ -88,13 +118,24 @@ def _go(estimate: str, yes: bool) -> bool:
 
 
 FAILURES = (
+    JudgeError,
     MissingSettingError,
     MissingModelError,
     RerankerError,
+    GenerationError,
     EngineConnectionError,
     AuthenticationException,
     httpx.HTTPError,
 )
+
+
+def _judge(settings: Settings, pacer: Pacer) -> "RagasJudge":
+    """The Ragas judge, its calls spaced by ``pacer``."""
+    try:
+        from cultural_events_rag.evaluation.judge import RagasJudge
+    except ImportError as exc:
+        raise JudgeError("the judge needs the eval extra: run make install") from exc
+    return RagasJudge(settings, pacer)
 
 
 def _context(settings: Settings, questions: int, asked_on: date) -> list[str]:
@@ -184,6 +225,83 @@ def _retrieval(args: argparse.Namespace) -> int:
     return 0
 
 
+def _generation(args: argparse.Namespace) -> int:
+    settings = get_settings()
+    quiet_logs()
+    dataset = load_dataset(BENCHMARK_QUESTIONS)
+    try:
+        config = RetrievalConfig(SEARCH_MODE, bool(reranker_model(settings)))
+        per_minute = requests_per_minute(settings)
+        client, problem = _benchmark(settings)
+        if problem:
+            print(f"FAIL {problem}", file=sys.stderr)
+            return 1
+        interval = 60 / per_minute
+        answering = len(dataset.questions) * interval
+        in_scope = sum(1 for question in dataset.questions if question.relevant)
+        to_judge = 0.0 if args.no_judge else in_scope * JUDGE_CALLS * interval
+        estimate = (
+            f"{duration(answering + to_judge)}: the answers {duration(answering)}"
+            + (f", the judge {duration(to_judge)}" if to_judge else "")
+            + f", at {per_minute:g} calls a minute"
+        )
+        if not _go(estimate, args.yes):
+            print("Nothing run")
+            return 0
+        # The LLM and the judge share the quota of the chat models.
+        pacer = Pacer(per_minute)
+        assistant = load_assistant(
+            settings,
+            client,
+            BENCHMARK_ALIAS,
+            pacer=pacer,
+            load_reranker=load_reranker,
+        )
+        judge = None if args.no_judge else _judge(settings, pacer)
+        print(
+            f"Questions: {len(dataset.questions)}, asked on {dataset.reference_date}, "
+            f"in {BENCHMARK_ALIAS}, {config.name}, answered by {LLM_MODEL}"
+            + (f", judged by {JUDGE_MODEL}" if judge else "")
+            + "\n"
+        )
+        start = time.perf_counter()
+        results = evaluate_answers(assistant, dataset)
+        elapsed = time.perf_counter() - start
+        print(f"Answered in {duration(elapsed)}")
+        judging = 0.0
+        if judge:
+            start = time.perf_counter()
+            results = asyncio.run(judge_answers(results, judge))
+            judging = time.perf_counter() - start
+            print(f"Judged in {duration(judging)}")
+    except FAILURES as exc:
+        print(f"FAIL {_failure(exc, settings.elasticsearch_url)}", file=sys.stderr)
+        return 1
+
+    context = _context(settings, len(dataset.questions), dataset.reference_date)
+    context += [
+        (f"Search: {config.name}, the first {SEARCH_K} events given to the LLM"),
+        f"Answers: {LLM_MODEL}, in {elapsed:.0f} s",
+        (
+            f"Judge: {JUDGE_MODEL} (Ragas), in {judging:.0f} s"
+            if judge
+            else "Judge: none"
+        ),
+        (
+            f"Calls to the chat models: {per_minute:g} a "
+            "minute, the quota of the Mistral plan"
+        ),
+    ]
+    page, answers = _write(
+        "generation", render_answers(results, context), answers_json(results)
+    )
+    print()
+    for line in aligned(scores(results), bold=sys.stdout.isatty()):
+        print(line)
+    print(f"\nReport: {shown(page)}, answers: {shown(answers)}")
+    return 0
+
+
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
     """Add ``cultural-events-rag evaluate`` to the cultural-events-rag command."""
     evaluate_ = commands.add_parser(
@@ -202,3 +320,16 @@ def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[
         "--yes", action="store_true", help="run without asking, its duration shown"
     )
     retrieval.set_defaults(run=_retrieval)
+    generation = steps.add_parser(
+        "generation",
+        help="answer the questions with the configuration kept, and measure them",
+    )
+    generation.add_argument(
+        "--no-judge",
+        action="store_true",
+        help="the exact checks only, without the Ragas judge (hours on the free plan)",
+    )
+    generation.add_argument(
+        "--yes", action="store_true", help="run without asking, its duration shown"
+    )
+    generation.set_defaults(run=_generation)

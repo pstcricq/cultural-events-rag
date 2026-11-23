@@ -35,6 +35,9 @@ EMBEDDING_MODEL = "mistral-embed"
 # The model that writes the answer from the events found: the most capable of
 # the free plan.
 LLM_MODEL = "ministral-14b-latest"
+# The model that judges the answers (make eval-generation): the one that
+# writes them.
+JUDGE_MODEL = LLM_MODEL
 
 # The tokenizer MistralAIEmbeddings counts the tokens with.
 TOKENIZER_REPO = "mistralai/Mixtral-8x7B-v0.1"

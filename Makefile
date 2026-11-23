@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search ask benchmark eval-retrieval test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search ask benchmark eval-retrieval eval-generation test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -32,8 +32,8 @@ help: ## Show this help
 
 ##@ Environment
 
-install: ## Install the locked environment, the reranker and the git hooks
-	$(call run,$(UV) sync --extra rerank)
+install: ## Install the locked environment, the reranker, the judge and the git hooks
+	$(call run,$(UV) sync --extra rerank --extra eval)
 	$(call run,$(RUN) pre-commit install)
 
 models: ## Download the models run on this machine (Mistral tokenizer, reranker)
@@ -101,6 +101,9 @@ benchmark: ## Check the benchmark and build its index when missing or outdated
 
 eval-retrieval: ## Compare the configurations of the search on the benchmark (ARGS="--no-rerank --yes")
 	$(call run,$(RUN) cultural-events-rag evaluate retrieval $(ARGS))
+
+eval-generation: ## Answer the benchmark questions and judge them (ARGS="--no-judge")
+	$(call run,$(RUN) cultural-events-rag evaluate generation $(ARGS))
 
 ##@ Tests
 

@@ -58,29 +58,48 @@ def test_an_evaluation_refused_runs_nothing(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     prefix = "cultural_events_rag.cli.evaluate"
-    settings = Settings(_env_file=None)
+    settings = Settings(
+        _env_file=None, rerank_available=True, llm_requests_per_minute=2
+    )
     monkeypatch.setattr(f"{prefix}.get_settings", lambda: settings)
     monkeypatch.setattr(f"{prefix}._benchmark", lambda _: (None, None))
     monkeypatch.setattr("builtins.input", lambda _: "n")
 
+    assert main(["evaluate", "generation"]) == 0
     assert main(["evaluate", "retrieval", "--no-rerank"]) == 0
 
     out = capsys.readouterr().out
+    assert (
+        "Estimated time: about 3 h 02 min: the answers 25 min, the judge 2 h 38 min, "
+        "at 2 calls a minute." in out
+    )
     assert "Estimated time: about 30 s, 3 configurations." in out
-    assert "Nothing run" in out
+    assert out.count("Nothing run") == 2
 
 
-def test_an_evaluation_with_the_reranker_needs_rerank_available(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+@pytest.mark.parametrize(
+    ("step", "values", "missing"),
+    [
+        ("retrieval", {}, "RERANK_AVAILABLE"),
+        ("generation", {}, "RERANK_AVAILABLE"),
+        ("generation", {"rerank_available": True}, "LLM_REQUESTS_PER_MINUTE"),
+    ],
+)
+def test_an_evaluation_names_the_missing_setting(
+    step: str,
+    values: dict[str, object],
+    missing: str,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
-    settings = Settings(_env_file=None)
+    settings = Settings(_env_file=None, **values)  # type: ignore[arg-type]
     monkeypatch.setattr(
         "cultural_events_rag.cli.evaluate.get_settings", lambda: settings
     )
 
-    assert main(["evaluate", "retrieval"]) == 1
+    assert main(["evaluate", step]) == 1
 
-    assert "RERANK_AVAILABLE is not set" in capsys.readouterr().err
+    assert f"{missing} is not set" in capsys.readouterr().err
 
 
 @pytest.mark.parametrize("command", ["analyze", "search", "ask"])

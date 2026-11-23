@@ -1,0 +1,973 @@
+{
+  "theme-techno": {
+    "answer": "Voici plusieurs soirées techno à Toulouse qui pourraient vous plaire :\n\n- LIVE MACHINE TECHNO // GEARGEIST BY THE PETIT LONDON le samedi 24 octobre de 22h à 2h30, avec un line-up 100 % live et une ambiance hypnotique et industrielle. L'entrée est gratuite.\n\n- MILIO RUANDO ALL NIGHT LONG (TECHNO, ACID & TRANCE) le samedi 24 octobre à partir de 23h55, pour une nuit immersive mêlant techno, acid et trance. Les tarifs varient entre 9,99 € et 17,02 €.\n\n- (TRIBE) (TEKNO) (DNB) NET PROD BY THE PETIT LONDON le vendredi 30 octobre de 22h à 1h30, avec un mélange de tribe, drum & bass et techno minimal. L'entrée est gratuite.\n\n- HALLOWEEN RAVE PARTY XXL 2026 le samedi 31 octobre à partir de 23h, pour une rave XXL avec hard techno, hard groove et une ambiance festive jusqu’à 7h. Les tarifs commencent à 11,29 €.\n\n- ElectroNyx Techno le samedi 7 novembre à partir de 21h30, avec une soirée haute en énergie et un line-up 100 % féminine. L'entrée est gratuite.",
+    "recommended": [
+      "35689387",
+      "5667002",
+      "87454334",
+      "40545019",
+      "16927835"
+    ],
+    "given": [
+      "16927835",
+      "35689387",
+      "5667002",
+      "87454334",
+      "40545019"
+    ],
+    "judged": {
+      "faithfulness": 0.9230769230769231,
+      "answer_relevancy": 0.826824123039351,
+      "factual_correctness": 0.36
+    }
+  },
+  "theme-animation": {
+    "answer": "Voici les films d'animation projetés à Toulouse ces prochaines semaines :\n\n- Fête du cinéma d’animation : Projection de deux courts-métrages, Lola et le piano à bruits (27 min) et Mon petit frère de la lune (6 min), accompagnés de contes. Cet événement a lieu le mercredi 28 octobre à 14h30 à la Médiathèque José Cabanis. Le tarif n'est pas précisé.\n\n- Arco : Un long-métrage d'animation primé au Festival de Cannes et d'Annecy, projeté dans le cadre du festival Lumières sur le Quai. La séance dure 90 minutes et est accessible dès 8 ans. Plusieurs dates sont disponibles jusqu'au 1er novembre, avec un tarif de 5€ (plein) ou 3€ (réduit). La séance du dimanche 1er novembre est gratuite sur réservation.\n\n- La prophétie des grenouilles : Un autre long-métrage d'animation, adapté d'une fable écologique, projeté dans le même cadre que Arco. Il est accessible dès 7 ans, avec des séances de 90 minutes aux mêmes dates et tarifs (5€ ou 3€). La séance du dimanche 1er novembre est également gratuite sur réservation.\n\n- Rêveries d'animaux : Une sélection de courts-métrages d'animation 3D créés par des étudiants de l'ESMA, destinée aux enfants dès 3 ans. Les projections ont lieu les samedi 31 octobre et dimanche 1er novembre à 10h30, et sont gratuites sur inscription sur place.\n\n- Festival Séquence court métrage : Une compétition de courts-métrages d'animation variés (11 films au total), pour un public à partir de 12 ans. La séance a lieu le jeudi 10 décembre à 18h30 à la Médiathèque José Cabanis. Le tarif n'est pas précisé.\n\nN'hésitez pas à préciser si vous cherchez un type de film ou un public en particulier !",
+    "recommended": [
+      "45386710",
+      "87227570",
+      "23209302",
+      "72889912",
+      "21918493"
+    ],
+    "given": [
+      "45386710",
+      "87227570",
+      "23209302",
+      "21918493",
+      "72889912"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8821184353270453,
+      "factual_correctness": 0.29
+    }
+  },
+  "theme-sf": {
+    "answer": "Voici deux conférences qui pourraient vous intéresser autour de la science-fiction à Toulouse :\n\n- Sciences et SF : Journée thématique le jeudi 22 octobre de 14h à 19h au Quai des Savoirs. Cette journée explore les liens entre sciences et science-fiction à travers des tables rondes, des dédicaces d'auteurs et une conférence-spectacle (Sleep for Earth). Les tables rondes et dédicaces sont gratuites, mais le spectacle est payant sur inscription.\n\n- La science-fiction peut-elle sortir de la dystopie ? le samedi 31 octobre de 15h à 16h15 au Quai des Savoirs. Cette table ronde avec des auteurs et éditeurs du magazine Métal Hurlant aborde la difficulté d'imaginer des récits positifs en science-fiction. L'entrée est libre et gratuite, dans la limite des places disponibles.\n\nCes deux événements s'inscrivent dans le cadre du festival Lumières sur le Quai 2026.",
+    "recommended": [
+      "12606354",
+      "93458911"
+    ],
+    "given": [
+      "12606354",
+      "93458911",
+      "82762710",
+      "39716471",
+      "88170630"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8467133784843959,
+      "factual_correctness": 0.62
+    }
+  },
+  "theme-puppets": {
+    "answer": "Voici deux spectacles de marionnettes qui pourraient vous intéresser à Toulouse :\n\n- « Traversée » par la Rift Compagnie : une création poétique sur le lien entre une grand-mère et sa petite-fille, mêlant théâtre et marionnettes. Les représentations scolaires sont prévues le vendredi 11 décembre 2026 à 10h et 14h30, mais le spectacle est accessible au public en général (à partir de 6 ans).\n\n- « 100% Polyester » par Christian Rizzo & Caty Olive : bien que centré sur la danse et les costumes, ce projet inclut des éléments de marionnettes et de manipulation d’objets dansants. Il est présenté du 6 au 22 novembre 2026 à la Chapelle des Carmélites, avec des créneaux variés.\n\nSi vous cherchez un spectacle de marionnettes classique, « Traversée » est le plus adapté. Sinon, « 100% Polyester » offre une expérience artistique unique, même si son approche est plus expérimentale.",
+    "recommended": [
+      "50440150",
+      "30327372"
+    ],
+    "given": [
+      "50440150",
+      "94488977",
+      "30327372",
+      "49105760",
+      "43791930"
+    ],
+    "judged": {
+      "faithfulness": 0.7857142857142857,
+      "answer_relevancy": 0.8300957404665996,
+      "factual_correctness": 0.4
+    }
+  },
+  "theme-drawing": {
+    "answer": "Malheureusement, aucun atelier de dessin ou de peinture pour adultes n'est disponible dans les événements fournis. Ces ateliers sont uniquement proposés pour les familles avec des enfants à partir de 3 ans. Si vous souhaitez une activité similaire pour adultes, je vous invite à reformuler votre demande pour que je puisse mieux vous orienter.",
+    "recommended": [],
+    "given": [
+      "14312926",
+      "73143512",
+      "23098457",
+      "18791295",
+      "46017621"
+    ],
+    "judged": {
+      "faithfulness": 0.8,
+      "answer_relevancy": 0.0,
+      "factual_correctness": 0.14
+    }
+  },
+  "theme-jazz": {
+    "answer": "Voici deux concerts de jazz qui pourraient vous plaire à Toulouse :\n\n- « Saison musicale - Les empreintes nocturnes » par Iralki Khutsichvili : Un concert intimiste pour guitare solo mêlant jazz, musiques du monde et influences classiques, dans une ambiance immersive et poétique. Il se déroulera le vendredi 11 décembre 2026 à 20h00 à la Chapelle des Carmélites. Le tarif est de 12 €.\n\n- « daoud » : Un spectacle de jazz audacieux et déstructuré, porté par un artiste qui bouscule les codes. Ce concert est prévu le samedi 20 mars 2027 à 19h30 à La Halle aux Grains, avec des tarifs entre 30,5 € et 35,5 €.\n\nSi vous souhaitez une expérience plus accessible, le Brass Band du Conservatoire propose également un répertoire varié incluant des influences jazz, le mardi 23 mars 2027 à 20h00 à l'Auditorium Saint-Pierre des Cuisines. L'entrée est gratuite sur réservation.\n\nN'hésitez pas à préciser si vous cherchez un style particulier ou une date spécifique !",
+    "recommended": [
+      "68249282",
+      "86128202",
+      "29446106"
+    ],
+    "given": [
+      "68249282",
+      "86128202",
+      "29446106",
+      "84479041",
+      "60422140"
+    ],
+    "judged": {
+      "faithfulness": 0.8947368421052632,
+      "answer_relevancy": 0.8453272372099059,
+      "factual_correctness": 0.84
+    }
+  },
+  "theme-rap": {
+    "answer": "Voici plusieurs concerts de rap à Toulouse qui pourraient vous intéresser :\n\nLe concert de MOHAND BAHA se tiendra le jeudi 22 octobre 2026 à 20h00 au Metronum. Ce spectacle mêle introspection et énergie, avec une esthétique inspirée des années 90/2000. Les tarifs commencent à 15,4 €.\n\nLe vendredi 23 octobre 2026 à 19h30, VEN1 se produira à La Cabane. Ce jeune artiste prometteur, connu pour son morceau « Hakayet », propose une musique entre mélancolie et fierté, avec une identité artistique forte. Les places sont disponibles à partir de 27,99 €.\n\nEnfin, le vendredi 6 novembre 2026 à 19h30, NeS sera en concert à La Cabane. Son style allie technique, émotion et exploration sonore, avec des influences variées du rap des années 90 aux codes contemporains. Les tarifs débutent également à 27,99 €.",
+    "recommended": [
+      "97863033",
+      "43126606",
+      "99881237"
+    ],
+    "given": [
+      "97863033",
+      "43126606",
+      "99881237",
+      "3427109",
+      "12804838"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8077900428033453,
+      "factual_correctness": 0.21
+    }
+  },
+  "theme-theatre": {
+    "answer": "Voici deux pièces de théâtre qui pourraient vous intéresser à Toulouse :\n\n- « Le dilemme du hérisson » (Cie Les Humanophones / Cie Sons de toile) : une création théâtrale corporelle et musicale, drôle et poétique, adaptée aux enfants dès 5 ans. Les représentations scolaires ont lieu le vendredi 13 novembre 2026 au Théâtre Jules Julien.\n\n- « Traversée » (Rift Compagnie) : un spectacle mêlant théâtre et marionnettes, racontant une histoire touchante entre une petite fille et sa grand-mère. Destiné aux enfants dès 6 ans, il est programmé le vendredi 11 décembre 2026 au Théâtre Jules Julien.\n\nSi vous cherchez une pièce pour un public adulte, « La Candeur, au-delà des ruines » (Silencio Compagnie) est une création puissante et acérée, à partir de 12 ans, jouée les 20 et 21 novembre 2026 au même lieu.\n\nN'hésitez pas à préciser si vous souhaitez une recommandation pour un public ou une date en particulier !",
+    "recommended": [
+      "79358966",
+      "50440150",
+      "11254284",
+      "62755831"
+    ],
+    "given": [
+      "11254284",
+      "62755831",
+      "79358966",
+      "50440150",
+      "35134918"
+    ],
+    "judged": {
+      "faithfulness": 0.9333333333333333,
+      "answer_relevancy": 0.819248482772903,
+      "factual_correctness": 0.31
+    }
+  },
+  "theme-documentary": {
+    "answer": "Malheureusement, aucun des événements fournis ne correspond à une projection de film documentaire au cinéma à Toulouse. Tous les documentaires mentionnés ont lieu en médiathèque. Vous pourriez préciser votre demande pour que je vous propose d'autres options, comme des films en médiathèque ou des événements similaires.",
+    "recommended": [],
+    "given": [
+      "93879356",
+      "4419498",
+      "30363543",
+      "74694436",
+      "69766794"
+    ],
+    "judged": {
+      "faithfulness": 0.6666666666666666,
+      "answer_relevancy": 0.0,
+      "factual_correctness": 0.27
+    }
+  },
+  "theme-manga": {
+    "answer": "Voici plusieurs clubs autour des mangas et des bandes dessinées qui pourraient vous intéresser :\n\nLe Club bandes dessinées et mangas à la médiathèque José Cabanis le samedi 24 octobre de 15h à 16h30, où amateurs de 9e Art peuvent échanger sur leurs coups de cœur ou critiques. Les inscriptions se font sur place ou par téléphone.\n\nPour les ados, Fais tourner ! est un club dédié aux mangas, musique et romans, qui se réunit le jeudi 19 novembre de 17h30 à 18h30 à la médiathèque Saint-Cyprien.\n\nEnfin, deux clubs manga sont organisés à la médiathèque des Izards : un pour les 8-13 ans le samedi 28 novembre de 14h à 16h, et un autre pour les 14 ans et plus le samedi 31 octobre de 14h à 16h.\n\nSi vous cherchez un club plus généraliste incluant BD et mangas, le Club de lecteurs pour 10 ans et plus à la médiathèque Saint-Exupéry le samedi 24 octobre de 11h à 12h pourrait aussi vous plaire.",
+    "recommended": [
+      "43921904",
+      "13161934",
+      "64177939",
+      "845246",
+      "65567828"
+    ],
+    "given": [
+      "43921904",
+      "13161934",
+      "64177939",
+      "845246",
+      "65567828"
+    ],
+    "judged": {
+      "faithfulness": 0.9130434782608695,
+      "answer_relevancy": 0.8251021291932208,
+      "factual_correctness": 0.37
+    }
+  },
+  "theme-baroque": {
+    "answer": "Voici deux master-classes centrées sur la musique baroque qui pourraient vous intéresser :\n\nLa master-class de Xavier Miquel (hautbois) se déroulera les 18 et 19 novembre 2026 au Conservatoire de Toulouse. Ce musicien, spécialiste des musiques anciennes, y abordera des œuvres baroques et collaborera avec des ensembles comme l’Ensemble baroque de Toulouse.\n\nLa master-class de Marie Charvet (violon), prévue les 25 et 26 février 2027, explorera également des répertoires baroques, en plus de la création contemporaine. Violoniste internationale, elle partage son expertise avec enthousiasme.\n\nCes deux événements sont gratuits et accessibles sur inscription dans la limite des places disponibles.",
+    "recommended": [
+      "86153183",
+      "33108008"
+    ],
+    "given": [
+      "33108008",
+      "36588874",
+      "86153183",
+      "96425966",
+      "45033024"
+    ],
+    "judged": {
+      "faithfulness": 0.6666666666666666,
+      "answer_relevancy": 0.8416842282697862,
+      "factual_correctness": 0.0
+    }
+  },
+  "audience-6-years": {
+    "answer": "Voici plusieurs ateliers adaptés pour un enfant de 6 ans, qui pourront éveiller sa créativité tout en découvrant les œuvres d’un musée :\n\n- Drôles de têtes ! (modelage en argile) se déroulera le vendredi 30 octobre 2026, de 10h30 à 12h30. Les enfants s’initieront au modelage en argile pour créer des visages amusants.\n\n- Prendre racine (aquarelle) est prévu le samedi 28 novembre 2026, de 14h00 à 16h00. Cet atelier permettra à votre enfant de s’essayer à l’aquarelle pour représenter des paysages ou des motifs inspirés par la nature.\n\n- Brisez la glace ! (collage paysage d’hiver) aura lieu le samedi 12 décembre 2026, de 14h00 à 16h00. Les enfants créeront des collages évoquant des paysages hivernaux, une activité ludique et poétique.\n\nPour ces trois ateliers, le tarif n’est pas précisé et aucun accompagnement parental n’est nécessaire. N’hésitez pas à vérifier les disponibilités pour celui qui vous intéresse le plus !",
+    "recommended": [
+      "20199011",
+      "215206",
+      "62492963"
+    ],
+    "given": [
+      "62492963",
+      "54580942",
+      "215206",
+      "20199011",
+      "52281502"
+    ],
+    "judged": {
+      "faithfulness": 0.9090909090909091,
+      "answer_relevancy": 0.8298404255034173,
+      "factual_correctness": 0.0
+    }
+  },
+  "audience-toddlers": {
+    "answer": "Voici quelques idées de sorties adaptées pour un bébé de moins de 3 ans à Toulouse :\n\n- Les bébés bouquinent propose des séances de lecture et de partage autour des livres, idéales pour les tout-petits. Les prochaines dates sont le mercredi 4 novembre, le mercredi 18 novembre et le mercredi 2 décembre à 10h30. Ces séances ont lieu à la Bibliothèque Duranti ou à la Médiathèque Grand M.\n\n- Ma petite bulle : éveil sensoriel est une activité de découverte des cinq sens pour les bébés, toujours accompagnée de livres. Elle se déroulera le mercredi 9 décembre à 10h30 à la Bibliothèque Duranti.\n\n- Bébé’Zik est une séance musicale douce pour les 0-3 ans, prévue le mercredi 18 novembre à 10h30 à la Bibliothèque Duranti.\n\nPour ces activités, certaines nécessitent une inscription, notamment par téléphone. N'hésitez pas à vérifier les disponibilités selon vos dates de visite !",
+    "recommended": [
+      "67609344",
+      "59961943",
+      "71650215",
+      "67304765"
+    ],
+    "given": [
+      "67609344",
+      "59961943",
+      "71650215",
+      "26890299",
+      "67304765"
+    ],
+    "judged": {
+      "faithfulness": 0.8,
+      "answer_relevancy": 0.8145657287528302,
+      "factual_correctness": 0.59
+    }
+  },
+  "audience-teens": {
+    "answer": "Voici une activité qui pourrait plaire aux ados : le club « Fais tourner ! » propose des échanges autour des mangas, de la musique et des romans. La prochaine séance a lieu le jeudi 19 novembre à 17h30 à la médiathèque Saint-Cyprien. Le tarif n'est pas précisé, mais c'est une occasion de partager des passions entre ados de 12 à 16 ans.",
+    "recommended": [
+      "13161934"
+    ],
+    "given": [
+      "13161934",
+      "15303271",
+      "84034365",
+      "9709315",
+      "71892207"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7193349464911134,
+      "factual_correctness": 0.86
+    }
+  },
+  "audience-students": {
+    "answer": "Voici quelques événements qui pourraient vous intéresser en tant qu'étudiants :\n\n- Les saisons étudiantes : Profitez de la gratuité du Musée des Arts Précieux Paul-Dupuy du 12 au 25 octobre 2026. Une belle occasion de découvrir ses collections en accès libre.\n\n- Rendez-vous étudiant : Visite Exposition IVRESSE : Une visite guidée de l'exposition IVRESSE au même musée, spécialement conçue pour les étudiants à partir de 16 ans, le mardi 20 octobre à 17h. L'entrée est gratuite.\n\nCes deux propositions sont idéales pour allier culture et avantages réservés aux étudiants.",
+    "recommended": [
+      "46218040",
+      "72586859"
+    ],
+    "given": [
+      "72586859",
+      "49925333",
+      "46218040",
+      "81905834",
+      "72889912"
+    ],
+    "judged": {
+      "faithfulness": 0.875,
+      "answer_relevancy": 0.7156896042419427,
+      "factual_correctness": 0.77
+    }
+  },
+  "audience-sign-language": {
+    "answer": "Voici deux activités accessibles en langue des signes à Toulouse :\n\n- Découvrir l'écho des signes le dimanche 15 novembre à 15h00 à la Médiathèque José Cabanis. Stéphanie Fontez et Florence Houmad, comédienne sourde, partageront leur expérience autour de leur livre et de la culture des Sourds, avec une interprète en langue des signes française.\n\n- Conte Kamishibaï en LSF le lundi 21 décembre à 15h30 au Musée des Augustins. Un comédien sourd racontera l'histoire de Lili la gargouille en langue des signes, spécialement conçu pour les enfants de 6 à 12 ans.\n\nCes deux événements sont adaptés pour un public intéressé par la langue des signes ou l'inclusion des personnes sourdes.",
+    "recommended": [
+      "53338185",
+      "23401599"
+    ],
+    "given": [
+      "35107969",
+      "53338185",
+      "4360216",
+      "23401599",
+      "5496527"
+    ],
+    "judged": {
+      "faithfulness": 0.8571428571428571,
+      "answer_relevancy": 0.8532506064610317,
+      "factual_correctness": 0.67
+    }
+  },
+  "audience-seniors": {
+    "answer": "Voici une activité spécialement conçue pour les seniors à Toulouse : « Flamenco Séniors » animé par Soledad Cuesta, qui se déroulera le mardi 3 novembre 2026 de 15h à 16h à la Médiathèque Empalot. Cet atelier s’inscrit dans le dispositif Inclusion Flamenca pour offrir un accès accessible à la culture flamenca aux personnes âgées. L’inscription est possible au 05 36 25 20 80.",
+    "recommended": [
+      "47184568"
+    ],
+    "given": [
+      "47184568",
+      "11924259",
+      "43638262",
+      "12302945",
+      "5496527"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7059633972768453,
+      "factual_correctness": 0.67
+    }
+  },
+  "audience-family-sunday": {
+    "answer": "Voici deux idées pour une sortie en famille ce dimanche 25 octobre 2026 à Toulouse :\n\n- Microb-ID : un jeu immersif mêlant jeu de rôle et Escape Game, idéal pour les enfants à partir de 9 ans. Vous devrez résoudre une énigme médicale en équipe, avec des outils scientifiques ludiques. L’atelier est gratuit sur inscription et se déroule au Quai des Savoirs (11h, 14h30 ou 16h30).\n\n- La prophétie des grenouilles : une projection du film d’animation La prophétie des grenouilles, adapté aux enfants dès 7 ans. Ce film écologiste revisite le mythe de Noé avec humour et aventure. La séance a lieu à 14h30 au Quai des Savoirs (5€ ou 3€ selon les tarifs, gratuit sur réservation le 1er novembre).\n\nPour les plus jeunes (3 à 6 ans), Le p'tit rituel du dimanche à la médiathèque José Cabanis propose des lectures, projections et musiques, mais il a lieu uniquement le dimanche à 16h15.\n\nSi vous souhaitez une activité en autonomie pour des enfants de 8 à 14 ans, la mallette Enquête avec Carmela à la chapelle des Carmélites est disponible, mais elle nécessite une réservation en ligne (10€).",
+    "recommended": [
+      "74674484",
+      "23209302",
+      "60477373",
+      "21941989"
+    ],
+    "given": [
+      "60477373",
+      "74674484",
+      "21941989",
+      "23209302",
+      "37547997"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7716006222798335,
+      "factual_correctness": 0.42
+    }
+  },
+  "practical-free-concert": {
+    "answer": "Voici plusieurs concerts gratuits à Toulouse qui pourraient vous intéresser :\n\n- « 1er jet » : un concert présentant des œuvres composées par les élèves des classes de composition instrumentale et électroacoustique du Conservatoire. Il a lieu le jeudi 10 décembre 2026 à 19h00, avec entrée libre dans la limite des places disponibles.\n\n- « Orchestre Symphonique B du Conservatoire » : un concert dirigé par Jean-Guy Olive, prévu le mercredi 31 mars 2027 à 20h00. L’entrée est gratuite sur réservation, à partir du 19 mars 2026.\n\n- « L'Être et le Lieu, rhapsodie concertante » : un concert dirigé par Christopher Gibert, compositeur et chef de chœur, avec plusieurs ensembles du Conservatoire. Il se déroulera le mercredi 3 mars 2027 à 20h00, avec entrée gratuite sur réservation à partir du 19 février 2027.\n\n- « Orchestres symphoniques C et D du Conservatoire » : un concert réunissant deux orchestres du Conservatoire, dirigés par Jean-Guy Olive et Valérie Apparailly. Il est prévu le mercredi 24 mars 2027 à 19h00, avec entrée gratuite sur réservation à partir du 12 mars 2027.\n\n- « Harmonie B du Conservatoire » : un concert d’un orchestre d’harmonie composé d’élèves de 10 à 14 ans, avec un programme varié incluant des musiques de film. Il aura lieu le samedi 3 avril 2027 à 12h30, avec entrée gratuite sur réservation à partir du 23 mars 2027.",
+    "recommended": [
+      "60422140",
+      "36639598",
+      "92632001",
+      "45033024",
+      "18990827"
+    ],
+    "given": [
+      "36639598",
+      "92632001",
+      "60422140",
+      "18990827",
+      "45033024"
+    ],
+    "judged": {
+      "faithfulness": 0.9333333333333333,
+      "answer_relevancy": 0.8630995617700471,
+      "factual_correctness": 0.0
+    }
+  },
+  "practical-computer-help": {
+    "answer": "Voici plusieurs ateliers qui pourraient vous aider à optimiser ou résoudre des problèmes sur votre ordinateur :\n\n- Aide numérique personnalisée : optimiser votre PC propose des conseils pour améliorer les performances de votre machine, avec un accompagnement personnalisé. Deux créneaux sont disponibles le samedi 24 octobre à 10h ou 11h.\n\n- Résolution de problèmes d'ordinateurs aborde des questions variées, des icônes manquantes aux infections virales, avec une durée de 2h30. Les prochaines sessions ont lieu les mardis 3 et 17 novembre (et jusqu'en décembre) à partir de 14h30.\n\n- Aide numérique personnalisée : nettoyer et optimiser son PC est similaire au premier atelier, mais proposé le samedi 7 novembre à 10h ou 11h.\n\nPour ces ateliers, le tarif n'est pas précisé. Vous pouvez amener votre propre matériel pour les ateliers de résolution de problèmes.\n\nN'hésitez pas à préciser si vous souhaitez une aide pour un problème spécifique ou un créneau particulier !",
+    "recommended": [
+      "13903517",
+      "45965830",
+      "4934152",
+      "83037035",
+      "67104592"
+    ],
+    "given": [
+      "45965830",
+      "13903517",
+      "67104592",
+      "83037035",
+      "4934152"
+    ],
+    "judged": {
+      "faithfulness": 0.8181818181818182,
+      "answer_relevancy": 0.7611743818841464,
+      "factual_correctness": 0.36
+    }
+  },
+  "practical-public-writer": {
+    "answer": "Vous pouvez bénéficier d'une permanence d’écrivain public à la Médiathèque José Cabanis, le mardi entre 10h et 17h (sauf le 10 novembre). Sabah de l’association Pour écrire un mot vous accompagnera pour rédiger votre courrier administratif. Cette aide est gratuite, mais uniquement sur rendez-vous au 07 81 20 29 16.",
+    "recommended": [
+      "35457358"
+    ],
+    "given": [
+      "35457358",
+      "39839098",
+      "28715770",
+      "36696258",
+      "12621364"
+    ],
+    "judged": {
+      "faithfulness": 0.875,
+      "answer_relevancy": 0.7223156788633454,
+      "factual_correctness": 0.67
+    }
+  },
+  "practical-free-kids-weekend": {
+    "answer": "Voici deux activités gratuites pour enfants ce week-end à Toulouse :\n\n- Atelier Impression 3D ! : Un atelier ludique pour découvrir l'impression 3D, idéal pour les enfants à partir de 7 ans. Les créneaux sont disponibles jusqu'au 2 janvier 2027, mais il est conseillé de retirer votre billet gratuit au guichet le jour même, dans la limite des places disponibles. Un adulte doit accompagner les enfants de moins de 12 ans.\n\n- Microb-ID : Un jeu immersif mêlant jeu de rôle et escape game, parfait pour les enfants à partir de 9 ans. Plusieurs sessions sont proposées samedi 24 et dimanche 25 octobre, entre 11h et 18h. L'inscription est gratuite mais obligatoire.\n\nProfitez bien de ces activités !",
+    "recommended": [
+      "1065522",
+      "74674484"
+    ],
+    "given": [
+      "1065522",
+      "74674484",
+      "60477373",
+      "66922223",
+      "62862543"
+    ],
+    "judged": {
+      "faithfulness": 0.9166666666666666,
+      "answer_relevancy": 0.7983147540475855,
+      "factual_correctness": 0.64
+    }
+  },
+  "practical-no-booking": {
+    "answer": "Voici les activités sans réservation parmi celles disponibles :\n\n- Visites flash : résistances - tout finit par passer : Une expérience immersive de 30 minutes au Monument à la Gloire de la Résistance, où vous explorerez les installations de l'artiste YllH<++. L'entrée est libre et gratuite, mais réservée aux publics à partir de 12 ans.\n\n- Restitution publique de la semaine de création chorégraphique : Le vendredi 30 octobre 2026 à 15h30, les élèves du Conservatoire présenteront une création chorégraphique dirigée par Dylan Crossman. L'entrée est libre dans la limite des places disponibles.\n\nMalheureusement, les autres événements nécessitent une réservation. Si vous souhaitez une activité sans contrainte de réservation, ces deux propositions devraient vous convenir !",
+    "recommended": [
+      "38515589",
+      "31693648"
+    ],
+    "given": [
+      "49925333",
+      "5496527",
+      "31693648",
+      "38515589",
+      "55923981"
+    ],
+    "judged": {
+      "faithfulness": 0.7272727272727273,
+      "answer_relevancy": 0.8363280869237748,
+      "factual_correctness": 0.0
+    }
+  },
+  "practical-video-games": {
+    "answer": "Vous pouvez jouer aux jeux vidéo gratuitement lors des rendez-vous suivants à la médiathèque :\n\n- Aprem’ Jeux : Chaque mercredi (hors vacances scolaires) de 14h à 17h à la médiathèque Grand M, avec des sessions de jeux coopératifs et compétitifs. L’accès est libre sur présentation de votre carte de bibliothèque.\n- Animation jeux vidéo : Tous les vendredis de 14h à 17h à la médiathèque des Minimes, pour jouer et participer à des tournois, dont un tournoi FIFA prévu le 30 octobre à 15h.\n\nLes tournois mensuels (comme ceux des 7 novembre ou 21 novembre) sont aussi une excellente occasion de jouer en compétition, mais leur tarif n’est pas précisé.\n\nN’hésitez pas à vérifier les dates exactes et les conditions d’accès sur place !",
+    "recommended": [
+      "88152713",
+      "86427040",
+      "46964688",
+      "41254859"
+    ],
+    "given": [
+      "88152713",
+      "86427040",
+      "46964688",
+      "84596272",
+      "41254859"
+    ],
+    "judged": {
+      "faithfulness": 0.7,
+      "answer_relevancy": 0.8404791185339454,
+      "factual_correctness": 0.48
+    }
+  },
+  "place-jacobins": {
+    "answer": "Au Couvent des Jacobins, plusieurs activités vous attendent pour découvrir ce lieu chargé d’histoire et d’art médiéval. Voici quelques suggestions adaptées à vos envies :\n\n- Visite guidée du monument : Explorez les particularités architecturales et historiques de ce site emblématique des 13e et 14e siècles, avec des anecdotes inédites et des détails exceptionnels. Cette visite est idéale pour les amateurs d’histoire et d’architecture, et elle est accessible dès 12 ans.\n\n- La conservation du patrimoine : Une visite flash le mercredi 28 octobre à 11h30 vous plongera dans les défis de préservation de ce monument à travers les siècles, avec un focus sur les restaurations du cloître et de la chapelle Saint Antonin. Parfait pour comprendre l’évolution des techniques de conservation.\n\n- S'habiller au Moyen Âge : Une animation ludique et interactive pour découvrir l’origine et les codes de la mode médiévale, suivie d’un moment pour vous costumer et prendre des photos. Disponible les vendredis 23 et 30 octobre, ainsi que le mardi 27 octobre, à partir de 15h30. Idéal pour une sortie en famille ou entre amis.\n\n- Écriture & Enluminures : les lettrines médiévales : Participez à un atelier pour apprendre les rudiments de la calligraphie médiévale et créer votre propre lettrine dorée, inspirée des manuscrits anciens. Deux sessions sont proposées les mardis 20 et 27 octobre à 10h30, pour les enfants dès 8 ans et les adultes.\n\nNote : L’atelier « Créatures & Légendes : immersion dans un univers fantastique » est annulé pour le moment.",
+    "recommended": [
+      "37547997",
+      "42402307",
+      "7237524",
+      "84211441"
+    ],
+    "given": [
+      "37547997",
+      "42402307",
+      "43873170",
+      "7237524",
+      "84211441"
+    ],
+    "judged": {
+      "faithfulness": 0.9444444444444444,
+      "answer_relevancy": 0.8494509391345885,
+      "factual_correctness": 0.3
+    }
+  },
+  "place-carmelites": {
+    "answer": "Voici les événements à venir à la Chapelle des Carmélites :\n\n- Saison musicale - Messe des Gargouilles, Sabbat des Grenouilles : Une soirée envoûtante mêlant concerts de Barnabaie, Elizabeth Vogler, The Cradle et Radio Hito, pour une expérience musicale poétique et variée, le jeudi 29 octobre de 19h à 23h59. Tarif : 8€ en prévente, 10€ sur place.\n\n- Les 24h de l’accordéon - Cave Poésie : Un marathon musical avec des artistes comme Aptère, Maryll Abbas Trio, Vento Colorido et Timothé Anthouard, les samedi 24 octobre (18h30-23h30) et dimanche 25 octobre (14h-17h). Participation libre, idéal pour les familles (à partir de 6 ans).\n\n- MESSE BASSE - ÉVÈNEMENT IMMERSIF : Une soirée immersive alliant musique électronique, performances et animations thématiques, le vendredi 4 décembre de 18h30 à minuit. Tarif : entre 15,40€ et 25,89€.\n\n- Saison musicale - Messe Basse par MIND FAMILY : Un concert immersif où musique, lumière et interactions transforment l’expérience en un moment unique, le vendredi 4 décembre de 19h à 23h59. Tarif : 19€ (plein).\n\nN’hésitez pas à préciser si vous souhaitez des détails sur l’un d’eux !",
+    "recommended": [
+      "38538332",
+      "86846863",
+      "50216206",
+      "61749502"
+    ],
+    "given": [
+      "50216206",
+      "33449417",
+      "38538332",
+      "86846863",
+      "61749502"
+    ],
+    "judged": {
+      "faithfulness": 0.8125,
+      "answer_relevancy": 0.8938260057076406,
+      "factual_correctness": 0.24
+    }
+  },
+  "place-saint-cyprien": {
+    "answer": "Voici quelques idées pour découvrir le quartier Saint-Cyprien à Toulouse :\n\n- La peste et ses remèdes : Une visite flash captivante autour de la peste et ses remèdes insolites, entre mythe et science. Les prochaines dates sont le mercredi 21 octobre à 15h, puis le 28 octobre à 15h (Chapelle de La Grave). L’entrée est payante (6€ ou 3€ selon les cas), et l’activité est adaptée aux enfants dès 8 ans.\n\n- Étienne enquête : jeu de piste en autonomie : Une mallette pédagogique pour explorer la chapelle de La Grave comme un détective, à travers l’histoire d’Étienne, un jeune orphelin. Idéal pour les enfants de 6 à 12 ans, disponible jusqu’au 31 décembre (Chapelle de La Grave). La location de la mallette coûte 10€.\n\n- Fais tourner ! : Un club ados dédié aux mangas, à la musique et aux romans, avec des échanges conviviaux. La prochaine séance a lieu le jeudi 19 novembre à 17h30 (Médiathèque Saint-Cyprien). L’accès est libre pour les 12-16 ans.\n\n- La forêt et les animaux qui l’habitent : Deux séances de lectures jeunesse autour de la forêt et de ses habitants, avec des albums illustrés. La première est prévue le mercredi 9 décembre à 16h30 (Médiathèque Saint-Cyprien), pour les enfants à partir de 3 ans. Une autre session est prévue le 16 décembre à 11h, mais pour les 0-3 ans.\n\nProfitez bien de ces activités pour explorer ce quartier riche en culture !",
+    "recommended": [
+      "55798363",
+      "59390189",
+      "13161934",
+      "85552246"
+    ],
+    "given": [
+      "55798363",
+      "49413012",
+      "59390189",
+      "13161934",
+      "85552246"
+    ],
+    "judged": {
+      "faithfulness": 0.84,
+      "answer_relevancy": 0.7717460481591353,
+      "factual_correctness": 0.24
+    }
+  },
+  "place-cratere": {
+    "answer": "Voici les films programmés au Cratère à Toulouse :\n\n- Jonás Trueba : Une rétrospective du réalisateur espagnol, avec les films La Reconquista, Eva en août, Venez voir et Septembre sans attendre, ainsi que Histoires de la bonne vallée de José Luis Guerín. Cette programmation inclut aussi des rencontres avec Jonás Trueba et Garance Schlemmer (le 19 octobre à 19h30).\n\n- Le Dernier passage : Un film immersif sur la grotte Chauvet, réalisé entièrement en 3D, suivi d'une rencontre avec Jean-Michel Geneste, prévue le 20 octobre à 18h00.\n\n- The Lighthouse : Un film hypnotique de Robert Eggers, avec Robert Pattinson et Willem Dafoe, accompagné d'une rencontre avec des étudiants, le 10 novembre à 20h00.\n\n- Repose en paix, si tu peux : Une comédie dramatique sur une famille en conflit autour de l’enterrement d’un proche, suivie d’une rencontre avec l’équipe du film, le 12 novembre à 20h30.\n\n- Soirées des cinémas européens : Quatre films récents d’Espagne, d’Italie, d’Allemagne et de France, en version originale sous-titrée, les 7 et 8 novembre, avec des rencontres après chaque séance.\n\nLes tarifs ne sont pas précisés pour ces événements.",
+    "recommended": [
+      "36723887",
+      "81839329",
+      "81905834",
+      "75558930",
+      "24108585"
+    ],
+    "given": [
+      "36723887",
+      "81839329",
+      "81905834",
+      "75558930",
+      "24108585"
+    ],
+    "judged": {
+      "faithfulness": 0.8333333333333334,
+      "answer_relevancy": 0.840983743617535,
+      "factual_correctness": 0.21
+    }
+  },
+  "place-quai-savoirs": {
+    "answer": "Au Quai des Savoirs, plusieurs événements vous attendent cette semaine et jusqu'en décembre ! Voici quelques idées selon vos envies :\n\n- Pour une expérience immersive et artistique : XYZT, les paysages abstraits est une installation interactive où vous pourrez explorer des paysages numériques abstraits en jouant avec vos gestes. Elle est accessible jusqu'au 20 décembre, avec des tarifs réduits pour certains publics (gratuit pour les moins de 6 ans, bénéficiaires de minimaux sociaux, etc.).\n\n- Pour un moment convivial et créatif : La Soirée Clutcho' le vendredi 30 octobre de 19h à 23h propose musique live, performances artistiques, ateliers interactifs (sérigraphie, maquillage, etc.) et animations pour tous. L’entrée est gratuite et ouverte à partir de 10 ans.\n\n- Pour des ateliers et animations pour les jeunes : La Rétrospective du Plateau créatif les samedi 31 octobre et dimanche 1er novembre de 10h à 18h permet de découvrir les activités créatives et techniques proposées ces 10 dernières années. Idéal pour les 7-15 ans, mais les adultes sont aussi les bienvenus !\n\n- Pour des discussions inspirantes : La table ronde « Quand les arts et les sciences s'inspirent » le mardi 27 octobre à 15h aborde les échanges entre artistes et scientifiques, avec des intervenants passionnants. L’accès est libre et gratuit, dans la limite des places disponibles.\n\n- Pour un voyage entre sciences et science-fiction : La journée « Sciences et SF : Journée thématique » le jeudi 22 octobre de 14h à 19h propose tables rondes, dédicaces d’auteurs et une conférence-spectacle sur des thèmes futuristes. La plupart des activités sont gratuites, sauf le spectacle de clôture.\n\nN’hésitez pas à vérifier les horaires et conditions pour chaque événement, car certains ont des accès libres ou des tarifs spécifiques.",
+    "recommended": [
+      "78008460",
+      "74374646",
+      "84034365",
+      "46895595",
+      "12606354"
+    ],
+    "given": [
+      "78008460",
+      "84034365",
+      "46895595",
+      "12606354",
+      "74374646"
+    ],
+    "judged": {
+      "faithfulness": 0.9166666666666666,
+      "answer_relevancy": 0.8212039333794202,
+      "factual_correctness": 0.15
+    }
+  },
+  "place-zenith": {
+    "answer": "Voici les concerts prévus au Zénith de Toulouse parmi les événements disponibles :\n\n- disiz vous propose un spectacle d’une ampleur nouvelle le mercredi 2 décembre 2026 à 20h00, mêlant émotion, tension et sensibilité dans un univers pop et alternatif. Les tarifs commencent à 38,99 €.\n\n- Sabaton animera The Legendary Tour Europe 2027 le mardi 13 avril 2027 à 17h30, avec un concert de heavy metal épique accompagné d’un orchestre. Les billets sont disponibles à partir de 74,5 € (ouverture le 10 juin 2026).\n\n- Mosimann vous promet un show électro immersif le jeudi 29 avril 2027 à 20h00, avec une expérience mêlant musique, performance et scénographie. Les prix varient entre 45,99 € et 165,99 €.\n\n- Tayc sera en concert le vendredi 30 avril 2027 à 20h00 pour son JOŸA TOUR, un voyage musical joyeux et énergique. Les tarifs débutent à 39,99 €.\n\n- Jok'Air clôturera l’année le samedi 27 novembre 2027 à 20h00 avec une tournée en zénith, portée par son album Pretty Girls Love Jok'Air. Les billets sont accessibles à partir de 49,99 €.\n\nTous ces concerts sont payants et se déroulent au Zénith Toulouse Métropole.",
+    "recommended": [
+      "11906715",
+      "92133409",
+      "12574000",
+      "62606104",
+      "79309144"
+    ],
+    "given": [
+      "11906715",
+      "92133409",
+      "12574000",
+      "79309144",
+      "62606104"
+    ],
+    "judged": {
+      "faithfulness": 0.9444444444444444,
+      "answer_relevancy": 0.8378650867400496,
+      "factual_correctness": 0.1
+    }
+  },
+  "time-weekend": {
+    "answer": "Ce week-end à Toulouse, plusieurs événements pourraient vous plaire selon vos envies ! \n\nSi vous aimez l’accordéon et les spectacles familiaux, les 24h de l’accordéon - Cave Poésie à la chapelle des Carmélites proposent un marathon musical du samedi 24 octobre (18h30-23h30) au dimanche 25 octobre (14h-17h), avec des artistes variés et des ambiances joyeuses, adaptées dès 6 ans. \n\nPour une soirée électro intense, Hard Halloween 2026 XXL (samedi 24 octobre, 23h-6h30) et LE CRI inv. BOWOD & MICHI (samedi 24 octobre, 23h55-6h) offrent des nuits hardcore et techno dans des lieux différents, avec une ambiance très énergique. Ces deux événements sont réservés à un public adulte (à partir de 18 ans). \n\nEnfin, si vous préférez une ambiance techno live et gratuite, LIVE MACHINE TECHNO // GEARGEIST BY THE PETIT LONDON (samedi 24 octobre, 22h-2h30) propose une soirée 100% live avec des artistes locaux, dans une cave intimiste. \n\nProfitez bien de votre week-end !",
+    "recommended": [
+      "86846863",
+      "65989411",
+      "67345706",
+      "35689387"
+    ],
+    "given": [
+      "98329436",
+      "35689387",
+      "86846863",
+      "65989411",
+      "67345706"
+    ],
+    "judged": {
+      "faithfulness": 0.8461538461538461,
+      "answer_relevancy": 0.8406677438482213,
+      "factual_correctness": 0.17
+    }
+  },
+  "time-halloween": {
+    "answer": "Pour Halloween, Toulouse propose plusieurs événements festifs et immersifs ! Voici quelques idées pour une soirée mémorable :\n\n- Halloween Rave Party XXL : Une nuit XXL de techno et hard groove dans un espace de 3 000 m², avec deux scènes, des décors spectaculaires et des navettes gratuites depuis le centre-ville. Parfait pour les amateurs de musique électronique et d’ambiance intense.\n\n- Bears Tolosa : Une soirée spécial Halloween dans un cadre chaleureux et festif, avec une programmation pop, R&B et tech house. Une ambiance inclusive et conviviale pour danser jusqu’au petit matin.\n\n- Techno Horror X Plein Phare : Une nuit dédiée à la techno, hard techno et trance dans une ambiance immersive et horrifique. Idéal pour les fans de musique électronique et de décors thématiques.\n\n- Halloween Warehouse Horror Show - Nightmare Park : Une fête foraine horrifique avec des performances live, des décors animés et 9 heures de tech-house et techno. Une expérience unique à vivre en équipe.\n\n- La Bringue - Halloween Girls Only : Une soirée exclusive réservée aux femmes et personnes s’identifiant au spectre féminin, avec des DJ sets féminins, des shows spéciaux et une ambiance sororité. Parfaite pour une soirée entre amies dans une atmosphère bienveillante.\n\nChaque événement a son propre style, alors choisissez celui qui correspond le mieux à vos envies !",
+    "recommended": [
+      "40545019",
+      "88398444",
+      "71298452",
+      "22899453",
+      "66044132"
+    ],
+    "given": [
+      "22899453",
+      "66044132",
+      "71298452",
+      "88398444",
+      "40545019"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.8730592715160218,
+      "factual_correctness": 0.13
+    }
+  },
+  "time-december": {
+    "answer": "Voici quelques idées de sorties à Toulouse en décembre 2026 :\n\n- ELLE SORT CE SOIR - 17.12 : Une soirée karaoké géant festive et décomplexée, réservée aux femmes, avec jeux et blind tests. Rendez-vous le jeudi 17 décembre de 20h à minuit.\n\n- Seth Gueko : Un concert de rap pour découvrir ou redécouvrir ce rappeur emblématique, le samedi 19 décembre à partir de 19h30 au Rex de Toulouse.\n\n- Farandole des lucioles : Une déambulation poétique et festive autour de l’amour, avec spectacle et boum, le vendredi 18 décembre de 16h30 à 19h au Jardin Serveyrolles.\n\n- Nuit Noire : Un récit-concert dessiné inspiré d’une aventure maritime légendaire, idéal pour les ados et adultes, le dimanche 13 décembre à 16h à la médiathèque José Cabanis.\n\n- Veillée de Noël : Une lecture d’histoires de Noël pour les enfants, le vendredi 11 décembre à 18h à la médiathèque Danièle Damin.\n\nN’hésitez pas à préciser si vous cherchez quelque chose de particulier !",
+    "recommended": [
+      "80978447",
+      "12276942",
+      "4469021",
+      "41984969",
+      "3226550"
+    ],
+    "given": [
+      "80978447",
+      "12276942",
+      "3226550",
+      "4469021",
+      "41984969"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7717145490905946,
+      "factual_correctness": 0.0
+    }
+  },
+  "time-tonight": {
+    "answer": "Ce soir à Toulouse, plusieurs options s'offrent à vous selon vos envies !\n\nSi vous aimez le cinéma, vous pourrez découvrir deux films en version sous-titrée accessible aux personnes sourdes et malentendantes : Eva en août (à partir de 19h30 au Cratère, suivi d'une rencontre avec Garance Schlemmer) et L'Espèce explosive (à 21h00 à l'ABC). Ces projections sont accompagnées de discussions ou d'événements complémentaires.\n\nMalheureusement, aucun événement gratuit ou adapté aux familles n'est proposé ce soir. Si vous souhaitez une activité en famille ou un autre type d'expérience, je vous invite à préciser votre demande pour que je puisse mieux vous orienter !",
+    "recommended": [
+      "37694699",
+      "35134918",
+      "24289460"
+    ],
+    "given": [
+      "17735788",
+      "61026604",
+      "24289460",
+      "37694699",
+      "35134918"
+    ],
+    "judged": {
+      "faithfulness": 0.4444444444444444,
+      "answer_relevancy": 0.804125722942249,
+      "factual_correctness": 0.44
+    }
+  },
+  "time-christmas": {
+    "answer": "Voici quelques animations festives pour Noël à Toulouse, adaptées aux enfants :\n\n- Chasse au trésor : Nom d’un lutin ! : Une chasse au trésor ludique pour résoudre des énigmes et trouver le trésor de Noël, le mercredi 16 décembre de 15h30 à 17h30 à la Bibliothèque Duranti. Réservé aux enfants à partir de 6 ans, sur inscription.\n\n- Veillée de Noël : Une veillée contée pour les tout-petits, le mercredi 16 décembre à 17h à la Médiathèque Pradettes, pour les enfants de 4 à 10 ans.\n\n- Décorations de Noël : Un atelier créatif pour décorer des objets de Noël, le mercredi 23 décembre à 15h à la Médiathèque Rangueil, à partir de 7 ans.\n\n- Atelier créatif spécial Noël surprise ! : Un autre atelier créatif pour les enfants de 7 ans et plus, le mercredi 23 décembre à 15h à la Médiathèque Danièle Damin.\n\nN’oubliez pas de vérifier les disponibilités et de vous inscrire pour ces animations !",
+    "recommended": [
+      "46089455",
+      "5969646",
+      "3907022",
+      "98794293"
+    ],
+    "given": [
+      "46089455",
+      "3907022",
+      "5969646",
+      "3226550",
+      "98794293"
+    ],
+    "judged": {
+      "faithfulness": 0.7272727272727273,
+      "answer_relevancy": 0.781609086505295,
+      "factual_correctness": 0.29
+    }
+  },
+  "time-toussaint": {
+    "answer": "Pendant les vacances de la Toussaint, voici quelques idées pour profiter de la culture à Toulouse :\n\n- Visite insolite : Précieux Halloween au Musée des Arts Précieux Paul-Dupuy, le samedi 31 octobre, est une expérience idéale pour les enfants de 7 à 12 ans. Les collections du musée se transforment en un univers peuplé de fantômes et de créatures effrayantes, avec des costumes acceptés pour plus de fun !\n\n- Nocturne : Halloween au Musée des Augustins, également le samedi 31 octobre, propose une déambulation nocturne entre les œuvres et des zombies. Le port d’un déguisement est fortement conseillé pour une immersion totale. Réservation nécessaire.\n\n- Si vous cherchez une activité plus calme, La peste et ses remèdes est une visite flash qui plonge dans l’histoire de la médecine ancienne, avec des anecdotes sur les remèdes insolites de l’époque. Elle a lieu le mercredi 28 octobre à 15h, et est adaptée aux enfants à partir de 8 ans.\n\n- Enfin, pour une pause ludique, Aprem’ Jeux à la médiathèque Grand M propose des sessions de jeux vidéo chaque mercredi après-midi (hors vacances scolaires) jusqu’au 16 décembre. Une activité idéale pour les ados et les adultes amateurs de jeux.\n\nProfitez bien de ces moments culturels et festifs !",
+    "recommended": [
+      "63231808",
+      "13154927",
+      "55798363",
+      "88152713"
+    ],
+    "given": [
+      "1764875",
+      "55798363",
+      "63231808",
+      "88152713",
+      "13154927"
+    ],
+    "judged": {
+      "faithfulness": 0.9375,
+      "answer_relevancy": 0.8840454128347222,
+      "factual_correctness": 0.0
+    }
+  },
+  "time-heritage-days": {
+    "answer": "Les Journées Européennes du Patrimoine 2026 à Toulouse ont proposé une riche programmation les 19 et 20 septembre. Voici quelques événements marquants qui ont eu lieu :\n\n- Journées Européennes du Patrimoine au Quai des Savoirs : Visites des coulisses, ateliers pour enfants comme Quel boucan cet environnement ! (à partir de 8 ans) et Tu viens à ma boum parents-enfants ?, ainsi que des animations au Quai des Petits (2-7 ans) et au Plateau créatif (à partir de 7 ans).\n\n- Journées Européennes du Patrimoine : Ouverture exceptionnelle de monuments emblématiques comme la Chapelle de La Grave, le Castelet, la Basilique Saint-Sernin, et bien d’autres, avec des visites guidées, des animations et une braderie des boutiques des monuments.\n\n- Les Journées Européennes du Patrimoine 2026 au musée (Musée des Arts Précieux Paul-Dupuy) : Projections sur les coulisses des musées, visites insolites en famille (À la rencontre de la lanterne magique !), rencontres sur la gravure et la photographie, et ateliers interactifs comme Les objets se réinventent.\n\n- Visite libre de la basilique Saint-Sernin : Découverte des tribunes et du patrimoine restauré, en autonomie.\n\n- Atelier Quel boucan cet environnement ! au Quai des Savoirs : Une expérience d’écoute participative pour découvrir les sons de la nature, animée par l’artiste Patrick Avakian.\n\nCes événements étaient gratuits et accessibles à tous, avec des activités adaptées aux enfants et aux adultes.",
+    "recommended": [
+      "38645102",
+      "75958357",
+      "98810306",
+      "84056692",
+      "80311812"
+    ],
+    "given": [
+      "38645102",
+      "75958357",
+      "98810306",
+      "84056692",
+      "80311812"
+    ],
+    "judged": {
+      "faithfulness": 0.8709677419354839,
+      "answer_relevancy": 0.8528694799039889,
+      "factual_correctness": 0.22
+    }
+  },
+  "entity-harpissima": {
+    "answer": "Harpissima 2026 se déroule les samedi 5 et dimanche 6 décembre 2026 à l'Auditorium Saint-Pierre des Cuisines. Deux événements sont prévus : un récital de harpe et flûte le samedi à 17h, et un concert de clôture réunissant des élèves de plusieurs conservatoires le dimanche de 15h à 17h. Les deux sont gratuits sur réservation (à partir du 26 novembre).",
+    "recommended": [
+      "3303321",
+      "7903266"
+    ],
+    "given": [
+      "3303321",
+      "7903266",
+      "46020438",
+      "32608264",
+      "1002737"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7964617078585704,
+      "factual_correctness": 0.57
+    }
+  },
+  "entity-dhervillers": {
+    "answer": "Vous pouvez découvrir les œuvres de Nicolas Dhervillers dans l'exposition « La Part des anges » au Musée des Augustins, jusqu’au 22 février 2027. Cette exposition propose une immersion poétique à travers ses pastels, photographies et graphites inspirés par le thème du ciel.\n\nPour approfondir votre visite, plusieurs événements sont organisés autour de cette exposition :\n- Une visite guidée thématique avec l’artiste le vendredi 20 novembre 2026 à 14h30.\n- Une nocturne dédiée à l’art et à la créativité le jeudi 19 novembre 2026 de 18h à 21h, incluant des ateliers de dessin et des rencontres avec Nicolas Dhervillers.\n- Une conversation autour de l’art le samedi 21 novembre 2026 à 16h, évoquant le parcours de l’artiste et la création de l’exposition.",
+    "recommended": [
+      "5428471",
+      "50685589",
+      "45390521",
+      "7182699"
+    ],
+    "given": [
+      "5428471",
+      "50685589",
+      "45390521",
+      "7182699",
+      "79300044"
+    ],
+    "judged": {
+      "faithfulness": 0.9285714285714286,
+      "answer_relevancy": 0.9317291409841271,
+      "factual_correctness": 0.59
+    }
+  },
+  "entity-trueba": {
+    "answer": "Oui, il y a des films de Jonás Trueba à Toulouse ! Le Cratère propose une rétrospective de ses œuvres du 3 au 27 octobre 2026, incluant notamment Eva en août. Une séance de ce film est même suivie d'une rencontre avec Garance Schlemmer, programmée ce lundi 19 octobre à 19h30. Vous pourrez ainsi découvrir son univers cinématographique, entre fiction et documentaire, tout en explorant ses thèmes chers comme les relations humaines et le passage du temps.",
+    "recommended": [
+      "36723887",
+      "24289460",
+      "37694699"
+    ],
+    "given": [
+      "36723887",
+      "24289460",
+      "37694699",
+      "90916761",
+      "21918493"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.7931403061123825,
+      "factual_correctness": 0.67
+    }
+  },
+  "entity-memoire-de-fille": {
+    "answer": "Vous pouvez voir le film Mémoire de fille ce lundi 19 octobre 2026 à 18h00 au cinéma ABC, dans le quartier Capitole. Une rencontre avec Maïwène Barthélemy, révélée dans Vingt Dieux, suivra la projection. Une autre séance aura lieu mardi 20 octobre à la même heure, sans rencontre associée. Le tarif n'est pas précisé pour ces deux séances.",
+    "recommended": [
+      "56553125",
+      "10737980"
+    ],
+    "given": [
+      "10737980",
+      "56553125",
+      "35592703",
+      "46719529",
+      "95404824"
+    ],
+    "judged": {
+      "faithfulness": 0.7777777777777778,
+      "answer_relevancy": 0.9188638952939918,
+      "factual_correctness": 0.62
+    }
+  },
+  "entity-dreville": {
+    "answer": "Voici deux films mettant en scène Valérie Dréville que vous pourrez découvrir à Toulouse :\n\n- Saint Omer : Ce drame judiciaire, réalisé par Alice Diop, suit Rama, une romancière qui assiste au procès de Laurence Coly, accusée d’avoir abandonné sa fille sur une plage. La projection est suivie d’une rencontre avec des étudiants de l’école de droit de Toulouse, mercredi 21 octobre à 20h00 au Cratère.\n\n- Mémoire de fille : Ce film de Judith Godrèche, inspiré du livre d’Annie Ernaux, plonge dans les souvenirs d’une femme lors d’un voyage dans sa ville natale. Une séance en version sous-titrée française (VFSTFR) est proposée mardi 20 octobre à 18h00 à l’ABC, suivie d’une rencontre avec Maïwène Barthélemy. Une autre séance, accompagnée d’une rencontre avec Maïwène Barthélemy, a lieu lundi 19 octobre à 18h00 au même endroit.\n\nLes deux événements sont gratuits, mais les tarifs ne sont pas précisés pour ces séances.",
+    "recommended": [
+      "95405788",
+      "56553125",
+      "10737980"
+    ],
+    "given": [
+      "95405788",
+      "56553125",
+      "46719529",
+      "10737980",
+      "35592703"
+    ],
+    "judged": {
+      "faithfulness": 0.875,
+      "answer_relevancy": 0.8640451257301044,
+      "factual_correctness": 0.48
+    }
+  },
+  "entity-lumieres-quai": {
+    "answer": "Le festival Lumières sur le Quai propose plusieurs événements passionnants cette année. Voici ce que vous pourrez y découvrir :\n\n- Nouveaux médias : partager les savoirs scientifiques d’hier à demain : Une table ronde le mardi 20 octobre de 15h à 16h15 pour explorer comment les passeurs de sciences s’adaptent aux réseaux sociaux et aux nouveaux formats de médiation.\n\n- Quand les arts et les sciences s'inspirent : Une rencontre le mardi 27 octobre de 15h à 16h avec des artistes et scientifiques pour discuter de leurs collaborations et de leur vision du futur.\n\n- Que recherche-t-on encore dans l'espace ? : Un enregistrement en direct du podcast Détour vers le futur le mercredi 28 octobre de 15h à 16h15, avec des experts du CNES et de l’ESA pour parler des enjeux actuels de la recherche spatiale.\n\n- La science-fiction peut-elle sortir de la dystopie ? : Une table ronde le samedi 31 octobre de 15h à 16h15 avec des auteurs et éditeurs de Métal Hurlant pour réfléchir à des récits de science-fiction plus optimistes.\n\n- Rétrospective du Plateau créatif : Un espace ouvert les samedi 31 octobre et dimanche 1er novembre de 10h à 18h pour découvrir les activités créatives et numériques proposées ces 10 dernières années, idéal pour les 7-15 ans (mais accessible à tous).\n\nTous ces événements sont gratuits et accessibles sans réservation, dans la limite des places disponibles.",
+    "recommended": [
+      "14754629",
+      "46895595",
+      "2204333",
+      "93458911",
+      "84034365"
+    ],
+    "given": [
+      "93458911",
+      "2204333",
+      "46895595",
+      "14754629",
+      "84034365"
+    ],
+    "judged": {
+      "faithfulness": 0.9473684210526315,
+      "answer_relevancy": 0.8997070185407761,
+      "factual_correctness": 0.33
+    }
+  },
+  "entity-dub-inc": {
+    "answer": "Dub Inc se produit à Toulouse le samedi 21 novembre 2026 au Zénith Toulouse Métropole, à partir de 20h. Les places commencent à 41,69 €.",
+    "recommended": [
+      "55953955"
+    ],
+    "given": [
+      "55953955",
+      "31221477",
+      "92704536",
+      "57191516",
+      "93069197"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9179301516522949,
+      "factual_correctness": 0.89
+    }
+  },
+  "entity-ai-escape-game": {
+    "answer": "L’escape game sur le thème de l’intelligence artificielle que vous cherchez est intitulé Escape game : Face à l’IA. Il se déroulera le dimanche 8 novembre 2026, de 14h30 à 15h30, à la Bibliothèque d’Étude et du Patrimoine. Cet événement est réservé aux participants à partir de 12 ans et nécessite une inscription préalable à l’adresse mediation.bep@mairie-toulouse.fr.",
+    "recommended": [
+      "27157688"
+    ],
+    "given": [
+      "27157688",
+      "74674484",
+      "48510100",
+      "56796418",
+      "3075800"
+    ],
+    "judged": {
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.9081509204207714,
+      "factual_correctness": 0.73
+    }
+  },
+  "out-rugby": {
+    "answer": "Malheureusement, aucun événement correspondant à un match de rugby du Stade Toulousain n'est disponible dans les données fournies pour le moment. Je vous invite à reformuler votre demande ou à vérifier les agendas sportifs dédiés pour trouver les prochaines rencontres.",
+    "recommended": [],
+    "given": [
+      "93069197",
+      "57191516",
+      "92246355",
+      "84596272",
+      "46964688"
+    ],
+    "judged": {}
+  },
+  "out-paris": {
+    "answer": "Je suis désolé, je ne peux recommander que des événements à Toulouse. Si vous souhaitez des suggestions pour ce soir à Toulouse, je peux vous aider !",
+    "recommended": [],
+    "given": [
+      "61026604",
+      "13553643",
+      "17735788",
+      "24289460",
+      "37694699"
+    ],
+    "judged": {}
+  },
+  "out-restaurant": {
+    "answer": "Voici deux événements qui pourraient vous plaire pour une ambiance italienne à Toulouse :\n\n- Saison musicale - Messe des Gargouilles, Sabbat des Grenouilles : Une soirée envoûtante mêlant musique folk, électronique et poésie, avec des artistes comme Barnabaie et Radio Hito, qui intègre des influences italiennes dans ses compositions. L’événement se déroule dans une chapelle, ce qui ajoute une touche particulière à l’expérience.\n\n- Concert « La Dolce Vita » : Ce concert propose une ambiance napolitaine avec des musiciens locaux et un ténor formé à Toulouse, François Pardailhé. Bien que ce ne soit pas un restaurant, l’univers musical et la thématique pourraient vous inspirer pour une soirée italienne.\n\nMalheureusement, aucun événement ne mentionne explicitement un restaurant italien. Si vous cherchez une adresse, je vous invite à reformuler votre demande pour que je puisse mieux vous orienter !",
+    "recommended": [
+      "38538332",
+      "46020438"
+    ],
+    "given": [
+      "24866605",
+      "46020438",
+      "70887933",
+      "38538332",
+      "95461459"
+    ],
+    "judged": {}
+  },
+  "out-pool": {
+    "answer": "Je n'ai trouvé aucun événement lié à la piscine Nakache dans les informations fournies. Pourriez-vous préciser votre demande ou reformuler afin que je puisse mieux vous aider ?",
+    "recommended": [],
+    "given": [
+      "76235491",
+      "7797917",
+      "22899453",
+      "93633751",
+      "74374646"
+    ],
+    "judged": {}
+  },
+  "out-tfc": {
+    "answer": "Malheureusement, aucun événement lié au Toulouse Football Club (TFC) n'est prévu dans les données fournies pour le moment. Je vous invite à reformuler votre demande ou à consulter les canaux officiels du club pour obtenir les informations les plus récentes sur les prochains matchs.",
+    "recommended": [],
+    "given": [
+      "4787652",
+      "19708826",
+      "3427109",
+      "39854374",
+      "41254859"
+    ],
+    "judged": {}
+  }
+}

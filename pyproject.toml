@@ -48,6 +48,9 @@ rerank = [
     "sentence-transformers>=6.3.0",
     "torch>=2.15.0",
 ]
+eval = [
+    "ragas>=0.4.4",
+]
 
 [dependency-groups]
 dev = [
@@ -79,6 +82,11 @@ explicit = true
 # pytest's cache inside .venv.
 [tool.pytest.ini_options]
 cache_dir = ".venv/.pytest_cache"
+# Ragas imports a module of langchain-community it does not use here, which
+# warns that the package is no longer maintained: not ours to fix.
+filterwarnings = [
+    "ignore:`langchain-community` is being sunset:DeprecationWarning",
+]
 
 # The coverage of the package by every test (`make coverage`): below 95% of
 # its lines, the run fails. Its data inside .venv.
