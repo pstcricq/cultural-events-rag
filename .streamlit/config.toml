@@ -1,0 +1,27 @@
+# The settings of Streamlit for `make ui`, read from the working directory.
+
+[server]
+headless = true  # no browser opened, no email asked at the first start
+address = "127.0.0.1"  # this machine only (0.0.0.0 under docker compose)
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"  # no "Deploy" button
+
+# A warm light theme: brick orange on cream, rounded corners, the headings in
+# Plus Jakarta Sans (Google Fonts, loaded by the browser; sans-serif when it
+# cannot).
+[theme]
+base = "light"
+primaryColor = "#C2410C"
+backgroundColor = "#FFFCF8"
+secondaryBackgroundColor = "#FBF1E8"
+textColor = "#1F2937"
+borderColor = "#EADFD3"
+baseRadius = "0.75rem"
+headingFont = "Plus Jakarta Sans:https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700&display=swap, sans-serif"
+
+[theme.sidebar]
+backgroundColor = "#FBF1E8"

@@ -148,6 +148,29 @@ services:
       start_period: 60s
       retries: 6
 
+  # The web interface, a client of the API reached by its name: the same
+  # image, Streamlit in it, and no secret, it needs none.
+  ui:
+    image: ${APP_IMAGE:?set APP_IMAGE in .env or in the environment}:${APP_TAG:?set APP_TAG in .env or in the environment}
+    environment:
+      API_URL: http://api:8000
+    command: ["streamlit", "run", "src/cultural_events_rag/ui/app.py", "--server.address", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - import urllib.request; urllib.request.urlopen("http://localhost:8501/_stcore/health", timeout=5)
+      interval: 10s
+      timeout: 10s
+      start_period: 30s
+      retries: 6
+
 volumes:
   elasticsearch-data:
   huggingface:

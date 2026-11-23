@@ -14,6 +14,9 @@ import yaml
 from cultural_events_rag.settings import Settings
 from tests import ROOT, elastic_version
 
+# The setting the API never reads: that of the web interface.
+NOT_FOR_THE_API = {"API_URL"}
+
 
 def _example() -> str:
     return (ROOT / ".env.example").read_text(encoding="utf-8")
@@ -52,7 +55,7 @@ def test_the_api_is_given_every_setting_it_reads() -> None:
     environment = _services("compose.yaml")["api"]["environment"]
     settings = {name.upper() for name in Settings.model_fields}
 
-    assert set(environment) == settings
+    assert set(environment) == settings - NOT_FOR_THE_API
 
 
 def test_every_variable_of_a_container_is_written() -> None:
@@ -72,7 +75,7 @@ def test_the_variables_of_the_environment_are_required() -> None:
 
 def test_the_application_runs_from_one_image_built_on_this_machine_only() -> None:
     services = _services("compose.yaml")
-    application = {"models", "api"}
+    application = {"models", "api", "ui"}
 
     images = {services[name]["image"] for name in application}
 

@@ -59,6 +59,9 @@ class Settings(BaseSettings):
     # X-API-Key): unset, the rebuild is turned off.
     admin_api_key: SecretStr | None = None
 
+    # Where the web interface (make ui) reaches the API.
+    api_url: str | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status rebuild analyze search ask benchmark eval-retrieval eval-generation api test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status rebuild analyze search ask benchmark eval-retrieval eval-generation api ui test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -35,8 +35,8 @@ help: ## Show this help
 
 ##@ Environment
 
-install: ## Install the locked environment, the reranker, the judge and the git hooks
-	$(call run,$(UV) sync --extra rerank --extra eval)
+install: ## Install the locked environment, the reranker, the judge, the web interface and the git hooks
+	$(call run,$(UV) sync --extra rerank --extra eval --extra ui)
 	$(call run,$(RUN) pre-commit install)
 
 models: ## Download the models run on this machine (Mistral tokenizer, reranker)
@@ -114,6 +114,11 @@ eval-generation: ## Answer the benchmark questions and judge them (ARGS="--no-ju
 
 api: ## Serve the API on http://127.0.0.1:8000, its documentation at /docs
 	$(call run,$(RUN) uvicorn cultural_events_rag.api.app:create_app --factory --host 127.0.0.1 --port 8000)
+
+##@ Web interface (Streamlit)
+
+ui: ## Serve the web interface on http://127.0.0.1:8501 (needs the API: make api)
+	$(call run,$(RUN) streamlit run src/cultural_events_rag/ui/app.py)
 
 ##@ Tests
 

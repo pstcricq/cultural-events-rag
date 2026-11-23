@@ -1,5 +1,5 @@
-# The image takes pyproject.toml, uv.lock, README.md, LICENSE, NOTICE and
-# src/ only: everything else stays out of the build context.
+# The image takes pyproject.toml, uv.lock, README.md, LICENSE, NOTICE, src/
+# and .streamlit/ only: everything else stays out of the build context.
 *
 !pyproject.toml
 !uv.lock
@@ -7,5 +7,6 @@
 !LICENSE
 !NOTICE
 !src/
+!.streamlit/
 **/__pycache__/
 **/.DS_Store

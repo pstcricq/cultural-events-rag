@@ -53,6 +53,9 @@ rerank = [
 eval = [
     "ragas>=0.4.4",
 ]
+ui = [
+    "streamlit>=1.67.0",
+]
 
 [dependency-groups]
 dev = [
@@ -93,6 +96,9 @@ filterwarnings = [
 # The coverage of the package by every test (`make coverage`): below 95% of
 # its lines, the run fails. Its data inside .venv.
 [tool.coverage.run]
+# A folder rather than the package: coverage matches a package by the name of
+# its modules, and the page of the web interface runs as __main__ under
+# Streamlit's AppTest.
 source = ["src/cultural_events_rag"]
 data_file = ".venv/.coverage"
 

@@ -44,17 +44,18 @@ jobs:
       - name: Lint the Python
         run: make lint
 
-  # With the rerank extra (PyTorch for the CPU) and the eval extra (Ragas):
-  # mypy checks the calls of the reranker against sentence-transformers and
-  # those of the judge against Ragas. The tests need the eval extra only.
+  # With the rerank extra (PyTorch for the CPU), the eval extra (Ragas) and
+  # the ui extra (Streamlit): mypy checks the calls of the reranker against
+  # sentence-transformers, those of the judge against Ragas and those of the
+  # page against Streamlit. The tests need the eval and ui extras only.
   typecheck:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - *setup-uv
-      - name: Install the locked environment, the rerank and eval extras
-        run: uv sync --locked --extra rerank --extra eval
+      - name: Install the locked environment, the rerank, eval and ui extras
+        run: uv sync --locked --extra rerank --extra eval --extra ui
       - name: Check the types
         run: make typecheck
 
@@ -82,8 +83,8 @@ jobs:
       - uses: actions/checkout@v7
       - *setup-uv
       - &install-eval
-        name: Install the locked environment and the eval extra
-        run: uv sync --locked --extra eval
+        name: Install the locked environment, the eval and ui extras
+        run: uv sync --locked --extra eval --extra ui
       - name: The unit tests
         run: make test-unit
 

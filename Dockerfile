@@ -1,7 +1,7 @@
-# The image of the application, one for its two services (the command that
-# downloads the models, the API): the locked environment without the dev tools
-# nor the eval extra (the evaluation runs outside), with the reranker (PyTorch
-# for the CPU on Linux).
+# The image of the application, one for its three services (the command that
+# downloads the models, the API, the web interface): the locked environment
+# without the dev tools nor the eval extra (the evaluation runs outside), with
+# the reranker (PyTorch for the CPU on Linux) and Streamlit.
 
 FROM python:3.12-slim AS builder
 
@@ -18,12 +18,12 @@ WORKDIR /app
 # not install them again.
 COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-dev --extra rerank --no-install-project
+    uv sync --locked --no-dev --extra rerank --extra ui --no-install-project
 
 COPY README.md LICENSE NOTICE ./
 COPY src ./src
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked --no-dev --extra rerank
+    uv sync --locked --no-dev --extra rerank --extra ui
 
 FROM python:3.12-slim
 
@@ -37,6 +37,8 @@ WORKDIR /app
 
 COPY --from=builder /app/.venv ./.venv
 COPY --from=builder /app/src ./src
+# The settings of Streamlit, read from the working directory.
+COPY .streamlit ./.streamlit
 
 # The models read from the volume, offline: the models service downloads them.
 ENV PATH="/app/.venv/bin:$PATH" \
@@ -46,6 +48,6 @@ ENV PATH="/app/.venv/bin:$PATH" \
 
 USER app
 
-EXPOSE 8000
+EXPOSE 8000 8501
 
 CMD ["uvicorn", "cultural_events_rag.api.app:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000"]
