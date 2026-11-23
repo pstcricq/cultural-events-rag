@@ -1,5 +1,6 @@
 """The tests: unit/ needs nothing but the repository, integration/ a docker
-that runs the Elasticsearch of compose.yaml."""
+that runs the Elasticsearch of compose.yaml, smoke/ the services `make
+docker-up` started."""
 
 import re
 from pathlib import Path

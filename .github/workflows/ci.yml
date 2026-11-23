@@ -1,8 +1,8 @@
-# One job per make target of the same name, in parallel. Every job installs
-# with `uv sync --locked`, which fails when uv.lock no longer matches
-# pyproject.toml, and UV_LOCKED keeps every `uv run` on uv.lock. No secret is
-# needed: the tests fake Mistral and Open Agenda, and start their own
-# Elasticsearch.
+# One job per make target of the same name, in parallel, and the image built,
+# started and checked. Every job installs with `uv sync --locked`, which fails
+# when uv.lock no longer matches pyproject.toml, and UV_LOCKED keeps every
+# `uv run` on uv.lock. No secret is needed: the tests fake Mistral and Open
+# Agenda, and start their own Elasticsearch.
 name: CI
 
 on:
@@ -101,3 +101,58 @@ jobs:
       - *install-eval
       - name: Every test and the coverage
         run: make coverage ARGS="--cov-report=term --cov-report=markdown-append:$GITHUB_STEP_SUMMARY"
+
+  # The image of the application built, never pushed, then the API and the
+  # web interface started on it, with Elasticsearch, and checked by `make
+  # test-smoke`: a Dockerfile that no longer builds, or services that no
+  # longer start or reach each other, fail here. Dummy secrets: the checks
+  # never call Mistral, and no reranker, its model being 2 GB to download. The
+  # layers of the image are cached between runs.
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    # What the job sets itself, over the values of .env.example copied below
+    # (the environment wins over .env): the image, named once (the action
+    # builds it, compose runs it), dummy secrets, and no reranker.
+    env:
+      APP_IMAGE: cultural-events-rag
+      APP_TAG: ci
+      MISTRAL_API_KEY: not-a-key
+      OPENAGENDA_API_KEY: not-a-key
+      ADMIN_API_KEY: not-a-key
+      ELASTIC_PASSWORD: smoke-test-password
+      KIBANA_PASSWORD: smoke-test-password
+      RERANK_AVAILABLE: "false"
+    steps:
+      - uses: actions/checkout@v7
+      # The tools of the runner the job does not use deleted: the image, its
+      # layers and the volumes of the services fill its disk, and Elasticsearch
+      # refuses to write above 95% of it.
+      - &free-disk
+        name: Free disk space on the runner
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: docker/setup-buildx-action@v4
+      # As compose.dev.yaml does on a laptop, its layers cached by GitHub.
+      - name: Build the image of the application
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          load: true
+          tags: ${{ env.APP_IMAGE }}:${{ env.APP_TAG }}
+          cache-from: type=gha,scope=app
+          cache-to: type=gha,mode=max,scope=app
+      - name: The other values, those of the example
+        run: cp .env.example .env
+      # docker compose itself, on compose.yaml alone as a server runs it, the
+      # image built above: make docker-up would build it again, without the
+      # cache of GitHub. With the profile search, Elasticsearch starts too, the
+      # API waiting for it; Kibana, needed by neither, does not.
+      - name: Start the API and the web interface, and what they need
+        run: docker compose --profile search up -d --wait api ui
+      - *setup-uv
+      - *install
+      - name: Check that they answer
+        run: make test-smoke
+      - name: The logs of the services, on failure
+        if: failure()
+        run: docker compose --profile search logs --no-color --tail 100

@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status rebuild analyze search ask benchmark eval-retrieval eval-generation api ui test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status rebuild analyze search ask benchmark eval-retrieval eval-generation api ui test-all test-unit test-integration test-smoke coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -122,13 +122,16 @@ ui: ## Serve the web interface on http://127.0.0.1:8501 (needs the API: make api
 
 ##@ Tests
 
-test-all: test-unit test-integration ## Run the unit, then integration tests
+test-all: test-unit test-integration $(if $(SMOKE),test-smoke) ## Run the unit, then integration tests (SMOKE=1: then the smoke tests)
 
 test-unit: ## Run the tests that need only the repository
 	$(call run,$(RUN) pytest tests/unit -q)
 
 test-integration: ## Run the tests that need an Elasticsearch (docker)
 	$(call run,$(RUN) pytest tests/integration -q)
+
+test-smoke: ## Check that the API and the web interface of docker-up answer
+	$(call run,$(RUN) pytest tests/smoke -q)
 
 coverage: ## Run the unit and integration tests, list the lines left uncovered, fail under 95%
 	$(call run,$(RUN) pytest tests/unit tests/integration -q --cov $(ARGS))
