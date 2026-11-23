@@ -60,6 +60,14 @@ make status
 
 `make index` (`cultural-events-rag index`) sends these documents to `mistral-embed` (`MISTRAL_API_KEY`) in batches of about 15k tokens, a batch retried on a rate limit or a server error, and writes them into Elasticsearch: each one with its text, analyzed in French for the lexical search (BM25), its vector, for the vector search (kNN, exact: the question is compared with every vector by cosine), and its metadata, as fields to filter on. Each build writes a new index, then moves the alias `events` (`ELASTICSEARCH_INDEX`) onto it once every event is in it, and deletes the one it served: a failed build leaves the served index as it was. The index records what it was built with, the embedding model, the chunking, the document format and the vector index type: `make status` (`cultural-events-rag status`) shows the index served, its documents, when it was built, and whether the code still builds it the same way.
 
+## Retrieval
+
+```bash
+make analyze Q="Un concert gratuit ce week-end à Saint-Cyprien ?"
+```
+
+`make analyze` (`cultural-events-rag analyze`) shows the filters the search will apply to a question, read by rules, without any model: the period ("ce week-end", "en décembre", "du 20 au 25 octobre", "Noël", "les vacances de la Toussaint", taken at their widest whatever the year), free entry ("gratuit", "entrée libre": the free events and those whose price the agenda does not give, many free ones not saying so; the answer tells which price is unknown), the district or the venue, among those of the index served. A question without a period, or with one under way, looks for events from today; past events only for a question about the past ("le mois dernier"). `ARGS="--today 2026-10-15"` asks it on another day.
+
 ## CI
 
 GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: the tests fake Mistral and Open Agenda, and start their own Elasticsearch. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.

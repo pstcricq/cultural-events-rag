@@ -19,7 +19,7 @@ from cultural_events_rag.indexing.build import BuildReport
 from cultural_events_rag.models import Event
 from cultural_events_rag.settings import Settings
 
-COMMANDS = ("status", "index")
+COMMANDS = ("analyze", "status", "index")
 CONNECTION = EngineConnectionError("connection refused")
 REFUSED = AuthenticationException(
     "refused",
@@ -113,8 +113,9 @@ def test_each_command_explains_an_elasticsearch_failure(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     _client(monkeypatch, command, Failing(error))
+    question = ["Un concert ce soir ?"] if command == "analyze" else []
 
-    assert main([command]) == 1
+    assert main([command, *question]) == 1
 
     assert message in capsys.readouterr().err
 

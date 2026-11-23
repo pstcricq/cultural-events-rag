@@ -5,6 +5,7 @@ area. The exit code is 0 when the command succeeded, 1 otherwise.
 import argparse
 
 from cultural_events_rag.cli import (
+    analyze,
     config,
     documents,
     fetch,
@@ -14,7 +15,7 @@ from cultural_events_rag.cli import (
     status,
 )
 
-GROUPS = (config, models, fetch, process, documents, index, status)
+GROUPS = (config, models, fetch, process, documents, index, status, analyze)
 
 
 def _parser() -> argparse.ArgumentParser:

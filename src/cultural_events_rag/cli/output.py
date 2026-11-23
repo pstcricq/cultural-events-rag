@@ -1,11 +1,19 @@
 """What the cultural-events-rag command prints."""
 
+import argparse
 import logging
 import sys
 from pathlib import Path
 
 from cultural_events_rag.logs import quiet_libraries
 from cultural_events_rag.paths import ROOT
+
+
+def question(text: str) -> str:
+    """A question as typed, refused when it holds no word, as by the API."""
+    if not text.strip():
+        raise argparse.ArgumentTypeError('empty: with make, Q="..."')
+    return text
 
 
 def shown(path: Path) -> str:
