@@ -77,9 +77,12 @@ With `--rerank`, a cross-encoder, `RERANK_MODEL` (`BAAI/bge-reranker-v2-m3`), so
 
 ```bash
 make benchmark
+make eval-retrieval
 ```
 
 The benchmark (`data/benchmark/`, committed) measures the search on fixed ground: 50 questions in French (`questions.json`), each with the events a human judged relevant and a reference answer, all judged as of a reference date, and the 1,850 events they were judged on (`events.jsonl`), frozen. `make benchmark` (`cultural-events-rag benchmark`) checks that every relevant event is among them, then writes them into Elasticsearch under an alias of their own, `events-benchmark`, beside the index of the application, by the same build: only when that index is missing, built otherwise than the code builds it now, or holds other events.
+
+`make eval-retrieval` (`cultural-events-rag evaluate retrieval`) searches each question in that index, as of its reference date, by each configuration: `lexical`, `vector` and `hybrid`, without then with the reranker (`ARGS="--no-rerank"`, or `RERANK_AVAILABLE=false`: without only). No LLM is involved: the events found are compared with those judged relevant, by Hit@5, Recall@5, Precision@5, MRR and Recall@20, the candidates of the reranker. Recall@k counts the relevant events in the first k out of min(k, relevant events): five relevant events in the first five of "en décembre" is a perfect answer. The report, `reports/retrieval.md`, sets every configuration side by side, the best score of each row in bold: the metrics, how often each one does better than each other question by question (a mean can hide a few large gains or losses), the metrics by category, Recall@5 for each question, and what comes first for the out-of-scope questions, with the first score of the reranker; `reports/retrieval.json` holds every ranking. The best configuration is chosen on these same 50 questions: its scores are slightly optimistic, and a gap of a few points between two configurations is not necessarily real.
 
 ## CI
 

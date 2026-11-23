@@ -9,6 +9,7 @@ from cultural_events_rag.cli import (
     benchmark,
     config,
     documents,
+    evaluate,
     fetch,
     index,
     models,
@@ -28,6 +29,7 @@ GROUPS = (
     analyze,
     search,
     benchmark,
+    evaluate,
 )
 
 

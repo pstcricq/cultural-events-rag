@@ -3,6 +3,7 @@
 import argparse
 import logging
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 
 from cultural_events_rag.logs import quiet_libraries
@@ -28,3 +29,47 @@ def quiet_logs() -> None:
     reports a failure itself."""
     logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
     quiet_libraries()
+
+
+def duration(seconds: float) -> str:
+    """A duration as a person reads it: "40 s", "3 min", "2 h 40 min"."""
+    if seconds < 60:
+        return f"{seconds:.0f} s"
+    hours, minutes = divmod(round(seconds / 60), 60)
+    if not hours:
+        return f"{minutes} min"
+    return f"{hours} h {minutes:02d} min" if minutes else f"{hours} h"
+
+
+def aligned(table: Sequence[str], bold: bool = False) -> list[str]:
+    """A Markdown table as a terminal shows it: its columns aligned, the
+    numbers to the right, a line under the header; its cells in bold set in
+    bold (ANSI) when ``bold``, plain otherwise."""
+    rows = [
+        [cell.strip() for cell in line.strip().strip("|").split("|")]
+        for line in table
+        if not set(line) <= set("|-: ")  # the rule under the header
+    ]
+    texts = [[cell.strip("*") for cell in row] for row in rows]
+    widths = [max(len(row[i]) for row in texts) for i in range(len(texts[0]))]
+    lines = []
+    for row, text in zip(rows, texts, strict=True):
+        cells = []
+        for i, (cell, value) in enumerate(zip(row, text, strict=True)):
+            padded = value.ljust(widths[i]) if i == 0 else value.rjust(widths[i])
+            if bold and cell.startswith("**"):
+                padded = f"\033[1m{padded}\033[0m"
+            cells.append(padded)
+        lines.append("  ".join(cells).rstrip())
+    rule = "-" * (sum(widths) + 2 * (len(widths) - 1))
+    return [lines[0], rule, *lines[1:]]
+
+
+def confirm(question: str) -> bool:
+    """The answer to a yes or no ``question`` asked on the terminal: no by
+    default, and no without a terminal to answer it."""
+    try:
+        answer = input(f"{question} [y/N] ")
+    except EOFError:
+        return False
+    return answer.strip().lower() in ("y", "yes", "o", "oui")

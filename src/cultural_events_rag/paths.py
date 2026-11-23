@@ -21,3 +21,7 @@ EVENTS_FILE = PROCESSED_DIR / "events.jsonl"
 BENCHMARK_DIR = ROOT / "data" / "benchmark"
 BENCHMARK_QUESTIONS = BENCHMARK_DIR / "questions.json"
 BENCHMARK_EVENTS = BENCHMARK_DIR / "events.jsonl"
+
+# The reports of the evaluations, committed: their history shows the effect of
+# each change.
+REPORTS_DIR = ROOT / "reports"
