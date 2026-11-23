@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status rebuild analyze search ask benchmark eval-retrieval eval-generation api ui test-all test-unit test-integration test-smoke coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status rebuild analyze search ask benchmark eval-retrieval eval-generation api ui test-all test-unit test-integration test-smoke coverage lint format typecheck pre-commit docs-serve docs-build ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -149,13 +149,21 @@ typecheck: ## Check the types (mypy strict)
 pre-commit: ## Run every pre-commit hook on every file
 	$(call run,$(RUN) pre-commit run --all-files --show-diff-on-failure)
 
+##@ Documentation (mkdocs.yml, docs/)
+
+docs-serve: ## Serve the documentation site on http://127.0.0.1:8008, reloaded on save
+	NO_MKDOCS_2_WARNING=1 $(RUN) --group docs mkdocs serve -a 127.0.0.1:8008
+
+docs-build: ## Build the documentation site into site/, every warning an error
+	$(call run,NO_MKDOCS_2_WARNING=1 $(RUN) --group docs mkdocs build --strict)
+
 ##@ CI
 
-ci: lint typecheck pre-commit coverage ## Everything the CI checks, in this order
+ci: lint typecheck pre-commit coverage docs-build ## Everything the CI checks, in this order
 
 ##@ Cleanup
 
-clean: ## Remove the Python caches (__pycache__) and the HTML report of the coverage (htmlcov/)
+clean: ## Remove the Python caches, the HTML coverage report (htmlcov/) and the built site (site/)
 	find . -type d -name __pycache__ -not -path "./.venv/*" -exec rm -rf {} +
-	rm -rf htmlcov
+	rm -rf htmlcov site
 	$(call run,echo "Cleaning done.")

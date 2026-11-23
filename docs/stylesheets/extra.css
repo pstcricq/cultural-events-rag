@@ -1,0 +1,404 @@
+/* The site of cultural-events-rag: the brick and cream of the web interface,
+   a theatre-curtain plum for the frame, ticket gold for the accents. */
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&display=swap");
+
+:root > * {
+  --brick: #c2410c;
+  --brick-dark: #9a3412;
+  --brick-wash: rgba(194, 65, 12, 0.09);
+  --plum: #3d1530;
+  --plum-mid: #6b1f45;
+  --gold: #e0a526;
+  --gold-wash: rgba(224, 165, 38, 0.14);
+  --cream: #fffcf8;
+  --sand: #fbf1e8;
+  --line: #eadfd3;
+  --ok: #2f7d4f;
+
+  --md-primary-fg-color: var(--plum-mid);
+  --md-primary-fg-color--light: var(--brick);
+  --md-primary-fg-color--dark: var(--plum);
+  --md-accent-fg-color: var(--brick);
+  --md-accent-fg-color--transparent: var(--brick-wash);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: var(--cream);
+  --md-typeset-a-color: var(--brick-dark);
+  --md-code-bg-color: #f7efe6;
+  --heading: #2a1220;
+  --table-head: var(--sand);
+  --card-bg: #fff;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #1d1418;
+  --md-default-bg-color--light: #261a20;
+  --md-typeset-a-color: #f4a46a;
+  --md-code-bg-color: #2a1d23;
+  --heading: #f6e7dc;
+  --table-head: rgba(244, 164, 106, 0.08);
+  --line: #3a2a31;
+  --card-bg: #261a20;
+}
+
+/* Frame: the curtain across the top, the stage below */
+.md-header {
+  background: linear-gradient(100deg, var(--plum) 0%, var(--plum-mid) 55%, var(--brick-dark) 100%);
+  box-shadow: none;
+}
+.md-tabs {
+  background: linear-gradient(100deg, var(--plum) 0%, var(--plum-mid) 100%);
+}
+.md-tabs__link--active,
+.md-tabs__item--active .md-tabs__link {
+  color: var(--gold);
+  opacity: 1;
+}
+.md-footer {
+  background: var(--plum);
+}
+.md-footer-meta {
+  background: #2c0e22;
+}
+
+/* Type: the headings of the web interface */
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3,
+.md-header__title,
+.md-nav__title {
+  font-family: "Plus Jakarta Sans", var(--md-text-font-family), sans-serif;
+}
+.md-typeset h1 {
+  color: var(--heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.md-typeset h2 {
+  color: var(--heading);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+.md-typeset h2::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 2.4rem;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--brick);
+}
+.md-typeset h3 {
+  color: var(--heading);
+  font-weight: 700;
+}
+
+/* The command that opens a page */
+.md-typeset h1 + .highlight,
+.md-typeset h1 + div.highlight {
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 0.72rem;
+  overflow: hidden;
+}
+.md-typeset table:not([class]) th {
+  background: var(--table-head);
+  color: var(--heading);
+  font-weight: 700;
+}
+.md-typeset table:not([class]) tr:hover {
+  background: var(--brick-wash);
+}
+
+/* Screenshots: framed like the cards of the interface, dimmed at night */
+.md-typeset img[src*="screenshots"] {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px -12px rgba(61, 21, 48, 0.25);
+}
+/* Screenshot sizes: a maximum width each, centred, the whole width on a
+   phone. shot-l for a whole page, shot-m for a part of it, shot-s for a tall
+   one. */
+.md-typeset img.shot-l,
+.md-typeset img.shot-m,
+.md-typeset img.shot-s {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.md-typeset img.shot-l {
+  max-width: min(100%, 860px);
+}
+.md-typeset img.shot-m {
+  max-width: min(100%, 580px);
+}
+.md-typeset img.shot-s {
+  max-width: min(100%, 480px);
+}
+[data-md-color-scheme="slate"] .md-typeset img[src*="screenshots"] {
+  filter: brightness(0.85);
+  transition: filter 150ms;
+}
+[data-md-color-scheme="slate"] .md-typeset img[src*="screenshots"]:hover {
+  filter: none;
+}
+.glightbox-clean .gslide-media img {
+  border: none;
+  box-shadow: none;
+}
+
+/* Caption: a paragraph that is one italic span, right under a figure */
+.md-typeset p:has(> em:only-child) {
+  margin-top: 0.4rem;
+  font-size: 0.72rem;
+  color: var(--md-default-fg-color--light);
+  text-align: center;
+}
+
+/* Home: the curtain rises */
+.md-typeset .hero {
+  position: relative;
+  overflow: hidden;
+  margin: 0 0 2rem;
+  padding: 2.4rem 2.4rem 2rem;
+  border-radius: 18px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(224, 165, 38, 0.45), transparent 38%),
+    radial-gradient(circle at 8% 110%, rgba(194, 65, 12, 0.6), transparent 45%),
+    linear-gradient(135deg, var(--plum) 0%, var(--plum-mid) 60%, var(--brick-dark) 100%);
+}
+.md-typeset .hero::after {
+  /* a row of footlights along the bottom edge */
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg, var(--gold) 0 10px, transparent 10px 22px);
+  opacity: 0.55;
+}
+.md-typeset .hero .kicker {
+  display: inline-block;
+  margin-bottom: 0.6rem;
+  padding: 0.15rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.md-typeset .hero h1 {
+  margin: 0 0 0.5rem;
+  color: #fff;
+  font-size: 2.3rem;
+  line-height: 1.15;
+}
+.md-typeset .hero p {
+  max-width: 40rem;
+  margin: 0 0 1.1rem;
+  font-size: 0.86rem;
+  opacity: 0.95;
+}
+.md-typeset .hero .md-button {
+  margin: 0.2rem 0.4rem 0.2rem 0;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+}
+.md-typeset .hero .md-button--primary {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--plum);
+}
+.md-typeset .hero .md-button:hover {
+  background: #fff;
+  color: var(--plum);
+  border-color: #fff;
+}
+
+/* A question asked, as the chat of the interface shows it */
+.md-typeset .ask {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.2rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 0.8rem;
+}
+
+/* Tickets: the figures of the home page */
+.md-typeset .tickets {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.9rem;
+  margin: 1rem 0 1.6rem;
+}
+.md-typeset .ticket {
+  position: relative;
+  padding: 0.9rem 1rem 0.8rem 1.4rem;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 0 50%, var(--md-default-bg-color) 0.45rem, transparent 0.5rem),
+    radial-gradient(circle at 100% 50%, var(--md-default-bg-color) 0.45rem, transparent 0.5rem),
+    var(--card-bg);
+}
+.md-typeset .ticket::before {
+  /* the perforation */
+  content: "";
+  position: absolute;
+  top: 0.6rem;
+  bottom: 0.6rem;
+  left: 0.75rem;
+  border-left: 2px dashed var(--gold-wash);
+  border-left-color: rgba(224, 165, 38, 0.55);
+}
+.md-typeset .ticket .label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+}
+.md-typeset .ticket .figure {
+  display: block;
+  margin: 0.2rem 0 0.15rem;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--brick);
+}
+.md-typeset .ticket .note {
+  display: block;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  color: var(--md-default-fg-color--light);
+}
+
+/* The programme: the steps of the pipeline */
+.md-typeset .programme {
+  counter-reset: step;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.7rem;
+  margin: 1rem 0 1.6rem;
+}
+.md-typeset .programme a {
+  counter-increment: step;
+  display: block;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  border-top: 4px solid var(--brick);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--md-default-fg-color);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.md-typeset .programme a:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -10px rgba(194, 65, 12, 0.45);
+}
+.md-typeset .programme a::before {
+  content: "0" counter(step);
+  display: block;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--gold);
+}
+.md-typeset .programme strong {
+  display: block;
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: var(--heading);
+}
+.md-typeset .programme span {
+  font-size: 0.68rem;
+  color: var(--md-default-fg-color--light);
+}
+
+/* Narrow screens: tickets and steps on fewer columns */
+@media screen and (max-width: 60em) {
+  .md-typeset .tickets {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .md-typeset .programme {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media screen and (max-width: 30em) {
+  .md-typeset .tickets,
+  .md-typeset .programme {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cards */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 12px;
+  background: var(--card-bg);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  border-color: var(--brick);
+  box-shadow: 0 6px 18px -8px rgba(194, 65, 12, 0.35);
+}
+.md-typeset .lg {
+  font-size: 1.5em;
+  vertical-align: middle;
+}
+.md-typeset .brick {
+  color: var(--brick);
+}
+.md-typeset .plum {
+  color: var(--plum-mid);
+}
+[data-md-color-scheme="slate"] .md-typeset .plum {
+  color: #e59ac0;
+}
+
+/* Admonitions in the colours of the site */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: var(--gold);
+}
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: var(--gold-wash);
+}
+.md-typeset .note > .admonition-title::before,
+.md-typeset .note > summary::before {
+  background-color: var(--brick);
+}
+
+/* Diagrams on a card */
+.md-typeset .mermaid {
+  padding: 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card-bg);
+}
+
+/* Code reference: a little air between members */
+.md-typeset .doc-object {
+  margin-bottom: 1.2rem;
+}
+.md-typeset .doc-heading code {
+  color: var(--heading);
+}

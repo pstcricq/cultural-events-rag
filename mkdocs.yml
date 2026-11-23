@@ -1,0 +1,160 @@
+# The documentation site: `make docs-serve` to read it, `make docs-build` to
+# check it, the pages under docs/.
+site_name: cultural-events-rag
+site_description: >-
+  A RAG assistant that recommends cultural events in Toulouse from the public
+  Open Agenda agendas: hybrid search in Elasticsearch, a cross-encoder
+  reranker, and a Mistral model that answers in French from the events found.
+site_url: https://pstcricq.github.io/cultural-events-rag/
+repo_url: https://github.com/pstcricq/cultural-events-rag
+repo_name: pstcricq/cultural-events-rag
+edit_uri: edit/main/docs/
+site_author: Pierre St-Cricq
+copyright: >-
+  Copyright &copy; 2026 Pierre St-Cricq. Code and documentation under MIT;
+  event data under the Licence Ouverte 2.0 of its sources.
+
+# Every broken link or anchor is a warning, and `--strict` turns it into an
+# error.
+validation:
+  omitted_files: warn
+  absolute_links: warn
+  unrecognized_links: warn
+  anchors: warn
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Guide:
+      - Architecture: guide/architecture.md
+      - Collection: guide/collection.md
+      - Indexing: guide/indexing.md
+      - Search: guide/search.md
+      - Generation: guide/generation.md
+      - Evaluation: guide/evaluation.md
+      - API: guide/api.md
+      - Web interface: guide/interface.md
+  - Operations:
+      - Configuration: operations/configuration.md
+      - Docker: operations/docker.md
+      - CI: operations/ci.md
+  - Development: development.md
+  - Code reference:
+      - reference/index.md
+      - Assistant and settings: reference/core.md
+      - Collection: reference/collection.md
+      - Indexing: reference/indexing.md
+      - Retrieval: reference/retrieval.md
+      - Generation: reference/generation.md
+      - Evaluation: reference/evaluation.md
+      - API: reference/api.md
+      - Web interface: reference/ui.md
+      - Command line: reference/cli.md
+  - Project:
+      - Decisions: project/decisions.md
+      - Limits and next steps: project/limits.md
+      - Licences: project/licences.md
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Light mode
+  font:
+    text: Source Sans 3
+    code: JetBrains Mono
+  icon:
+    logo: material/drama-masks
+    repo: fontawesome/brands/github
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - navigation.footer
+    - navigation.instant
+    - toc.follow
+    - content.code.copy
+    - content.tabs.link
+    - search.highlight
+    - search.suggest
+
+plugins:
+  - search
+  - glightbox
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            members_order: source
+            docstring_style: google
+            filters: ["!^_"]
+            heading_level: 2
+            separate_signature: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+# The author's and the project's links, in the footer of every page.
+extra:
+  generator: false
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/pstcricq
+      name: Pierre St-Cricq on GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/pierre-st-cricq/
+      name: Pierre St-Cricq on LinkedIn
+
+extra_css:
+  - stylesheets/extra.css
+
+# The formulas of the evaluation, rendered by MathJax.
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3.2.2/es5/tex-mml-chtml.js

@@ -68,6 +68,12 @@ dev = [
     "pyyaml>=6.0.3",
     "types-pyyaml>=6.0.12.20261113",
 ]
+# The documentation site and its code reference, with `uv run --group docs`.
+docs = [
+    "mkdocs-glightbox>=0.5.3",
+    "mkdocs-material>=9.8.2",
+    "mkdocstrings[python]>=1.0.8",
+]
 
 # The only uv version allowed on the project.
 [tool.uv]

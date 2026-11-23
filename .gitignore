@@ -19,3 +19,6 @@ htmlcov/
 
 # Editor settings.
 .vscode/
+
+# The documentation site built by `make docs-build`.
+site/

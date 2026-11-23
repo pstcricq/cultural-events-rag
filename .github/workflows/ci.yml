@@ -96,6 +96,21 @@ jobs:
       - name: Every test and the coverage
         run: make coverage ARGS="--cov-report=term --cov-report=markdown-append:$GITHUB_STEP_SUMMARY"
 
+  # The documentation site, every warning an error, kept for docs-publish.
+  docs-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - *setup-uv
+      - name: Install the locked environment and the docs group
+        run: uv sync --locked --group docs
+      - name: The site, strict
+        run: make docs-build
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: site/
+
   # The image of the application built (not pushed), the API and the web
   # interface started on it with Elasticsearch, then checked by `make
   # test-smoke`. Dummy secrets, no reranker. The layers of the image are
@@ -145,3 +160,19 @@ jobs:
       - name: The logs of the services, on failure
         if: failure()
         run: docker compose --profile search logs --no-color --tail 100
+
+  # The site of docs-build on GitHub Pages, from main once every check passes.
+  docs-publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [lint, typecheck, pre-commit, test-unit, coverage, docs-build, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

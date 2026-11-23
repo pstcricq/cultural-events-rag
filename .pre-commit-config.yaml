@@ -13,6 +13,8 @@ repos:
       - id: trailing-whitespace
       - id: check-merge-conflict
       - id: check-yaml
+        # mkdocs.yml carries !!python/name tags, read by `make docs-build`.
+        exclude: ^mkdocs\.yml$
       - id: check-toml
       - id: check-json
       # The frozen events of the benchmark, 3.5 MB, versioned.
