@@ -1,0 +1,11 @@
+# The image takes pyproject.toml, uv.lock, README.md, LICENSE, NOTICE and
+# src/ only: everything else stays out of the build context.
+*
+!pyproject.toml
+!uv.lock
+!README.md
+!LICENSE
+!NOTICE
+!src/
+**/__pycache__/
+**/.DS_Store

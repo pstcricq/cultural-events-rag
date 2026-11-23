@@ -10,7 +10,13 @@ from cultural_events_rag.settings import Settings, get_settings
 from tests import ROOT
 
 # The variables only compose reads, never the application.
-COMPOSE_ONLY = {"ELASTIC_VERSION", "KIBANA_PASSWORD"}
+COMPOSE_ONLY = {
+    "API_ELASTICSEARCH_URL",
+    "ELASTIC_VERSION",
+    "APP_IMAGE",
+    "APP_TAG",
+    "KIBANA_PASSWORD",
+}
 
 
 def _env_file(tmp_path: Path, text: str) -> Path:

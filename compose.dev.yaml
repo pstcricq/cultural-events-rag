@@ -1,0 +1,7 @@
+# The image of the application built from this checkout, named
+# APP_IMAGE:APP_TAG: for this machine only, read along with compose.yaml by
+# make (COMPOSE in the Makefile). A server reads compose.yaml alone, and pulls
+# that image from its registry.
+services:
+  api:
+    build: .

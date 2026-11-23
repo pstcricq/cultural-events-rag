@@ -19,8 +19,11 @@ RUN := $(UV) run
 # models run on this machine; a command missing one says so.
 export HF_HUB_OFFLINE := 1
 
-# docker compose reads compose.yaml and .env on its own.
-COMPOSE := docker compose
+# docker compose reads .env on its own. On this machine: the image built from
+# this checkout (compose.dev.yaml), and Elasticsearch and Kibana run by compose
+# (the profile search). A server runs docker compose itself, on compose.yaml
+# alone.
+COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml --profile search
 
 # The targets of a command take its options in ARGS: ARGS=--help lists them.
 help: ## Show this help
@@ -46,8 +49,8 @@ config: ## Show the active settings, secrets masked
 
 ##@ Docker (compose.yaml, its values from .env)
 
-docker-up: ## Start every service (S=<service>: those only), wait until healthy
-	$(call run,$(COMPOSE) up -d --wait $(S))
+docker-up: ## Build the image if the code changed, start every service (S=<service>: those only), wait until healthy
+	$(call run,$(COMPOSE) up -d --wait --build $(S))
 
 docker-down: ## Stop the services, keep their data
 	$(call run,$(COMPOSE) down)
