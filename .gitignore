@@ -7,7 +7,8 @@ __pycache__/
 # The secrets and the local settings: .env.example shows them.
 .env
 
-# The events as each API returns them, and in the common format.
+# The events as each API returns them, and in the common format: only the
+# benchmark of data/ is committed.
 data/raw/
 data/processed/
 

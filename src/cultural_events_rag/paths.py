@@ -15,3 +15,9 @@ RAW_DIR = ROOT / "data" / "raw"
 # The events of the common format, one per line, never committed.
 PROCESSED_DIR = ROOT / "data" / "processed"
 EVENTS_FILE = PROCESSED_DIR / "events.jsonl"
+
+# The benchmark, committed: the annotated questions, and the events they were
+# judged on, frozen.
+BENCHMARK_DIR = ROOT / "data" / "benchmark"
+BENCHMARK_QUESTIONS = BENCHMARK_DIR / "questions.json"
+BENCHMARK_EVENTS = BENCHMARK_DIR / "events.jsonl"

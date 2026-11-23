@@ -73,6 +73,14 @@ make search Q="Un concert gratuit ce week-end à Saint-Cyprien ?" ARGS="--mode h
 
 With `--rerank`, a cross-encoder, `RERANK_MODEL` (`BAAI/bge-reranker-v2-m3`), sorts the first 20 events of the search again: it reads the question and the best chunk of each event together, and scores how well the chunk answers it, more exactly than the comparison of their vectors, too slowly for the whole index. It runs on this machine (the `rerank` extra, the model downloaded by `make models`): about 2.3 GB on disk, 2 to 3 GB of memory, a few seconds to load, under a second per search.
 
+## Evaluation
+
+```bash
+make benchmark
+```
+
+The benchmark (`data/benchmark/`, committed) measures the search on fixed ground: 50 questions in French (`questions.json`), each with the events a human judged relevant and a reference answer, all judged as of a reference date, and the 1,850 events they were judged on (`events.jsonl`), frozen. `make benchmark` (`cultural-events-rag benchmark`) checks that every relevant event is among them, then writes them into Elasticsearch under an alias of their own, `events-benchmark`, beside the index of the application, by the same build: only when that index is missing, built otherwise than the code builds it now, or holds other events.
+
 ## CI
 
 GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: the tests fake Mistral and Open Agenda, and start their own Elasticsearch. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
@@ -89,4 +97,4 @@ make coverage
 
 ## Licence
 
-The code, under MIT: see [LICENSE](LICENSE).
+The code, under MIT: see [LICENSE](LICENSE). The events of the benchmark keep the licence of their source, the Licence Ouverte 2.0 of Etalab, with the attribution of each event: see [NOTICE](NOTICE).

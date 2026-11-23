@@ -16,7 +16,10 @@ repos:
       - id: check-merge-conflict
       - id: check-yaml
       - id: check-toml
+      - id: check-json
+      # The frozen events of the benchmark, 3.5 MB, committed on purpose.
       - id: check-added-large-files
+        exclude: ^data/benchmark/events\.jsonl$
       - id: detect-private-key
 
   # The API keys of .env, should one land in a committed file.

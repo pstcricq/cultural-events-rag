@@ -6,6 +6,7 @@ import argparse
 
 from cultural_events_rag.cli import (
     analyze,
+    benchmark,
     config,
     documents,
     fetch,
@@ -16,7 +17,18 @@ from cultural_events_rag.cli import (
     status,
 )
 
-GROUPS = (config, models, fetch, process, documents, index, status, analyze, search)
+GROUPS = (
+    config,
+    models,
+    fetch,
+    process,
+    documents,
+    index,
+    status,
+    analyze,
+    search,
+    benchmark,
+)
 
 
 def _parser() -> argparse.ArgumentParser:

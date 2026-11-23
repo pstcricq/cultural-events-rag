@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search benchmark test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -86,6 +86,11 @@ analyze: ## Show the filters of a question (Q="concert gratuit ce week-end")
 
 search: ## Search the events of a question (Q="...", ARGS="--mode hybrid --rerank")
 	$(call run,$(RUN) cultural-events-rag search "$(Q)" $(ARGS))
+
+##@ Evaluation (cultural-events-rag benchmark)
+
+benchmark: ## Check the benchmark and build its index when missing or outdated
+	$(call run,$(RUN) cultural-events-rag benchmark)
 
 ##@ Tests
 

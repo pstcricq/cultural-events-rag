@@ -20,7 +20,7 @@ from cultural_events_rag.indexing.store import IndexInfo
 from cultural_events_rag.models import Event
 from cultural_events_rag.settings import Settings
 
-COMMANDS = ("analyze", "status", "index", "search")
+COMMANDS = ("analyze", "status", "index", "search", "benchmark")
 CONNECTION = EngineConnectionError("connection refused")
 REFUSED = AuthenticationException(
     "refused",
@@ -85,7 +85,7 @@ def services(tmp_path: Path, event: Event, monkeypatch: pytest.MonkeyPatch) -> N
             f"cultural_events_rag.cli.{command}.get_settings", lambda: SETTINGS
         )
     monkeypatch.setattr("cultural_events_rag.cli.index.EVENTS_FILE", events)
-    for command in ("index", "search"):
+    for command in ("index", "search", "benchmark"):
         monkeypatch.setattr(
             f"cultural_events_rag.cli.{command}.make_embeddings", lambda _: fake
         )

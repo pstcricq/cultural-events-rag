@@ -1,0 +1,59 @@
+cultural-events-rag
+Copyright (c) 2026 Pierre St-Cricq
+
+The code of this repository, and the questions and reference answers of the
+benchmark (data/benchmark/questions.json), are under the MIT licence: see
+LICENSE. The events are not: they keep the licence of their source, below.
+
+
+Event data
+----------
+
+data/benchmark/events.jsonl holds public events of Toulouse published on
+OpenAgenda (https://openagenda.com), fetched through the OpenAgenda API and
+through its mirror on OpenDataSoft, the dataset "Public events - OpenAgenda"
+(https://public.opendatasoft.com/explore/dataset/evenements-publics-openagenda/).
+`make fetch` and `make process` fetch and write the same kind of data into
+data/raw/ and data/processed/, which are not committed.
+
+These events are published under the Licence Ouverte / Open Licence 2.0 of
+Etalab (https://www.etalab.gouv.fr/licence-ouverte-open-licence/), as
+OpenAgenda documents it
+(https://doc.openagenda.com/fr/article/des-agendas-en-donnees-ouvertes-opendata-1kv0rno/).
+
+The licensor of an event is the organization of the agenda it was created in,
+not OpenAgenda, which hosts and distributes the agendas. Each event of the
+file keeps its attribution:
+
+  - agenda_title: the agenda, its licensor;
+  - url: its canonical link on OpenAgenda;
+  - updated_at: the date of its last update at its source.
+
+The agendas: Bibliothèques de Toulouse; Musée des Augustins; Conservatoire à
+rayonnement régional de Toulouse; Musée des arts précieux Paul-Dupuy; SCARE -
+Syndicat des Cinémas d'Art, de Répertoire et d'Essai; Shotgun; Le Cratère;
+Journées européennes du patrimoine - Occitanie; Quai des savoirs; Monuments
+de Toulouse; Théâtre Jules-Julien.
+
+The events were modified: read into a common format, their HTML turned into
+text, those outside the city or of another period left out, each event kept
+once, the sessions of one activity published as separate events merged, and
+the set frozen for the benchmark (reference date: 2026-10-19). The contact
+details of the contributors of the agendas are not kept.
+
+This project is not affiliated with OpenAgenda nor with the organizers of the
+events, and is not endorsed by them.
+
+
+Images
+------
+
+The images of the events are neither kept nor shown: the events are read
+without them, and the application links to the page of each event.
+
+
+Personal data
+-------------
+
+The description of an event may name people (artists, speakers). Their
+reuse remains subject to the rules on personal data (GDPR).
