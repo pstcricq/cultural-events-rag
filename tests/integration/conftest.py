@@ -72,13 +72,16 @@ def elasticsearch_url() -> Iterator[str]:
 
 @pytest.fixture
 def settings(elasticsearch_url: str) -> Settings:
-    """The settings of the test Elasticsearch, an alias of its own per test."""
+    """The settings of the test Elasticsearch, an alias of its own per test, no
+    reranker."""
     return Settings(
         _env_file=None,
         elasticsearch_url=elasticsearch_url,
         elastic_user="elastic",
         elastic_password=SecretStr(PASSWORD),
         elasticsearch_index=f"events-test-{uuid.uuid4().hex[:8]}",
+        rerank_available=False,  # no model in the tests: a fake one where needed
+        llm_requests_per_minute=2,
     )
 
 

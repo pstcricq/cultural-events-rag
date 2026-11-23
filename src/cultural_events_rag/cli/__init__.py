@@ -6,6 +6,7 @@ import argparse
 
 from cultural_events_rag.cli import (
     analyze,
+    ask,
     benchmark,
     config,
     documents,
@@ -28,6 +29,7 @@ GROUPS = (
     status,
     analyze,
     search,
+    ask,
     benchmark,
     evaluate,
 )

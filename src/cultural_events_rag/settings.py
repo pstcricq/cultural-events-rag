@@ -50,6 +50,11 @@ class Settings(BaseSettings):
     # 3 GB of memory. false where it cannot: `models` then leaves its model out.
     rerank_available: bool | None = None
 
+    # The requests per minute the Mistral plan allows its chat models: 2 on
+    # the free plan. The calls are spaced to keep to it, rather than refused
+    # and retried.
+    llm_requests_per_minute: float | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:

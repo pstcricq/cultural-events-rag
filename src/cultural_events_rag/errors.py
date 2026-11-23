@@ -19,6 +19,10 @@ class RerankerError(RuntimeError):
     """The reranker cannot run: the rerank extra is not installed."""
 
 
+class GenerationError(RuntimeError):
+    """The model gave no usable answer."""
+
+
 class MissingModelError(RuntimeError):
     """A model of Hugging Face run on this machine is not downloaded: every
     command but ``models`` runs offline."""

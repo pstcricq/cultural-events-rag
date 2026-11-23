@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search benchmark eval-retrieval test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search ask benchmark eval-retrieval test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -22,8 +22,10 @@ export HF_HUB_OFFLINE := 1
 # docker compose reads compose.yaml and .env on its own.
 COMPOSE := docker compose
 
+# The targets of a command take its options in ARGS: ARGS=--help lists them.
 help: ## Show this help
-	awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m\n\n"} \
+	awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m [Q=...] [ARGS=...]\n"; \
+		printf "ARGS=--help after a target lists every option of its command\n\n"} \
 		/^[a-zA-Z0-9_-]+:.*##/ { printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2 } \
 		/^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) }' $(MAKEFILE_LIST)
 	echo
@@ -81,18 +83,23 @@ status: ## Show the index served, and whether the code still builds it the same 
 
 ##@ Retrieval (cultural-events-rag analyze, search)
 
-analyze: ## Show the filters of a question (Q="concert gratuit ce week-end")
-	$(call run,$(RUN) cultural-events-rag analyze "$(Q)" $(ARGS))
+analyze: ## Show the filters of a question (Q="concert gratuit ce week-end", ARGS="--today 2026-10-15")
+	$(call run,$(RUN) cultural-events-rag analyze $(ARGS) "$(Q)")
 
 search: ## Search the events of a question (Q="...", ARGS="--mode hybrid --rerank")
-	$(call run,$(RUN) cultural-events-rag search "$(Q)" $(ARGS))
+	$(call run,$(RUN) cultural-events-rag search $(ARGS) "$(Q)")
+
+##@ Generation (cultural-events-rag ask)
+
+ask: ## Answer a question from the events found (Q="...", ARGS="--no-rerank")
+	$(call run,$(RUN) cultural-events-rag ask $(ARGS) "$(Q)")
 
 ##@ Evaluation (cultural-events-rag benchmark, evaluate)
 
 benchmark: ## Check the benchmark and build its index when missing or outdated
 	$(call run,$(RUN) cultural-events-rag benchmark)
 
-eval-retrieval: ## Compare the configurations of the search on the benchmark
+eval-retrieval: ## Compare the configurations of the search on the benchmark (ARGS="--no-rerank --yes")
 	$(call run,$(RUN) cultural-events-rag evaluate retrieval $(ARGS))
 
 ##@ Tests

@@ -1,6 +1,7 @@
 """What each command says when a service fails, the services replaced: no
-Elasticsearch, a refused password, an embedding request refused by Mistral,
-no index; and what index reports of the indices it replaced."""
+Elasticsearch, a refused password, an embedding or a generation request
+refused by Mistral, no index; and what index reports of the indices it
+replaced."""
 
 from pathlib import Path
 from typing import Any
@@ -15,12 +16,15 @@ from pydantic import SecretStr
 
 from cultural_events_rag.cli import main
 from cultural_events_rag.collection.files import save_events
+from cultural_events_rag.errors import GenerationError
 from cultural_events_rag.indexing.build import BuildReport, index_signature
 from cultural_events_rag.indexing.store import IndexInfo
 from cultural_events_rag.models import Event
+from cultural_events_rag.retrieval.filters import SearchFilters
+from cultural_events_rag.retrieval.search import Retrieval
 from cultural_events_rag.settings import Settings
 
-COMMANDS = ("analyze", "status", "index", "search", "benchmark")
+COMMANDS = ("analyze", "status", "index", "search", "ask", "benchmark")
 CONNECTION = EngineConnectionError("connection refused")
 REFUSED = AuthenticationException(
     "refused",
@@ -40,6 +44,8 @@ SETTINGS = Settings(
     elastic_user="elastic",
     elastic_password=SecretStr("password"),
     mistral_api_key=SecretStr("key"),
+    rerank_available=False,
+    llm_requests_per_minute=2,
 )
 
 
@@ -85,9 +91,9 @@ def services(tmp_path: Path, event: Event, monkeypatch: pytest.MonkeyPatch) -> N
             f"cultural_events_rag.cli.{command}.get_settings", lambda: SETTINGS
         )
     monkeypatch.setattr("cultural_events_rag.cli.index.EVENTS_FILE", events)
-    for command in ("index", "search", "benchmark"):
+    for module in ("cli.index", "cli.search", "cli.benchmark", "assistant"):
         monkeypatch.setattr(
-            f"cultural_events_rag.cli.{command}.make_embeddings", lambda _: fake
+            f"cultural_events_rag.{module}.make_embeddings", lambda _: fake
         )
 
 
@@ -117,7 +123,7 @@ def test_each_command_explains_an_elasticsearch_failure(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     _client(monkeypatch, command, Failing(error))
-    asked = command in ("analyze", "search")
+    asked = command in ("analyze", "search", "ask")
     question = ["Un concert ce soir ?"] if asked else []
     mode = ["--mode", "hybrid"] if command == "search" else []
 
@@ -188,3 +194,68 @@ def test_search_explains_a_refused_embedding(
     assert main(["search", "Un concert", "--mode", "hybrid"]) == 1
 
     assert "FAIL embedding the question: " in capsys.readouterr().err
+
+
+@pytest.fixture
+def served(monkeypatch: pytest.MonkeyPatch) -> None:
+    """An index served, built with the settings, behind a client never
+    reached."""
+    _client(monkeypatch, "ask", Failing(CONNECTION))
+    info = IndexInfo(name="events-1", count=1, meta=index_signature())
+    monkeypatch.setattr(
+        "cultural_events_rag.retrieval.search.served_index", lambda *_: info
+    )
+
+
+def test_ask_without_index(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    _client(monkeypatch, "ask", Failing(CONNECTION))
+    monkeypatch.setattr(
+        "cultural_events_rag.retrieval.search.served_index", lambda *_: None
+    )
+
+    assert main(["ask", "Un concert"]) == 1
+
+    assert "FAIL no index behind events: run make index" in capsys.readouterr().err
+
+
+def test_ask_explains_a_refused_embedding(
+    served: None, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def refused(*args: Any, **kwargs: Any) -> None:
+        raise refusal("embeddings")
+
+    monkeypatch.setattr("cultural_events_rag.assistant.retrieve", refused)
+
+    assert main(["ask", "Un concert", "--no-rerank"]) == 1
+
+    assert "FAIL embedding the question: HTTP 401" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    ("error", "message"),
+    [
+        (refusal("chat/completions"), "FAIL generating the answer: HTTP 401"),
+        (GenerationError("no structured answer"), "FAIL no structured answer"),
+    ],
+    ids=["refused", "unstructured"],
+)
+def test_ask_explains_a_failed_generation(
+    error: Exception,
+    message: str,
+    served: None,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    found = Retrieval(filters=SearchFilters(), matches=[])
+    monkeypatch.setattr("cultural_events_rag.assistant.retrieve", lambda *_: found)
+
+    def failed(*args: Any, **kwargs: Any) -> None:
+        raise error
+
+    monkeypatch.setattr("cultural_events_rag.assistant.generate", failed)
+
+    assert main(["ask", "Un concert", "--no-rerank"]) == 1
+
+    assert message in capsys.readouterr().err
