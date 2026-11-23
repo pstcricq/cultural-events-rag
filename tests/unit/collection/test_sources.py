@@ -1,5 +1,5 @@
-"""The requests each source sends, its pagination, and the errors of a call:
-retried when transient, a SourceError in the end."""
+"""Tests of the sources: their requests, their pagination, and the errors of a
+call, retried when transient."""
 
 from collections.abc import Callable
 from datetime import UTC, datetime

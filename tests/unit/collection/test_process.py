@@ -1,5 +1,5 @@
-"""The three steps chained: the raw events of a source parsed by its parser,
-cleaned, the sessions of one activity merged, every drop counted."""
+"""Tests of the processing: parsing, cleaning and merging chained, every drop
+counted."""
 
 from datetime import UTC, datetime
 from typing import Any

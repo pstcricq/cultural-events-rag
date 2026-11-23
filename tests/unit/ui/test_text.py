@@ -1,6 +1,5 @@
-"""The French texts of the web interface: errors, the badges of an event
-(price, delay, audience), its dates beside the tile of its day, waiting time
-and the filters read in a question."""
+"""Tests of the French texts of the web interface: errors, badges, dates, the
+waiting message and the filters."""
 
 from datetime import UTC, date, datetime
 

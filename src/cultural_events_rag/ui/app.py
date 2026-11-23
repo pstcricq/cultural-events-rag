@@ -1,11 +1,9 @@
-"""The web interface (Streamlit): a chat with the assistant, through the API.
+"""The Streamlit page: a chat with the assistant, through the API.
 
-    make api
-    make ui      # http://127.0.0.1:8501
+    uv run streamlit run src/cultural_events_rag/ui/app.py
 
-Each question is answered on its own, as the API does: the chat only keeps
-the previous answers on screen.
-"""
+Each question is answered on its own; the chat only keeps the previous answers
+on screen."""
 
 import re
 import time
@@ -39,14 +37,12 @@ from cultural_events_rag.ui.text import (
     when,
 )
 
-# The width of the sidebar, in pixels: wide enough for its texts to read as
-# lines, not as a block.
+# The width of the sidebar, in pixels.
 SIDEBAR_WIDTH = 400
 
-# The pause between two words of an answer written as it appears, in seconds.
+# The pause between two words of a streamed answer, in seconds.
 STREAM_DELAY = 0.02
-# The colours of the tile of a day: those of .streamlit/config.toml, the
-# primary one on the secondary background.
+# The colours of the day tile, from the theme of the page.
 TILE_STYLE = (
     "background:#FBF1E8;color:#9A3412;border-radius:0.75rem;text-align:center;"
     "padding:0.5rem 0;max-width:4.5rem;line-height:1.2"
@@ -70,8 +66,8 @@ class Message:
 
 @st.cache_resource
 def get_client() -> ApiClient:
-    """The client of the API at API_URL: unset, an API unreachable, its reason
-    shown."""
+    """Return the client of the API at ``API_URL``; raise ``ApiError`` when it
+    is unset."""
     url = get_settings().api_url
     if not url:
         raise ApiError(None, "API_URL is not set: add it to .env")
@@ -93,20 +89,20 @@ def today() -> date:
 
 
 def markdown(text: str) -> str:
-    """Plain text shown as Markdown: a "$" would start a formula."""
+    """Escape ``$`` in plain text shown as Markdown, which would start a formula."""
     return text.replace("$", r"\$")
 
 
 def words(text: str) -> Iterator[str]:
-    """The words of ``text``, each with the spaces before it, one by one."""
+    """Yield the words of ``text`` one by one, each with the spaces before it."""
     for word in re.findall(r"\s*\S+", text):
         time.sleep(STREAM_DELAY)
         yield word
 
 
 def render_day_tile(event: RecommendedEvent) -> None:
-    """Its first slot in the period of the question: its day large, then its
-    time. Only texts of the interface in the HTML, none of the event."""
+    """Show the tile of the first slot in the period of the question: its day,
+    large, then its time. The HTML holds no text of the event."""
     weekday, day, month, time = day_tile(event.next_slot)
     st.html(
         f'<div style="{TILE_STYLE}"><div style="font-size:0.8rem">{weekday}</div>'
@@ -117,7 +113,7 @@ def render_day_tile(event: RecommendedEvent) -> None:
 
 
 def badge(text: str, color: str, icon: str) -> str:
-    """A badge of Streamlit Markdown, its text kept from closing it."""
+    """Return a Streamlit Markdown badge, its text escaped."""
     text = markdown(text).replace("[", r"\[").replace("]", r"\]")
     return f":{color}-badge[{icon} {text}]"
 
@@ -132,8 +128,8 @@ def render_event(event: RecommendedEvent, today: date) -> None:
 
 
 def render_event_details(event: RecommendedEvent, today: date) -> None:
-    """Its title, its badges, its slots or its dates, and its place, one per
-    line, close together; then its link across the whole width."""
+    """Show the title, the badges, the slots or dates, and the place, one per
+    line, then the link across the whole width."""
     label, color = price_badge(event.is_free)
     badges = [badge(label, color, ":material/euro_symbol:")]
     if soon := delay(event.next_slot, today):
@@ -175,8 +171,8 @@ def render_response(response: AskResponse, *, stream: bool = False) -> None:
 
 
 def render(message: Message, *, stream: bool = False) -> None:
-    """A message of the chat; with ``stream``, an answer is written as it
-    appears, word by word, the previous ones at once."""
+    """Show a message of the chat; with ``stream``, an answer is written word
+    by word."""
     with st.chat_message(message.role, avatar=AVATARS[message.role]):
         if message.response:
             render_response(message.response, stream=stream)
@@ -196,13 +192,12 @@ def answer(question: str, day: date | None) -> Message:
 
 
 def note(text: str) -> None:
-    """A small line of the sidebar in the colour of the text: a caption is too
-    pale on its background."""
+    """Show a small line of the sidebar in the colour of the text."""
     st.markdown(f":small[{markdown(text)}]")
 
 
 def render_health() -> bool:
-    """The state of the assistant; whether the API answers."""
+    """Show the state of the assistant, or that the API does not answer."""
     try:
         health = get_health()
     except ApiError as exc:
@@ -245,8 +240,8 @@ def render_metadata(metadata: MetadataResponse) -> None:
 
 
 def sidebar() -> tuple[MetadataResponse | None, date | None]:
-    """The state of the assistant and the options: the metadata (None when the
-    API cannot give them) and the day chosen to ask on, if any."""
+    """Show the sidebar; return the metadata (None when the API cannot give
+    them) and the day chosen to ask on, if any."""
     metadata = None
     with st.sidebar:
         st.header("Assistant culturel", anchor=False)

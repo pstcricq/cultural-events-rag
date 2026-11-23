@@ -1,10 +1,8 @@
-"""compose.yaml writes no value an environment sets: every Elastic image at
-ELASTIC_VERSION (Kibana refuses an Elasticsearch of another version), set in
-.env.example, the Python client on its major version; the API is given every
-setting it reads, each written and required; one image for the application,
-built by compose.dev.yaml on this machine only, Elasticsearch run here with
-the profile search only, every port on 127.0.0.1 only; and the image builds with
-the uv pinned by the project."""
+"""Tests of compose.yaml: every value from the environment and required, the
+Elastic images on ``ELASTIC_VERSION`` and the Python client on its major
+version, every setting of the API given, one application image built on this
+machine only, Elasticsearch behind the profile ``search``, the ports on
+127.0.0.1, and the uv version of the image."""
 
 import re
 from typing import Any
@@ -82,7 +80,7 @@ def test_the_application_runs_from_one_image_built_on_this_machine_only() -> Non
     assert len(images) == 1
     assert images.pop().startswith("${APP_IMAGE:?")
     assert not any("build" in service for service in services.values())
-    # The build, for this machine only: a server reads compose.yaml alone.
+    # The build, for this machine only.
     assert _services("compose.dev.yaml") == {"api": {"build": "."}}
     makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
     assert (
@@ -98,8 +96,8 @@ def test_elasticsearch_runs_here_with_the_profile_search_only() -> None:
     elastic = {"elasticsearch", "kibana-setup", "kibana"}
     assert {name for name, s in services.items() if "profiles" in s} == elastic
     assert all(services[name]["profiles"] == ["search"] for name in elastic)
-    # The API waits for it when it runs here, and reaches it at an address of
-    # its own: without the profile, an Elasticsearch run elsewhere.
+    # The API waits for Elasticsearch when it runs in compose, and reaches it
+    # at its own address.
     assert api["depends_on"]["elasticsearch"]["required"] is False
     url = api["environment"]["ELASTICSEARCH_URL"]
     assert url.startswith("${API_ELASTICSEARCH_URL:?")

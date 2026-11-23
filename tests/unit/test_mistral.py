@@ -1,5 +1,5 @@
-"""The Mistral models made from the settings: the embedding model with the
-tokenizer of Hugging Face, a missing tokenizer or key refused clearly."""
+"""Tests of the Mistral models built from the settings, of the tokenizer, and
+of the pacer."""
 
 import asyncio
 from typing import Any
@@ -25,7 +25,7 @@ TOKENIZER = Tokenizer(models.WordLevel({"[UNK]": 0}, unk_token="[UNK]"))
 
 @pytest.fixture(autouse=True)
 def offline_tokenizer(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Never Hugging Face in unit tests: a tokenizer at hand."""
+    """Return a local tokenizer: no Hugging Face in unit tests."""
     monkeypatch.setattr(
         "cultural_events_rag.mistral.Tokenizer.from_pretrained",
         lambda *_args: TOKENIZER,
@@ -80,7 +80,7 @@ def test_mistral_embeddings_configured_from_settings() -> None:
     assert isinstance(embeddings, MistralAIEmbeddings)
     assert embeddings.model == "mistral-embed"
     assert embeddings.mistral_api_key.get_secret_value() == "secret"
-    assert embeddings.max_retries is None  # retries are handled (visibly) by the caller
+    assert embeddings.max_retries is None  # retries are left to the caller
     assert embeddings.tokenizer is TOKENIZER
 
 

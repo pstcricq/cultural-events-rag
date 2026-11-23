@@ -1,32 +1,31 @@
-"""Every error this package raises."""
+"""The errors raised by the package."""
 
 
 class SourceError(RuntimeError):
-    """A call to a source of events failed for good: retries spent, or an
-    error not worth retrying."""
+    """A call to a source of events failed after its retries, or with an error
+    that is not retried."""
 
 
 class MissingSettingError(RuntimeError):
-    """A setting the command needs, a key or a password, is not set."""
+    """A setting the command needs is not set."""
 
 
 class IncompleteIndexError(RuntimeError):
-    """Some events have no document in the index just built: the alias stays
-    on the index it served."""
+    """Some events have no document in the new index; the alias is not moved."""
 
 
 class RerankerError(RuntimeError):
-    """The reranker cannot run: the rerank extra is not installed."""
+    """The reranker cannot run: the ``rerank`` extra is not installed."""
 
 
 class JudgeError(RuntimeError):
-    """The judge of the answers cannot run: the eval extra is not installed."""
+    """The judge cannot run: the ``eval`` extra is not installed."""
 
 
 class GenerationError(RuntimeError):
-    """The model gave no usable answer."""
+    """The chat model gave no usable answer."""
 
 
 class MissingModelError(RuntimeError):
-    """A model of Hugging Face run on this machine is not downloaded: every
-    command but ``models`` runs offline."""
+    """A Hugging Face model is not in the local cache. Every command but
+    ``models`` runs offline."""

@@ -1,8 +1,6 @@
-"""The ``cultural-events-rag evaluate`` commands, their reports written into
-``reports/``: ``retrieval``, the questions of the benchmark searched by each
-configuration, the events found compared with those judged relevant;
-``generation``, the questions answered by the configuration kept, the events
-the answers recommend compared with those judged relevant."""
+"""The ``evaluate`` commands, their reports written into ``reports/``:
+``retrieval`` compares the search configurations on the benchmark;
+``generation`` evaluates the answers of the assistant."""
 
 import argparse
 import asyncio
@@ -80,13 +78,13 @@ from cultural_events_rag.retrieval.search import SEARCH_K
 from cultural_events_rag.retry import describe
 from cultural_events_rag.settings import Settings, get_settings
 
-if TYPE_CHECKING:  # Ragas, the eval extra, only to judge
+if TYPE_CHECKING:  # the eval extra, only to judge
     from cultural_events_rag.evaluation.judge import RagasJudge
 
 
 def _benchmark(settings: Settings) -> tuple[Elasticsearch, str | None]:
-    """A client of Elasticsearch, and why the index of the benchmark cannot be
-    used: None when it can."""
+    """Return an Elasticsearch client and why the benchmark index cannot be
+    used, or None."""
     client = make_elastic_client(settings)
     events = load_events(BENCHMARK_EVENTS)
     reason = rebuild_reason(client, events, settings, BENCHMARK_ALIAS)
@@ -96,7 +94,7 @@ def _benchmark(settings: Settings) -> tuple[Elasticsearch, str | None]:
 
 
 def _failure(exc: Exception, url: str | None) -> str:
-    """What a command says when a service fails."""
+    """Return the message of a command when a service fails."""
     if isinstance(exc, EngineConnectionError):
         return f"no Elasticsearch at {url}: run make docker-up"
     if isinstance(exc, AuthenticationException):
@@ -106,13 +104,13 @@ def _failure(exc: Exception, url: str | None) -> str:
     return str(exc)
 
 
-# A question reranked on this machine, its 20 candidates read by the
-# cross-encoder: about a second.
+# The time to rerank one question on this machine, in seconds.
 RERANK_SECONDS = 1.0
 
 
 def _go(estimate: str, yes: bool) -> bool:
-    """Whether to run, its duration shown first: asked unless ``yes``."""
+    """Return whether to run, after showing the estimated duration; asked
+    unless ``yes``."""
     print(f"Estimated time: about {estimate}.")
     return yes or confirm("Run it?")
 
@@ -130,7 +128,7 @@ FAILURES = (
 
 
 def _judge(settings: Settings, pacer: Pacer) -> "RagasJudge":
-    """The Ragas judge, its calls spaced by ``pacer``."""
+    """Return the Ragas judge, its calls spaced by ``pacer``."""
     try:
         from cultural_events_rag.evaluation.judge import RagasJudge
     except ImportError as exc:
@@ -139,7 +137,7 @@ def _judge(settings: Settings, pacer: Pacer) -> "RagasJudge":
 
 
 def _context(settings: Settings, questions: int, asked_on: date) -> list[str]:
-    """The lines that head a report: the run, the benchmark and the index."""
+    """Return the header lines of a report: the run, the benchmark and the index."""
     events = len(load_events(BENCHMARK_EVENTS))
     return [
         f"Run: {datetime.now(UTC):%Y-%m-%d %H:%M} UTC",
@@ -156,7 +154,7 @@ def _context(settings: Settings, questions: int, asked_on: date) -> list[str]:
 
 
 def _write(name: str, markdown: str, data: str) -> tuple[Path, Path]:
-    """The report ``name`` written into reports/, as Markdown and JSON."""
+    """Write the report ``name`` into ``reports/``, as Markdown and JSON."""
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     page, details = REPORTS_DIR / f"{name}.md", REPORTS_DIR / f"{name}.json"
     page.write_text(markdown, encoding="utf-8")
@@ -165,8 +163,8 @@ def _write(name: str, markdown: str, data: str) -> tuple[Path, Path]:
 
 
 def _reranker_model(settings: Settings, no_rerank: bool) -> str | None:
-    """The reranker of the evaluation: none when asked so or when this machine
-    cannot run it (RERANK_AVAILABLE)."""
+    """Return the reranker of the evaluation: none when not asked for, or when
+    the machine cannot run it (``RERANK_AVAILABLE``)."""
     if no_rerank:
         return None
     if settings.rerank_available is None:
@@ -248,7 +246,7 @@ def _generation(args: argparse.Namespace) -> int:
         if not _go(estimate, args.yes):
             print("Nothing run")
             return 0
-        # The LLM and the judge share the quota of the chat models.
+        # The chat model and the judge share the quota of the plan.
         pacer = Pacer(per_minute)
         assistant = load_assistant(
             settings,
@@ -303,7 +301,7 @@ def _generation(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag evaluate`` to the cultural-events-rag command."""
+    """Add the ``evaluate`` command to the parser of ``cultural-events-rag``."""
     evaluate_ = commands.add_parser(
         "evaluate", help="measure the assistant on the benchmark"
     )

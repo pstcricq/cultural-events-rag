@@ -1,5 +1,5 @@
-"""Chunks within their size, cut at the most natural boundary, overlapping,
-covering the whole text."""
+"""Tests of the chunking: chunks within their size, cut at natural boundaries,
+overlapping, covering the whole text."""
 
 from itertools import pairwise
 

@@ -1,28 +1,21 @@
-# The services of the application, the same file in every environment: their
-# values from the environment, then from .env (.env.example lists them), none
-# written here, every one required: a value forgotten stops compose, and
-# names itself, rather than leave the code to its default. The ports are
-# published on 127.0.0.1, this machine only (a proxy in front elsewhere). The
-# application runs from one image, APP_IMAGE:APP_TAG. Elasticsearch and Kibana
-# run here only with the profile search; without it, the API reaches an
-# Elasticsearch run elsewhere, at API_ELASTICSEARCH_URL. On this machine, make
-# reads this file with compose.dev.yaml, which builds the image from this
-# checkout, and with the profile search: `make docker-up` builds the image
-# again when the code changed, starts the services and waits until they are
-# healthy. A server runs docker compose on this file alone, pulling the image
-# from its registry: `docker compose --profile search up -d`, or without the
-# profile for an Elasticsearch run elsewhere.
+# The services of the application, the same file in every environment. Every
+# value comes from the environment, then from .env, and is required. The ports
+# are published on 127.0.0.1. The application runs from one image,
+# APP_IMAGE:APP_TAG. Elasticsearch and Kibana run only with the profile search;
+# without it, the API reaches the Elasticsearch at API_ELASTICSEARCH_URL.
+#
+# On this machine: make docker-up (with compose.dev.yaml and the profile
+# search). On a server: docker compose --profile search up -d, or without the
+# profile for an external Elasticsearch.
 
 name: cultural-events-rag
 
 services:
-  # The search engine: the vector and lexical index of the events. One node,
-  # with the elastic user and ELASTIC_PASSWORD, over plain HTTP inside the
-  # network of compose: TLS and a dedicated user in production.
-  # ELASTIC_PASSWORD is only read at the first start: to change it later, run
-  # make docker-reset (the index is lost, make index builds it again).
-  # ELASTIC_VERSION is the version of every Elastic image: the Python client in
-  # pyproject.toml must stay on the same major version.
+  # The search engine: one node, the elastic user with ELASTIC_PASSWORD, plain
+  # HTTP inside the compose network. ELASTIC_PASSWORD is read at the first
+  # start only (make docker-reset deletes the data to change it).
+  # ELASTIC_VERSION is the version of every Elastic image and the major version
+  # of the Python client.
   elasticsearch:
     profiles: [search]
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:?set ELASTIC_VERSION in .env or in the environment}
@@ -31,26 +24,25 @@ services:
       ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:?set ELASTIC_PASSWORD in .env or in the environment}
       xpack.security.enabled: "true"
       xpack.security.http.ssl.enabled: "false"
-      # Machine learning is not used, and reserves memory.
+      # Machine learning off.
       xpack.ml.enabled: "false"
       ES_JAVA_OPTS: -Xms1g -Xmx1g
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
-    # Reached by make index, make search and the tests from this machine.
+    # Published for the commands and the tests run on this machine.
     ports:
       - "127.0.0.1:9200:9200"
     healthcheck:
-      # The password is read from the variable of the container, not written.
+      # The password is read from the variable of the container.
       test: ["CMD-SHELL", "curl -fsS -u \"elastic:$$ELASTIC_PASSWORD\" 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s'"]  # gitleaks:allow
       interval: 10s
       timeout: 10s
       start_period: 60s
       retries: 10
 
-  # The web interface of Elasticsearch, to browse the index and try queries:
-  # http://127.0.0.1:5601, signed in as elastic with ELASTIC_PASSWORD. Kibana
-  # itself reaches Elasticsearch as its built-in user kibana_system, whose
-  # password kibana-setup sets to KIBANA_PASSWORD at each start.
+  # Kibana, on http://127.0.0.1:5601, signed in as elastic with
+  # ELASTIC_PASSWORD. Kibana itself signs in as kibana_system, whose password
+  # kibana-setup sets to KIBANA_PASSWORD at each start.
   kibana-setup:
     profiles: [search]
     image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:?set ELASTIC_VERSION in .env or in the environment}
@@ -60,7 +52,7 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-    # The passwords are read from the variables of the container, not written.
+    # The passwords are read from the variables of the container.
     command: ["bash", "-c", "until curl -fsS -o /dev/null -u \"elastic:$$ELASTIC_PASSWORD\" -H 'Content-Type: application/json' -X POST http://elasticsearch:9200/_security/user/kibana_system/_password -d \"{\\\"password\\\":\\\"$$KIBANA_PASSWORD\\\"}\"; do sleep 2; done; echo 'kibana_system password set'"]  # gitleaks:allow
 
   kibana:
@@ -84,28 +76,25 @@ services:
       start_period: 90s
       retries: 12
 
-  # The models of Hugging Face the API runs (the Mistral tokenizer and the
-  # reranker, about 2 GB), downloaded once into their volume by
-  # `cultural-events-rag models`, then read offline by the API.
+  # The Hugging Face models of the API (the Mistral tokenizer and the reranker,
+  # about 2 GB), downloaded once into their volume.
   models:
     image: ${APP_IMAGE:?set APP_IMAGE in .env or in the environment}:${APP_TAG:?set APP_TAG in .env or in the environment}
     environment:
       HF_HUB_OFFLINE: "0"
-      # false, no reranker to download.
+      # false: no reranker to download.
       RERANK_AVAILABLE: ${RERANK_AVAILABLE:?set RERANK_AVAILABLE in .env or in the environment, true or false}
     command: ["cultural-events-rag", "models"]
     volumes:
       - huggingface:/models
 
-  # The REST API of the assistant, its documentation at /docs. Elasticsearch
-  # reached at API_ELASTICSEARCH_URL. Its health is that of the server: /health
-  # answers 503 until an index is built (make index from this machine, or POST
-  # /rebuild), or while Elasticsearch cannot be reached, with the reason.
+  # The REST API, its documentation at /docs. /health answers 503, with the
+  # reason, until an index is built or while Elasticsearch cannot be reached.
   api:
     image: ${APP_IMAGE:?set APP_IMAGE in .env or in the environment}:${APP_TAG:?set APP_TAG in .env or in the environment}
     environment:
       # http://elasticsearch:9200 with the profile search, another address
-      # without: not ELASTICSEARCH_URL, the address of make on this machine.
+      # without.
       ELASTICSEARCH_URL: ${API_ELASTICSEARCH_URL:?set API_ELASTICSEARCH_URL in .env or in the environment}
       # What it cannot run without.
       MISTRAL_API_KEY: ${MISTRAL_API_KEY:?set MISTRAL_API_KEY in .env or in the environment}
@@ -114,11 +103,10 @@ services:
       ELASTICSEARCH_INDEX: ${ELASTICSEARCH_INDEX:?set ELASTICSEARCH_INDEX in .env or in the environment}
       RERANK_AVAILABLE: ${RERANK_AVAILABLE:?set RERANK_AVAILABLE in .env or in the environment, true or false}
       LLM_REQUESTS_PER_MINUTE: ${LLM_REQUESTS_PER_MINUTE:?set LLM_REQUESTS_PER_MINUTE in .env or in the environment}
-      # What POST /rebuild collects: from the official API (OpenDataSoft is for
-      # a laptop without a key), and how many events.
+      # What POST /rebuild collects.
       OPENAGENDA_API_KEY: ${OPENAGENDA_API_KEY:?set OPENAGENDA_API_KEY in .env or in the environment}
       MAX_EVENTS: ${MAX_EVENTS:?set MAX_EVENTS in .env or in the environment, a number or all}
-      # The key POST /rebuild asks for.
+      # The key of POST /rebuild.
       ADMIN_API_KEY: ${ADMIN_API_KEY:?set ADMIN_API_KEY in .env or in the environment}
     volumes:
       - huggingface:/models
@@ -126,7 +114,7 @@ services:
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
-      # Waited for with the profile search, left out without.
+      # Waited for with the profile search, ignored without.
       elasticsearch:
         condition: service_healthy
         required: false
@@ -148,8 +136,8 @@ services:
       start_period: 60s
       retries: 6
 
-  # The web interface, a client of the API reached by its name: the same
-  # image, Streamlit in it, and no secret, it needs none.
+  # The web interface, a client of the API reached by its service name; the
+  # same image, no secret.
   ui:
     image: ${APP_IMAGE:?set APP_IMAGE in .env or in the environment}:${APP_TAG:?set APP_TAG in .env or in the environment}
     environment:

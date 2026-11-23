@@ -1,6 +1,5 @@
-"""The client of the API, against a fake API (httpx.MockTransport): what it
-sends, what it reads, and the error it raises when the API refuses or does
-not answer."""
+"""Tests of the API client on a fake API (httpx.MockTransport): its requests,
+its responses, and its errors."""
 
 import json
 from collections.abc import Callable

@@ -1,6 +1,5 @@
-"""The search before any Elasticsearch: the filter clauses, the entries
-grouped by event, the rankings fused by RRF, and the events kept in each mode,
-from canned hits."""
+"""Tests of the search without Elasticsearch: the filter clauses, the grouping
+by event, RRF, and the events of each mode."""
 
 from datetime import date
 from typing import Any

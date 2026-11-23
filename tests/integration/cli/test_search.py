@@ -1,6 +1,6 @@
-"""cultural-events-rag search end to end against a real Elasticsearch, with a
-fake embedding model and a fake reranker: the events found, reranked, and an
-index built otherwise or a missing rerank extra refused."""
+"""Tests of the ``search`` command against a real Elasticsearch, with a fake
+embedding model and a fake reranker: the events found and reranked, an outdated
+index and a missing rerank extra refused."""
 
 import sys
 from collections.abc import Sequence

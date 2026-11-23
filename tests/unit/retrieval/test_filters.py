@@ -1,5 +1,5 @@
-"""The filters of a search: events from today unless the question is about the
-past, and the line that describes them."""
+"""Tests of the filters: the start at today unless the question is about the
+past, and their description."""
 
 from datetime import date
 

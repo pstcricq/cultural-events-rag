@@ -1,5 +1,4 @@
-"""The ``cultural-events-rag process`` command: the raw events of the source
-turned into the events of the common format."""
+"""The ``process`` command: the raw events turned into events of the common format."""
 
 import argparse
 import sys
@@ -41,7 +40,7 @@ def _process(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag process`` to the cultural-events-rag command."""
+    """Add the ``process`` command to the parser of ``cultural-events-rag``."""
     process = commands.add_parser(
         "process", help="turn the raw events into the events of the common format"
     )

@@ -1,5 +1,4 @@
-"""The ``cultural-events-rag ask`` command: the answer of the assistant to a
-question, written by the LLM from the events of the index served, and the
+"""The ``ask`` command: the answer of the assistant to a question and the
 events it recommends."""
 
 import argparse
@@ -33,8 +32,8 @@ WIDTH = 88
 
 
 def _show(answer: Answer) -> None:
-    """The answer, then each event it recommends: its title, its place, slot
-    and price, and its link."""
+    """Print the answer, then each event it recommends: its title, place, slot,
+    price and link."""
     filters = answer.retrieval.filters
     for paragraph in answer.text.splitlines():
         print(textwrap.fill(paragraph, WIDTH) if paragraph else "")
@@ -103,7 +102,7 @@ def _ask(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag ask`` to the cultural-events-rag command."""
+    """Add the ``ask`` command to the parser of ``cultural-events-rag``."""
     ask = commands.add_parser("ask", help="the answer of the assistant to a question")
     ask.add_argument("question", type=question, help="a question in French")
     ask.add_argument("--no-rerank", action="store_true", help="without the reranker")

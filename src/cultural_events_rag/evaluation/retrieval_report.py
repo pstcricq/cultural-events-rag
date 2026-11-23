@@ -1,10 +1,6 @@
-"""The report of the evaluation of the search: a Markdown page to read, every
-configuration side by side and none put first, and a JSON file of every
-ranking, to compare two runs question by question.
-
-In each row of a table of scores, the best one is in bold, unless they are
-all the same.
-"""
+"""The report of the evaluation of the search: a Markdown page with every
+configuration side by side, and a JSON file of every ranking. The best score of
+each row is in bold, unless all are equal."""
 
 import json
 from collections.abc import Mapping, Sequence
@@ -34,9 +30,8 @@ METRICS = {
     f"recall@{CANDIDATES}": f"Recall@{CANDIDATES}",
 }
 
-# Each metric of a question, its formula in LaTeX (rendered by GitHub and most
-# Markdown viewers) and what it says. In a table: no | inside a formula, the
-# absolute value written \lvert \rvert.
+# Each metric of a question: its formula in LaTeX and its meaning. In a table,
+# no | inside a formula: the absolute value is written \lvert \rvert.
 BOLD = (
     "In bold, the best score of each row. A row where every configuration "
     "scores the same has none: no configuration does better there."
@@ -96,12 +91,12 @@ TITLE_WIDTH = 40
 
 
 def _score(value: float) -> str:
-    """A score of the reranker: out of scope, it is often below 0.01."""
+    """Return a reranker score as a cell; out of scope, it is often below 0.01."""
     return f"{value:.3f}"
 
 
 def configurations(results: Results) -> list[str]:
-    """The metrics of each configuration, the best of each metric in bold."""
+    """Return the metrics of each configuration, the best of each metric in bold."""
     names = [config.name for config in results]
     summaries = [summary(found) for found in results.values()]
     columns = [bold_best([s[metric] for s in summaries]) for metric in METRICS]
@@ -110,8 +105,8 @@ def configurations(results: Results) -> list[str]:
 
 
 def comparison(results: Results) -> list[str]:
-    """For each pair of configurations, the questions where the one of the row
-    does better than the one of the column on Recall@SHOWN."""
+    """Return, for each pair of configurations, the questions where the row
+    does better than the column on Recall@SHOWN."""
     configs = list(results)
     rows = [
         [
@@ -127,7 +122,7 @@ def comparison(results: Results) -> list[str]:
 
 
 def by_category(results: Results, metric: str) -> list[str]:
-    """``metric`` by category of question, one column per configuration."""
+    """Return ``metric`` by category of question, one column per configuration."""
     questions = in_scope(next(iter(results.values())))
     categories = list(dict.fromkeys(result.question.category for result in questions))
     rows = []
@@ -144,7 +139,7 @@ def by_category(results: Results, metric: str) -> list[str]:
 
 
 def each_question(results: Results) -> list[str]:
-    """Recall@SHOWN of each question with relevant events, by configuration."""
+    """Return Recall@SHOWN of each question with relevant events, by configuration."""
     first = in_scope(next(iter(results.values())))
     found = [in_scope(results[config]) for config in results]
     rows = []
@@ -174,10 +169,9 @@ def _title(result: QuestionResult) -> str:
 
 
 def out_of_scope(results: Results) -> list[str]:
-    """What comes first for each question without relevant event, by
-    configuration; and the first score of the reranker, with and without
-    relevant events: the lower out of scope, the better a threshold could tell
-    them apart."""
+    """Return what comes first for each question without relevant events, by
+    configuration, and the first score of the reranker with and without
+    relevant events."""
     found = {
         config: [r for r in rs if not r.relevant] for config, rs in results.items()
     }
@@ -229,7 +223,7 @@ def out_of_scope(results: Results) -> list[str]:
 
 
 def render(dataset: EvalDataset, results: Results, context: Sequence[str]) -> str:
-    """The Markdown report."""
+    """Return the Markdown report."""
     questions = in_scope(next(iter(results.values())))
     out = len(dataset.questions) - len(questions)
     lines = ["# Evaluation of the search", "", *(f"- {line}" for line in context), ""]
@@ -281,8 +275,8 @@ def render(dataset: EvalDataset, results: Results, context: Sequence[str]) -> st
 
 
 def rankings(results: Results) -> dict[str, Any]:
-    """Every ranking, by configuration then question: the uids found, best
-    first."""
+    """Return every ranking, by configuration then question: the uids found,
+    best first."""
     return {
         config.name: {result.question.id: result.ranked for result in found}
         for config, found in results.items()
@@ -290,8 +284,7 @@ def rankings(results: Results) -> dict[str, Any]:
 
 
 def to_json(results: Results) -> str:
-    """The rankings, one question per line: the diff of two runs shows the
-    questions whose ranking changed."""
+    """Return the rankings as JSON, one question per line."""
 
     def line(key: str, value: object) -> str:
         return f"{json.dumps(key, ensure_ascii=False)}: " + json.dumps(

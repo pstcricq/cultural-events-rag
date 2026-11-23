@@ -1,5 +1,5 @@
-"""The models every step works with: the agendas the events come from, their
-raw events, and the event of the common format both sources are turned into."""
+"""The data models: the agendas, their raw events, and the event of the common
+format."""
 
 from dataclasses import dataclass
 from datetime import datetime
@@ -10,13 +10,13 @@ from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
 @dataclass(frozen=True)
 class Agenda:
-    """An Open Agenda agenda: its uid in the APIs and its title."""
+    """An Open Agenda agenda: its uid and its title."""
 
     uid: int
     title: str
 
 
-# The raw events of each agenda, as the API returns them, by agenda uid.
+# The raw events of each agenda, by agenda uid.
 RawEvents = dict[int, list[dict[str, Any]]]
 
 
@@ -45,7 +45,7 @@ class Event(BaseModel):
     description: str = Field(min_length=1)
     long_description: str = ""
     conditions: str | None = None
-    # Free for everyone, paid, or unknown, read from the conditions.
+    # True: free for everyone; False: paid; None: unknown.
     is_free: bool | None = None
     keywords: list[str] = Field(default_factory=list)
     timings: list[Timing] = Field(min_length=1)

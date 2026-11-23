@@ -1,5 +1,5 @@
-"""What the index stores, before any Elasticsearch: its fields, the name of
-each build, a document as an entry, and the signature compared."""
+"""Tests of the index without Elasticsearch: its fields, the name of each
+build, a document as an entry, and the signature comparison."""
 
 from datetime import UTC, datetime
 from typing import Any

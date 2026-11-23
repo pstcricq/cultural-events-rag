@@ -1,4 +1,4 @@
-"""The ``cultural-events-rag fetch`` command: the raw events of the agendas."""
+"""The ``fetch`` command: the raw events of the agendas."""
 
 import argparse
 import logging
@@ -23,12 +23,12 @@ from cultural_events_rag.settings import get_settings
 
 
 def _client() -> httpx.Client:
-    """The HTTP client of the sources, replaced by the tests."""
+    """Return the HTTP client of the sources."""
     return httpx.Client(timeout=30)
 
 
 def _max_events(text: str) -> int | Literal["all"]:
-    """A number of events above 0, or all."""
+    """Parse a number of events above 0, or all."""
     if text == "all":
         return "all"
     if not text.isdigit() or int(text) < 1:
@@ -67,7 +67,7 @@ def _fetch(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag fetch`` to the cultural-events-rag command."""
+    """Add the ``fetch`` command to the parser of ``cultural-events-rag``."""
     fetch = commands.add_parser(
         "fetch", help="download the raw events of the cultural agendas"
     )

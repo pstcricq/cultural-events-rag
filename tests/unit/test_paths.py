@@ -1,4 +1,4 @@
-"""The files the package reads are found from the root of the repository."""
+"""Tests of the paths, from the root of the repository."""
 
 from cultural_events_rag import paths
 from tests import ROOT

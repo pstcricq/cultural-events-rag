@@ -1,5 +1,4 @@
-"""cultural-events-rag analyze before any Elasticsearch: what to do when the
-password is missing."""
+"""Tests of the ``analyze`` command without Elasticsearch: a missing password."""
 
 import pytest
 

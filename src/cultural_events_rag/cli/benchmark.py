@@ -1,6 +1,5 @@
-"""The ``cultural-events-rag benchmark`` command: the annotated questions
-checked against the frozen events they were judged on, and the index of those
-events built under its own alias when missing or outdated."""
+"""The ``benchmark`` command: the annotated questions checked against the
+frozen events, and the benchmark index built when missing or outdated."""
 
 import argparse
 import sys
@@ -101,7 +100,7 @@ def _benchmark(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag benchmark`` to the cultural-events-rag command."""
+    """Add the ``benchmark`` command to the parser of ``cultural-events-rag``."""
     benchmark = commands.add_parser(
         "benchmark", help="check the benchmark and build its index when needed"
     )

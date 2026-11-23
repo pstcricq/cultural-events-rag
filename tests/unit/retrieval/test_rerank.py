@@ -1,7 +1,5 @@
-"""The reranking before any model: the candidates sorted again by the scores
-of a reranker; the cross-encoder, its library replaced by a fake one, given
-each pair (question, chunk) within 512 tokens, a missing one refused clearly;
-its files downloaded."""
+"""Tests of the reranking without a model: the candidates sorted by the
+reranker; the cross-encoder, its library faked; its download."""
 
 import sys
 import types

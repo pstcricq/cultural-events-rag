@@ -1,6 +1,5 @@
-"""The French texts of the web interface: the example questions, the errors,
-the badges of an event (price, delay, audience), its dates beside the tile of
-its day, and the filters read in a question."""
+"""The French texts of the web interface: example questions, errors, badges,
+dates, and the filters read in a question."""
 
 from datetime import date, datetime
 from typing import Literal
@@ -15,8 +14,7 @@ from cultural_events_rag.ui.client import ApiError
 EVENING = 18
 SATURDAY = 5  # date.weekday()
 
-# A period and an audience, a price, a holiday, and one out of scope: each
-# question with the icon of its button.
+# The example questions, each with the icon of its button.
 EXAMPLE_QUESTIONS = (
     ("Que faire ce week-end en famille ?", ":material/family_restroom:"),
     ("Un concert gratuit en décembre ?", ":material/music_note:"),
@@ -24,7 +22,7 @@ EXAMPLE_QUESTIONS = (
     ("Un match de rugby du Stade Toulousain ?", ":material/sports_rugby:"),
 )
 
-# What the assistant is, and is not: shown in the sidebar.
+# What the assistant is, shown in the sidebar.
 ABOUT = (
     "Projet fictif de démonstration (preuve de concept) d'un assistant RAG, "
     "sans lien avec les organisateurs des événements ni avec Open Agenda. "
@@ -66,7 +64,7 @@ def error_message(error: ApiError) -> str:
 
 
 def price_badge(is_free: bool | None) -> tuple[str, BadgeColor]:
-    """The label of a price and the colour of its badge."""
+    """Return the label of a price and the colour of its badge."""
     match is_free:
         case True:
             return "Gratuit", "green"
@@ -77,8 +75,8 @@ def price_badge(is_free: bool | None) -> tuple[str, BadgeColor]:
 
 
 def delay(next_slot: datetime, today: date) -> str | None:
-    """How soon the first slot comes after ``today``, within a week: tonight,
-    tomorrow, this weekend, or in a few days; None further, or before."""
+    """Return how soon the first slot comes after ``today`` within a week
+    (tonight, tomorrow, this weekend, in a few days); None further, or before."""
     moment = next_slot.astimezone(TIMEZONE)
     days = (moment.date() - today).days
     if not 0 <= days < 7:
@@ -94,8 +92,8 @@ def delay(next_slot: datetime, today: date) -> str | None:
 
 
 def audience(age_min: int | None, age_max: int | None) -> str | None:
-    """The ages an event is for, when the agenda says it: 0 to 99 says
-    nothing."""
+    """Return the ages an event is for, or None when the agenda gives none or 0
+    to 99."""
     low = age_min or 0
     high = age_max if age_max is not None and age_max < 99 else None
     if low and high is not None:
@@ -108,8 +106,8 @@ def audience(age_min: int | None, age_max: int | None) -> str | None:
 
 
 def when(next_slot: datetime, dates: str) -> tuple[bool, str]:
-    """Whether an event is on the day of its tile only, and what to write
-    beside the tile: its slots alone then, its dates otherwise."""
+    """Return whether an event is on the day of its tile only, and the text
+    beside the tile: its slots then, its dates otherwise."""
     day = format_day(next_slot.astimezone(TIMEZONE).date())
     if dates.startswith(f"{day}, ") and ";" not in dates:
         return True, dates.removeprefix(f"{day}, ")
@@ -117,8 +115,8 @@ def when(next_slot: datetime, dates: str) -> tuple[bool, str]:
 
 
 def day_tile(next_slot: datetime) -> tuple[str, str, str, str]:
-    """The first slot of an event, as its tile shows it: the weekday
-    shortened, the day of the month, the month and the time, in Toulouse."""
+    """Return the tile of the first slot: the weekday shortened, the day of the
+    month, the month and the time, in Toulouse."""
     moment = next_slot.astimezone(TIMEZONE)
     day = moment.date()
     weekday = f"{WEEKDAYS[day.weekday()][:3]}."
@@ -126,7 +124,7 @@ def day_tile(next_slot: datetime) -> tuple[str, str, str, str]:
 
 
 def waiting_message(requests_per_minute: float | None) -> str:
-    """What the spinner says while a question waits for its answer."""
+    """Return the text of the spinner while a question waits for its answer."""
     message = "Recherche des événements et rédaction de la réponse…"
     if requests_per_minute:
         seconds = round(60 / requests_per_minute)
@@ -150,8 +148,8 @@ def describe_period(filters: SearchFilters, today: date) -> str | None:
 
 
 def describe_filters(filters: SearchFilters, today: date) -> list[str]:
-    """How the question was read, as ["Du samedi 21 novembre 2026 au dimanche
-    22 novembre 2026", "Quartier : Saint-Cyprien"]."""
+    """Return how the question was read, such as ["Du samedi 21 novembre 2026
+    au dimanche 22 novembre 2026", "Quartier : Saint-Cyprien"]."""
     parts = [describe_period(filters, today)]
     if filters.district:
         parts.append(f"Quartier : {filters.district}")

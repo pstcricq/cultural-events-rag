@@ -1,6 +1,5 @@
-"""The metrics of the search on hand-made rankings, measured where the
-assistant cuts, the comparison question by question, the question vectors asked
-once, and the report."""
+"""Tests of the search metrics on hand-made rankings, the comparison question
+by question, the cached question vectors, and the report."""
 
 import json
 from datetime import date

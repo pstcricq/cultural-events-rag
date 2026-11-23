@@ -4,19 +4,18 @@
 # The bytecode Python writes beside the modules.
 __pycache__/
 
-# The secrets and the local settings: .env.example shows them.
+# The local settings and secrets.
 .env
 
-# The events as each API returns them, and in the common format: only the
-# benchmark of data/ is committed.
+# The collected events; only the benchmark of data/ is versioned.
 data/raw/
 data/processed/
 
-# The HTML report of `make coverage ARGS="--cov-report=html"`.
+# The HTML coverage report.
 htmlcov/
 
 # The folder settings macOS Finder writes.
 .DS_Store
 
-# The settings of each one's editor: local, never shared.
+# Editor settings.
 .vscode/

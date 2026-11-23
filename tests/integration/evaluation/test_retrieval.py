@@ -1,6 +1,5 @@
-"""The evaluation of the search against a real Elasticsearch, with a fake
-embedding model: each question searched as of its reference date, and the
-command end to end, its report written."""
+"""Tests of the evaluation of the search against a real Elasticsearch, with a
+fake embedding model, and the command with its report."""
 
 from datetime import date
 from pathlib import Path

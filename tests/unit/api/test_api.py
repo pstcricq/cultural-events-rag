@@ -1,4 +1,4 @@
-"""What the API answers when something is missing or fails, its service
+"""Tests of the API answers when something is missing or fails, its service
 replaced: no assistant, a refused key, Mistral or Elasticsearch failing, a
 rebuild already running or failing."""
 

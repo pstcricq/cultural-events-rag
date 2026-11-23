@@ -1,6 +1,5 @@
-"""The places of the index, and cultural-events-rag analyze against a real
-Elasticsearch: the districts and venues of the index served found in the
-question."""
+"""Tests of the places of the index and of the ``analyze`` command against a
+real Elasticsearch."""
 
 import pytest
 from elasticsearch import Elasticsearch

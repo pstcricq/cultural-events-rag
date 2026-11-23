@@ -1,27 +1,25 @@
-"""Where the files this package reads live: the root of the repository, two
-levels above ``src/cultural_events_rag/``.
-"""
+"""The paths of the files the package reads and writes, from the root of the
+repository."""
 
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 
-# The secrets and the local settings, never committed: see .env.example.
+# The local settings and secrets, not versioned.
 ENV_FILE = ROOT / ".env"
 
-# The events as each API returns them, one file per source, never committed.
+# The raw events, one file per source, not versioned.
 RAW_DIR = ROOT / "data" / "raw"
 
-# The events of the common format, one per line, never committed.
+# The events of the common format, one per line, not versioned.
 PROCESSED_DIR = ROOT / "data" / "processed"
 EVENTS_FILE = PROCESSED_DIR / "events.jsonl"
 
-# The benchmark, committed: the annotated questions, and the events they were
-# judged on, frozen.
+# The benchmark, versioned: the annotated questions and the frozen events they
+# were judged on.
 BENCHMARK_DIR = ROOT / "data" / "benchmark"
 BENCHMARK_QUESTIONS = BENCHMARK_DIR / "questions.json"
 BENCHMARK_EVENTS = BENCHMARK_DIR / "events.jsonl"
 
-# The reports of the evaluations, committed: their history shows the effect of
-# each change.
+# The reports of the evaluations, versioned.
 REPORTS_DIR = ROOT / "reports"

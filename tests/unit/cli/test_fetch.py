@@ -1,5 +1,5 @@
-"""cultural-events-rag fetch, end to end against a fake OpenDataSoft:
-the raw file it writes, what it prints, its exit code, and the cap it needs."""
+"""Tests of the ``fetch`` command against a fake OpenDataSoft: the raw file,
+the output, the exit code, and the required cap."""
 
 import json
 from pathlib import Path

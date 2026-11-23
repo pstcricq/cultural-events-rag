@@ -1,5 +1,5 @@
-"""cultural-events-rag process, end to end on a raw file written for the test:
-the events file it writes, what it prints, its exit code."""
+"""Tests of the ``process`` command on a raw file: the events file, the output,
+the exit code."""
 
 import json
 from datetime import UTC, datetime, timedelta

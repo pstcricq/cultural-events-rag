@@ -1,19 +1,11 @@
-"""The models of the Mistral API the application calls, made from the
-settings: the embedding model, that turns the documents (indexing) and the
-questions (search) into vectors, and the chat model, that writes the answer.
+"""The Mistral models, built from the settings: the embedding model for the
+documents and the questions, and the chat model for the answers.
 
-Each model sits behind its LangChain interface (``Embeddings``,
-``BaseChatModel``), so that another provider can take its place.
-``MistralAIEmbeddings`` batches the texts, up to 16k tokens per request,
-counted with the Mistral tokenizer of Hugging Face: downloaded once by ``make
-models``, read offline then. Its own retries, a silent fixed 30 s wait, are
-turned off: the build retries each batch itself, visibly, with an exponential
-backoff.
-
-The chat models of the free plan take 2 requests a minute: a ``Pacer`` spaces
-the calls to keep to it, the first one at once, rather than letting Mistral
-refuse them and retrying after longer and longer waits.
-"""
+Both are used through their LangChain interfaces, ``Embeddings`` and
+``BaseChatModel``. ``MistralAIEmbeddings`` batches the texts up to 16k tokens
+per request, counted with the Mistral tokenizer; its built-in retries are
+turned off. A ``Pacer`` spaces the calls of a chat model to keep to the quota
+of the plan."""
 
 import asyncio
 import threading
@@ -30,40 +22,35 @@ from tokenizers import Tokenizer
 from cultural_events_rag.errors import MissingModelError, MissingSettingError
 from cultural_events_rag.settings import Settings
 
-# The model that turns each document into the vector of the index.
+# The embedding model of the documents and the questions.
 EMBEDDING_MODEL = "mistral-embed"
-# The model that writes the answer from the events found: the most capable of
-# the free plan.
+# The chat model that writes the answers.
 LLM_MODEL = "ministral-14b-latest"
-# The model that judges the answers (make eval-generation): the one that
-# writes them.
+# The chat model that judges the answers.
 JUDGE_MODEL = LLM_MODEL
 
-# The tokenizer MistralAIEmbeddings counts the tokens with.
+# The tokenizer the embedding requests are counted with.
 TOKENIZER_REPO = "mistralai/Mixtral-8x7B-v0.1"
 
 
 def download_tokenizer() -> str:
-    """Download the Mistral tokenizer into the cache of Hugging Face: its
-    path."""
+    """Download the Mistral tokenizer into the Hugging Face cache and return
+    its path."""
     return hf_hub_download(TOKENIZER_REPO, "tokenizer.json")
 
 
 def mistral_tokenizer() -> Tokenizer:
-    """The Mistral tokenizer, that MistralAIEmbeddings counts the tokens of
-    the texts with, to keep each request under 16k tokens. Loaded here rather
-    than by MistralAIEmbeddings, that falls back silently to counting
-    characters when it is missing."""
+    """Load the Mistral tokenizer from the Hugging Face cache."""
     try:
         return Tokenizer.from_pretrained(TOKENIZER_REPO)
-    except OSError as exc:  # not downloaded, and Hugging Face offline
+    except OSError as exc:  # not downloaded, Hugging Face offline
         raise MissingModelError(
             f"no Mistral tokenizer ({TOKENIZER_REPO}) on this machine: run make models"
         ) from exc
 
 
 def make_embeddings(settings: Settings) -> Embeddings:
-    """The Mistral embedding model, EMBEDDING_MODEL."""
+    """Return the Mistral embedding model, ``EMBEDDING_MODEL``."""
     if not settings.mistral_api_key:
         raise MissingSettingError("MISTRAL_API_KEY is not set: add it to .env")
     return MistralAIEmbeddings(
@@ -75,15 +62,15 @@ def make_embeddings(settings: Settings) -> Embeddings:
 
 
 def requests_per_minute(settings: Settings) -> float:
-    """The calls a minute the Mistral plan allows its chat models."""
+    """Return the requests per minute the Mistral plan allows its chat models."""
     if settings.llm_requests_per_minute is None:
         raise MissingSettingError("LLM_REQUESTS_PER_MINUTE is not set: add it to .env")
     return settings.llm_requests_per_minute
 
 
 class Pacer(BaseRateLimiter):
-    """At most ``per_minute`` requests a minute, evenly spaced: each one
-    ``60 / per_minute`` seconds after the previous, the first at once."""
+    """A rate limiter: at most ``per_minute`` requests a minute, each one ``60
+    / per_minute`` seconds after the previous, the first at once."""
 
     def __init__(
         self,
@@ -93,12 +80,12 @@ class Pacer(BaseRateLimiter):
     ) -> None:
         self.interval = 60 / per_minute
         self.clock, self.sleep = clock, sleep
-        self.next = float("-inf")  # the earliest time of the next request
+        self.next = float("-inf")  # earliest time of the next request
         self.lock = threading.Lock()
 
     def _reserve(self, blocking: bool) -> float | None:
-        """The wait before the next request, its slot taken; None when it
-        must wait and ``blocking`` is false."""
+        """Take the next slot and return the wait before it; None when a wait
+        is needed and ``blocking`` is false."""
         with self.lock:
             now = self.clock()
             if now < self.next and not blocking:
@@ -125,10 +112,9 @@ class Pacer(BaseRateLimiter):
 
 
 def make_chat_model(settings: Settings, pacer: Pacer | None = None) -> BaseChatModel:
-    """The Mistral chat model LLM_MODEL, as deterministic as it gets:
-    temperature 0 and a fixed seed, its calls spaced by ``pacer`` (one of its
-    own by default: share it between models that share a quota). One attempt
-    per call: the caller retries, visibly."""
+    """Return the Mistral chat model ``LLM_MODEL``: temperature 0, a fixed
+    seed, one attempt per call, its calls spaced by ``pacer`` (a new one by
+    default; pass the same pacer to models sharing a quota)."""
     if not settings.mistral_api_key:
         raise MissingSettingError("MISTRAL_API_KEY is not set: add it to .env")
     return ChatMistralAI(

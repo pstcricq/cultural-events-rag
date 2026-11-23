@@ -1,13 +1,9 @@
-"""The answer to a question, written by the LLM from the events found.
+"""The answer to a question, written by the chat model from the events found.
 
-The LLM returns a structured output: its answer and the uids of the events it
-recommends. Only the uids of the events it was given are kept, and every
-practical detail shown beside the answer (dates, place, price, link) comes from
-the index, never from the generated text.
-
-The LLM is told to say when no event fits: the score of the reranker alone
-cannot tell an out-of-scope question apart (``reports/retrieval.md``).
-"""
+The model returns a structured output: its answer and the uids of the events it
+recommends. Only the uids of the events it was given are kept, and the details
+shown with the answer (dates, place, price, link) come from the index, not from
+the generated text."""
 
 import logging
 import re
@@ -33,13 +29,14 @@ from cultural_events_rag.retry import make_retrying
 
 logger = logging.getLogger(__name__)
 
-# The model sometimes answers without its structured output: it is asked again.
+# An answer without its structured output is asked again, up to this many
+# attempts.
 STRUCTURED_ATTEMPTS = 3
 
 
 class Recommendation(BaseModel):
-    """The structured output of the LLM: the descriptions of its fields are
-    instructions to it, in French."""
+    """The structured output of the chat model; the descriptions of its fields
+    are instructions to the model, in French."""
 
     answer: str = Field(description="Réponse à l'utilisateur, en français.")
     event_uids: list[str] = Field(
@@ -57,31 +54,30 @@ class Answer:
     was written from."""
 
     text: str
-    events: list[EventMatch]  # recommended by the LLM, the most relevant first
+    events: list[EventMatch]  # recommended by the model, the most relevant first
     retrieval: Retrieval
 
 
 def recommender(llm: BaseChatModel) -> Runnable[Any, Any]:
-    """``llm`` returning a ``Recommendation``, as JSON constrained by its
-    schema: with a tool call instead, the API failed on long answers."""
+    """Return ``llm`` with a ``Recommendation`` as structured output, as JSON
+    constrained by its schema."""
     return llm.with_structured_output(Recommendation, method="json_schema")
 
 
 def strip_markdown_emphasis(text: str) -> str:
-    """Without **bold**, __bold__ nor *italic*: the model does not always keep
-    to plain text. A lone asterisk ("2 * 3") stays."""
+    """Remove the Markdown emphasis (**bold**, __bold__, *italic*) from
+    ``text``. A lone asterisk ("2 * 3") is kept."""
     text = re.sub(r"(\*\*|__)(\S(?:.*?\S)?)\1", r"\2", text)
     return re.sub(r"\*(\S(?:.*?\S)?)\*", r"\1", text)
 
 
-# How a whole answer ends: a colon announces what is missing.
+# The endings of a whole answer; a colon announces a list.
 _SENTENCE_ENDS = (".", "!", "?", "…", "»", ")")
 
 
 def looks_cut(text: str) -> bool:
-    """Whether ``text`` stops in the middle of a sentence, as when a straight
-    quote closed the JSON output early (its uids then came out empty). A
-    Markdown mark left after the last word ("annulé.*") does not count."""
+    """Return whether ``text`` stops in the middle of a sentence. A Markdown
+    mark after the last word ("annulé.*") is ignored."""
     return not text.rstrip().rstrip("*_").rstrip().endswith(_SENTENCE_ENDS)
 
 
@@ -92,8 +88,8 @@ def generate(
     retrieval: Retrieval,
     retrying: Retrying | None = None,
 ) -> Answer:
-    """The answer of ``model`` (a ``recommender``) to ``question`` asked on
-    ``today``, from the events of ``retrieval``."""
+    """Return the answer of ``model``, a ``recommender``, to ``question`` asked
+    on ``today``, from the events of ``retrieval``."""
     chain = PROMPT | model
     inputs = {
         "city": CITY,

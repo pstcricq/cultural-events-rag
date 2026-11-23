@@ -1,1 +1,1 @@
-"""cultural_events_rag: a RAG assistant recommending cultural events."""
+"""A RAG assistant that recommends cultural events."""

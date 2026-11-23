@@ -1,4 +1,4 @@
-# The settings of Streamlit for `make ui`, read from the working directory.
+# The settings of Streamlit, read from the working directory.
 
 [server]
 headless = true  # no browser opened, no email asked at the first start
@@ -10,9 +10,8 @@ gatherUsageStats = false
 [client]
 toolbarMode = "minimal"  # no "Deploy" button
 
-# A warm light theme: brick orange on cream, rounded corners, the headings in
-# Plus Jakarta Sans (Google Fonts, loaded by the browser; sans-serif when it
-# cannot).
+# The theme: brick orange on cream, rounded corners, headings in Plus Jakarta
+# Sans (Google Fonts, sans-serif as a fallback).
 [theme]
 base = "light"
 primaryColor = "#C2410C"

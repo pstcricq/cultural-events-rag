@@ -1,5 +1,4 @@
-"""cultural-events-rag config show: one line per setting, a secret only said to be
-set or not."""
+"""Tests of ``config show``: one line per setting, secrets masked."""
 
 from pathlib import Path
 

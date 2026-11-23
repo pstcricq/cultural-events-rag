@@ -1,7 +1,7 @@
-"""The index built in a real Elasticsearch with a fake embedding model: every
-document in it, found by its words and by its vector, the alias moved at each
-build, a failed build that leaves the served index as it was, and an old index
-that cannot be deleted left aside."""
+"""Tests of the build of the index in a real Elasticsearch, with a fake
+embedding model: every document indexed and found, the alias moved, a failed
+build leaving the served index unchanged, an old index that cannot be deleted
+left aside."""
 
 from datetime import UTC, datetime
 from typing import Any

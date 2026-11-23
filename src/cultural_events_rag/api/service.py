@@ -1,12 +1,6 @@
-"""What the API serves: the assistant of assistant.py, loaded once at start,
-and the rebuild of its index.
-
-The work stays in the packages of each step (collection, indexing,
-retrieval, generation) and in the assistant that puts them together: this
-module keeps it loaded, and runs the rebuild in the background. The new index replaces the one served only
-once complete (the alias moves), so the questions keep their answers
-meanwhile, and a failed rebuild leaves it in place.
-"""
+"""The service behind the API: the assistant, loaded once at start, and the
+rebuild of its index in the background. The alias moves to the new index only
+once it is complete."""
 
 import logging
 import threading
@@ -48,7 +42,7 @@ LOAD_ERRORS = (MissingSettingError, MissingModelError, RerankerError)
 
 
 class AssistantUnavailableError(RuntimeError):
-    """The assistant could not load: the reason is in the message."""
+    """The assistant could not load; the message gives the reason."""
 
 
 class RebuildRunningError(RuntimeError):
@@ -56,8 +50,8 @@ class RebuildRunningError(RuntimeError):
 
 
 def rebuild_index(settings: Settings, client: Elasticsearch) -> int:
-    """The events fetched again, processed and indexed, as by make fetch,
-    process and index: their count. Nothing replaced without events."""
+    """Fetch, process and index the events again; return their count. Without
+    events, nothing is replaced."""
     now = datetime.now(UTC)
     since = now - timedelta(days=LOOKBACK_DAYS)
     with httpx.Client(timeout=30) as http:
@@ -74,7 +68,7 @@ def rebuild_index(settings: Settings, client: Elasticsearch) -> int:
 
 
 class AssistantService:
-    """The assistant served, and the state of the rebuild of its index."""
+    """The assistant served and the state of the rebuild of its index."""
 
     def __init__(
         self,
@@ -90,8 +84,8 @@ class AssistantService:
         self._rebuilding = threading.Lock()
 
     def start(self) -> None:
-        """Load the assistant. Without a key or a model, the API starts all
-        the same and says why on /health."""
+        """Load the assistant. Without a key or a model, the service starts and
+        ``problem`` gives the reason."""
         try:
             self._assistant = self._load(self.settings)
         except LOAD_ERRORS as exc:
@@ -108,18 +102,18 @@ class AssistantService:
         return self._assistant
 
     def problem(self) -> str | None:
-        """Why no question can be answered: the assistant not loaded, no
-        index or an outdated one; None when one can."""
+        """Return why no question can be answered (assistant not loaded, no
+        index or an outdated one), or None."""
         if self._assistant is None:
             return self.unavailable
         return index_problem(self._assistant.client, self.settings)
 
     def ask(self, question: str, today: date) -> Answer:
-        """The answer to ``question`` asked on ``today``."""
+        """Return the answer to ``question`` asked on ``today``."""
         return self.assistant.ask(question, today)
 
     def index_state(self) -> IndexState | None:
-        """The index served: None before the first build."""
+        """Return the state of the index served, None before the first build."""
         client, alias = self.assistant.client, self.assistant.index
         info = served_index(client, alias)
         if info is None:
@@ -134,8 +128,8 @@ class AssistantService:
         )
 
     def start_rebuild(self) -> None:
-        """Mark a rebuild as started: ``RebuildRunningError`` when one runs
-        already. ``rebuild`` then runs it."""
+        """Mark a rebuild as started; raise ``RebuildRunningError`` when one is
+        running. ``rebuild`` then runs it."""
         if not self._rebuilding.acquire(blocking=False):
             raise RebuildRunningError("a rebuild is already running")
         self.rebuild_state = RebuildState(
@@ -143,12 +137,12 @@ class AssistantService:
         )
 
     def rebuild(self) -> None:
-        """Rebuild the index, as started by ``start_rebuild``: its outcome in
-        ``rebuild_state``, never raised (it runs in the background)."""
+        """Rebuild the index started by ``start_rebuild``. The outcome is
+        stored in ``rebuild_state``, never raised."""
         state = self.rebuild_state
         try:
             events = self._rebuild(self.settings, self.assistant.client)
-        except Exception as exc:  # noqa: BLE001 (in the background: kept, logged)
+        except Exception as exc:  # noqa: BLE001 (in the background: stored and logged)
             logger.error("Rebuild failed: %s", exc)
             self.rebuild_state = state.model_copy(
                 update={"state": "failed", "detail": str(exc), "finished_at": _now()}

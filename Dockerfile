@@ -1,7 +1,6 @@
-# The image of the application, one for its three services (the command that
-# downloads the models, the API, the web interface): the locked environment
-# without the dev tools nor the eval extra (the evaluation runs outside), with
-# the reranker (PyTorch for the CPU on Linux) and Streamlit.
+# The image of the application, for its three services (models, API, web
+# interface): the locked environment with the reranker (PyTorch for the CPU)
+# and Streamlit, without the dev tools nor the eval extra.
 
 FROM python:3.12-slim AS builder
 
@@ -14,8 +13,7 @@ ENV UV_COMPILE_BYTECODE=1 \
 
 WORKDIR /app
 
-# The dependencies first, in a layer of their own: a change of the code does
-# not install them again.
+# The dependencies first, in their own layer.
 COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --extra rerank --extra ui --no-install-project
@@ -27,8 +25,8 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 FROM python:3.12-slim
 
-# A user of its own, and the folders of its two volumes: the events (data/,
-# rewritten by POST /rebuild) and the models of Hugging Face.
+# A user of its own, and the folders of the two volumes: the events and the
+# Hugging Face models.
 RUN useradd --create-home --uid 1000 app \
     && mkdir -p /app/data /models \
     && chown app /app/data /models
@@ -40,7 +38,7 @@ COPY --from=builder /app/src ./src
 # The settings of Streamlit, read from the working directory.
 COPY .streamlit ./.streamlit
 
-# The models read from the volume, offline: the models service downloads them.
+# The models are read offline from their volume.
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     HF_HOME=/models \

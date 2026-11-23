@@ -1,6 +1,6 @@
-"""The API end to end against a real Elasticsearch, with a fake embedding
-model and a fake LLM: a question answered with the details of its events from
-the index, the state of the index, and a rebuild run in the background."""
+"""Tests of the API against a real Elasticsearch, with a fake embedding model
+and a fake chat model: a question answered with the details of its events, the
+state of the index, and a rebuild in the background."""
 
 import re
 from collections.abc import Iterator

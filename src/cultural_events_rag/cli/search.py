@@ -1,5 +1,5 @@
-"""The ``cultural-events-rag search`` command: the filters of a question, and
-the events of the index served they keep that are closest to it."""
+"""The ``search`` command: the filters of a question and the closest events of
+the index served."""
 
 import argparse
 import sys
@@ -49,8 +49,8 @@ def _block(
     mode: SearchMode,
     reranked: bool,
 ) -> str:
-    """Three lines per event: its title; its place, slot and price, as a user
-    reads them; what ranked it."""
+    """Return three lines per event: its title; its place, slot and price; what
+    ranked it."""
     metadata = match.chunk.metadata
     place = where_and_when(match, filters)
     lists = ", ".join(
@@ -72,8 +72,8 @@ def _block(
 
 
 def where_and_when(match: EventMatch, filters: SearchFilters) -> str:
-    """Its place, its first slot in the period of the filters and its price,
-    as a user reads them."""
+    """Return the place of an event, its first slot in the period of the
+    filters and its price."""
     metadata = match.chunk.metadata
     slot = first_slot(match, filters)
     when = f"{format_day(slot.date())} à {format_time(slot)}"
@@ -83,7 +83,7 @@ def where_and_when(match: EventMatch, filters: SearchFilters) -> str:
 
 
 def load_reranker(model: str) -> Reranker:
-    """The cross-encoder ``model``, loaded once, the time it took shown."""
+    """Load the cross-encoder ``model`` and print the time it took."""
     start = time.perf_counter()
     reranker = CrossEncoderReranker(model)
     print(f"Reranker: {model}, loaded in {time.perf_counter() - start:.1f} s")
@@ -106,7 +106,7 @@ def _search(args: argparse.Namespace) -> int:
         if problem:
             print(f"FAIL {problem}", file=sys.stderr)
             return 1
-        # Loaded once the index is known good: a few seconds.
+        # Loaded once the index is checked.
         reranker = load_reranker(model) if model else None
         start = time.perf_counter()
         retrieval: Retrieval = retrieve(
@@ -146,7 +146,7 @@ def _search(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag search`` to the cultural-events-rag command."""
+    """Add the ``search`` command to the parser of ``cultural-events-rag``."""
     search = commands.add_parser(
         "search", help="the events of the index closest to a question"
     )

@@ -1,5 +1,5 @@
-"""The Ragas judge built from the settings without any call, its metrics
-replaced: the scores kept, a failed or undefined metric left out."""
+"""Tests of the Ragas judge, its metrics replaced: the scores kept, a failed or
+undefined metric left out."""
 
 import asyncio
 import math

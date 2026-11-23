@@ -1,6 +1,5 @@
-"""The ``cultural-events-rag`` command, a command or a group of commands per
-area. The exit code is 0 when the command succeeded, 1 otherwise.
-"""
+"""The ``cultural-events-rag`` command line, one command or group of commands
+per module. The exit code is 0 on success, 1 otherwise."""
 
 import argparse
 

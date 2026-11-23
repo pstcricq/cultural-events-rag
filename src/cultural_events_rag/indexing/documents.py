@@ -1,13 +1,10 @@
-"""Turn events into the documents stored in the index: French text to embed, plus metadata.
+"""The documents of the index: the French text to embed and the metadata of
+each event.
 
-An event gives one document per description chunk. Each starts with the event header (title,
-dates, place, price...), so its vector stays tied to the event. Metadata is used for filtering
-(dates, area, audience) and citing sources; it holds the whole text of the event too, header and
-whole description, the one the LLM reads: the best chunk of a long description can leave out
-its sessions or its prices.
-
-The values are written in French by ``formatting``.
-"""
+An event gives one document per chunk of its description, each starting with
+the header of the event (title, dates, place, price). The metadata holds the
+fields filtered on and the whole text of the event, the one given to the chat
+model."""
 
 from collections.abc import Iterable
 from datetime import UTC, datetime
@@ -23,17 +20,16 @@ from cultural_events_rag.indexing.formatting import (
 )
 from cultural_events_rag.models import Event
 
-# Bumped when the text or the metadata of the documents change: an index built
-# before is then reported outdated, and built again.
+# Raised when the text or the metadata of the documents change: an index built
+# before is then outdated.
 DOCUMENT_FORMAT = 1
-DEFAULT_STATUS = "Programmé"  # not worth mentioning in the text
-# The price, always written: free ("Entrée libre" reads as free), paid, or
-# unknown, which a free question keeps too.
+DEFAULT_STATUS = "Programmé"  # not written in the text
+# The price line: free, paid or unknown.
 PRICE_LABELS = {True: "gratuit", False: "payant", None: "non précisé"}
 
 
 def event_header(event: Event) -> str:
-    """Labelled key facts (title, dates, place, price...), repeated at the top of every chunk."""
+    """Return the header of an event: its key facts, labelled, one per line."""
     summary = (
         None
         if event.long_description.startswith(event.description)
@@ -64,17 +60,17 @@ def _compose(header: str, body: str) -> str:
 
 
 def event_text(event: Event) -> str:
-    """Full French text of an event (header + whole description), as given to the LLM."""
+    """Return the whole text of an event: its header and its whole description."""
     return _compose(event_header(event), event.long_description)
 
 
 def _utc(moment: datetime) -> str:
-    """ISO 8601 in UTC: one offset for every event, so dates compare correctly."""
+    """Return ``moment`` in ISO 8601, in UTC."""
     return moment.astimezone(UTC).isoformat()
 
 
 def event_metadata(event: Event) -> dict[str, Any]:
-    """JSON-serializable metadata, used for filtering (dates, area, audience) and citing sources."""
+    """Return the metadata of an event, JSON-serializable."""
     return {
         "uid": event.uid,
         "title": event.title,
@@ -98,7 +94,8 @@ def event_metadata(event: Event) -> dict[str, Any]:
 
 
 def event_to_documents(event: Event, split: TextSplitter) -> list[Document]:
-    """One document per description chunk (a single one for short or empty descriptions)."""
+    """Return the documents of an event, one per chunk of its description (one
+    for a short or empty description)."""
     header = event_header(event)
     pieces = split(event.long_description) or [""]
     metadata = event_metadata(event) | {"event_text": event_text(event)}
@@ -113,7 +110,7 @@ def event_to_documents(event: Event, split: TextSplitter) -> list[Document]:
 
 
 def events_to_documents(events: Iterable[Event], split: TextSplitter) -> list[Document]:
-    """The documents of every event, event after event."""
+    """Return the documents of every event, event after event."""
     return [
         document for event in events for document in event_to_documents(event, split)
     ]

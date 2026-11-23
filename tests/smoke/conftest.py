@@ -1,7 +1,6 @@
-"""The services of compose.yaml, started by `make docker-up`: the tests of this
-directory check them from the outside, as a user would, and fail when they
-are not running, with one message: what to start. They never call Mistral:
-/ask is left out."""
+"""The services of docker compose, checked from outside. The tests stop at
+once, saying what to start, when the services do not answer. They never call
+Mistral."""
 
 import subprocess
 from collections.abc import Callable
@@ -11,22 +10,20 @@ import pytest
 
 from tests import ROOT
 
-# Where compose.yaml publishes them on this machine.
+# The ports compose.yaml publishes.
 API_URL = "http://127.0.0.1:8000"
 UI_URL = "http://127.0.0.1:8501"
 
 
 @pytest.fixture(autouse=True)
 def clean_environment() -> None:
-    """The environment of the machine kept, over that of tests/conftest.py:
-    these tests read no setting, and docker compose reads the values the CI
-    sets there."""
+    """Keep the environment of the machine, for docker compose."""
 
 
 @pytest.fixture(scope="session", autouse=True)
 def services_running() -> None:
-    """Stop at once, with what to do, when the API or the interface does not
-    answer, rather than fail each test on its own."""
+    """Stop the session, saying what to start, when the API or the web
+    interface does not answer."""
     for name, url in (("API", API_URL), ("web interface", UI_URL)):
         try:
             httpx.get(url, timeout=5)
@@ -40,10 +37,8 @@ def services_running() -> None:
 
 @pytest.fixture
 def run_in_ui() -> Callable[[str], str]:
-    """A function running a Python snippet in the container of the web
-    interface: its output, or the test failed with its error. docker compose
-    reads compose.yaml alone, enough to find the container, and its values
-    from the environment, then from .env."""
+    """Return a function running a Python snippet in the container of the web
+    interface: its output, or the test fails with its error."""
 
     def run(code: str) -> str:
         done = subprocess.run(

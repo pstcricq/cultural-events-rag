@@ -1,6 +1,6 @@
-"""The page of the web interface (Streamlit AppTest), its client talking to a
-fake API (httpx.MockTransport): the state of the assistant, a question and
-its answer with the events, the errors, the date simulated."""
+"""Tests of the Streamlit page (AppTest), its client on a fake API
+(httpx.MockTransport): the state of the assistant, an answer with its events,
+the errors, a simulated day."""
 
 import functools
 import json
@@ -145,8 +145,8 @@ def test_an_example_is_answered_with_its_events(api: FakeApi) -> None:
     assert answer.markdown[0].value == (
         r"Je vous recommande le Concert de jazz, à 5 \$ la place."
     )
-    # One information per line: its title, its badges (its first slot is long
-    # past: no delay), its dates and its place.
+    # One information per line: the title, the badges (no delay, the slot is
+    # past), the dates and the place.
     assert markdowns(page).count("##### Concert de jazz") == 2
     assert (
         markdowns(page).count(
@@ -163,7 +163,7 @@ def test_an_example_is_answered_with_its_events(api: FakeApi) -> None:
     assert (
         ":material/location_on: Le Taquin · 23 rue des Amidonniers, Toulouse"
     ) in captions(page)
-    # Its first slot in a tile beside each card: its day, then its time.
+    # The tile of the first slot beside each card: its day, then its time.
     tiles = [element.proto.body for element in page.get("html")]
     assert len(tiles) == 2
     assert all(">sam.<" in tile and ">21<" in tile for tile in tiles)

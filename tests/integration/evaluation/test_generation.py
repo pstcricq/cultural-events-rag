@@ -1,6 +1,5 @@
-"""The evaluation of the answers end to end against a real Elasticsearch, with
-a fake embedding model and a fake LLM: each question searched and answered as
-of its reference date, the report written."""
+"""Tests of the evaluation of the answers against a real Elasticsearch, with a
+fake embedding model and a fake chat model, and its report."""
 
 import re
 from pathlib import Path

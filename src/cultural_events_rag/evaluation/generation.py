@@ -1,19 +1,14 @@
-"""The evaluation of the answers: each question of the benchmark searched and
-answered by the configuration kept, as of its reference date, and the events
-the answer recommends compared with those judged relevant.
+"""The evaluation of the answers: each question of the benchmark asked to the
+assistant as of its reference date, and the events recommended compared with
+those judged relevant.
 
-The search was measured on its own (``evaluation.retrieval``): this measures
-what the LLM does with the events it is given. Exact checks, without a judge:
-
-- recommendation precision: the share of the events recommended that are
-  relevant, for a question with at least one recommended;
-- recommendation recall: the share of the relevant events given to the LLM
-  that it recommends, for a question with at least one given;
+- recommendation precision: the share of the events recommended that
+  are relevant, for a question with at least one recommended;
+- recommendation recall: the share of the relevant events given to the
+  model that it recommends, for a question with at least one given;
 - abstention: an out-of-scope question answered without any event.
 
-Then, optionally, the LLM judge of Ragas scores the answers themselves
-(``evaluation.judge``).
-"""
+The answers can then be scored by the judge (``evaluation.judge``)."""
 
 import logging
 from collections.abc import Sequence
@@ -25,28 +20,27 @@ from cultural_events_rag.assistant import Assistant
 from cultural_events_rag.evaluation.dataset import EvalDataset, EvalQuestion
 from cultural_events_rag.generation.prompt import event_text
 
-if TYPE_CHECKING:  # Ragas, the eval extra, only to judge
+if TYPE_CHECKING:  # the eval extra, only to judge
     from cultural_events_rag.evaluation.judge import RagasJudge
 
 logger = logging.getLogger(__name__)
 
 PRECISION, RECALL, ABSTENTION = "precision", "recall", "abstention"
-# The metrics of the judge (``evaluation.judge``).
+# The metrics of the judge.
 FAITHFULNESS, RELEVANCY, CORRECTNESS = (
     "faithfulness",
     "answer_relevancy",
     "factual_correctness",
 )
 EXACT, JUDGED = (PRECISION, RECALL, ABSTENTION), (FAITHFULNESS, RELEVANCY, CORRECTNESS)
-# The calls to the judge per answer: 2 for faithfulness (the claims, then
-# their check), 1 for answer relevancy, 4 for factual correctness (the claims
-# of the answer and of the reference, each checked against the other).
+# Judge calls per answer: 2 for faithfulness, 1 for answer relevancy, 4 for
+# factual correctness.
 JUDGE_CALLS = 7
 
 
 @dataclass(frozen=True)
 class GenerationResult:
-    """The answer to a question, the events it recommends and those the LLM
+    """The answer to a question, the events it recommends and those the model
     was given."""
 
     question: EvalQuestion
@@ -54,7 +48,7 @@ class GenerationResult:
     recommended: list[str]  # uids, the most relevant first
     given: list[str]  # uids of the events found, best first
     contexts: list[str] = field(default_factory=list)  # their text, as given
-    judged: dict[str, float] = field(default_factory=dict)  # by Ragas
+    judged: dict[str, float] = field(default_factory=dict)  # by the judge
 
     @property
     def relevant(self) -> set[str]:
@@ -65,9 +59,9 @@ class GenerationResult:
         return self.relevant.intersection(self.given)
 
     def metrics(self) -> dict[str, float]:
-        """Its metrics, those that apply to it only: precision with an event
-        recommended, recall with a relevant event given, abstention out of
-        scope."""
+        """Return the metrics that apply to the question: precision with an
+        event recommended, recall with a relevant event given, abstention out
+        of scope."""
         recommended = set(self.recommended)
         if not self.relevant:
             return {ABSTENTION: float(not recommended)}
@@ -81,8 +75,8 @@ class GenerationResult:
 
 
 def summary(results: list[GenerationResult]) -> dict[str, tuple[float, int]]:
-    """Each metric: its mean over the questions it applies to, and their
-    count."""
+    """Return the mean of each metric over the questions it applies to, and
+    their count."""
     scored = [result.metrics() | result.judged for result in results]
     names = (*EXACT, *JUDGED)
     values = {name: [m[name] for m in scored if name in m] for name in names}
@@ -92,8 +86,7 @@ def summary(results: list[GenerationResult]) -> dict[str, tuple[float, int]]:
 def evaluate_answers(
     assistant: Assistant, dataset: EvalDataset
 ) -> list[GenerationResult]:
-    """Each question of ``dataset`` asked to ``assistant``, as of its reference
-    date."""
+    """Ask each question of ``dataset`` to ``assistant`` as of its reference date."""
     today, results = dataset.reference_date, []
     for number, question in enumerate(dataset.questions, 1):
         retrieval = assistant.search(question.question, today)
@@ -114,8 +107,7 @@ def evaluate_answers(
 async def judge_answers(
     results: Sequence[GenerationResult], judge: "RagasJudge"
 ) -> list[GenerationResult]:
-    """The results, those of the questions with relevant events scored by
-    ``judge``."""
+    """Return the results, the questions with relevant events scored by ``judge``."""
     judged: list[GenerationResult] = []
     in_scope = len([result for result in results if result.relevant])
     done = 0

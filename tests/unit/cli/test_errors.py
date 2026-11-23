@@ -1,7 +1,6 @@
-"""What each command says when a service fails, the services replaced: no
-Elasticsearch, a refused password, an embedding or a generation request
-refused by Mistral, no index; and what index reports of the indices it
-replaced."""
+"""Tests of the messages of each command when a service fails, the services
+replaced: no Elasticsearch, a refused password, a request refused by Mistral,
+no index; and the indices ``index`` reports."""
 
 from pathlib import Path
 from typing import Any

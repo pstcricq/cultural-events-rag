@@ -1,5 +1,5 @@
-"""cultural-events-rag index then status, end to end against a real
-Elasticsearch with a fake embedding model."""
+"""Tests of the ``index`` and ``status`` commands against a real Elasticsearch,
+with a fake embedding model."""
 
 from pathlib import Path
 

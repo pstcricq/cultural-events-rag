@@ -1,6 +1,6 @@
-"""cultural-events-rag models, Hugging Face replaced: the tokenizer and the
-reranker downloaded, no reranker when RERANK_AVAILABLE is false, nothing when
-it is not set, a failed download reported."""
+"""Tests of the ``models`` command, Hugging Face replaced: the downloads, no
+reranker when ``RERANK_AVAILABLE`` is false, nothing when unset, a failed
+download."""
 
 from pathlib import Path
 

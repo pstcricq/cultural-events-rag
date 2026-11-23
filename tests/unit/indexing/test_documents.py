@@ -1,6 +1,5 @@
-"""The events as the index stores them: the French text of their header, the
-optional lines only when informative, their metadata, and one document per
-chunk of their description."""
+"""Tests of the documents: the header text, the optional lines, the metadata,
+and one document per chunk."""
 
 import json
 
@@ -83,7 +82,7 @@ def test_event_metadata(event: Event) -> None:
     ]
     assert metadata["district"] == "Capitole / Arnaud Bernard / Carmes"
     assert metadata["is_free"] is None  # no conditions in the fixture
-    json.dumps(metadata)  # must be serializable to be persisted with the index
+    json.dumps(metadata)  # serializable, to be stored in the index
 
 
 def test_metadata_dates_normalized_to_utc(event: Event) -> None:
@@ -99,7 +98,7 @@ def test_metadata_dates_normalized_to_utc(event: Event) -> None:
 
 
 def split_on_pipes(text: str) -> list[str]:
-    """Fake splitter: chunk boundaries are explicit, independent of the real strategy."""
+    """A fake splitter: the chunks are separated by pipes."""
     return [piece for piece in text.split("|") if piece]
 
 
@@ -139,7 +138,7 @@ def test_one_document_per_chunk_with_header_repeated(event: Event) -> None:
     ]
     assert [d.metadata["chunk_index"] for d in documents] == [0, 1, 2]
     assert {d.metadata["chunk_count"] for d in documents} == {3}
-    # The whole event in each: what the LLM reads.
+    # The whole event in each chunk.
     assert {d.metadata["event_text"] for d in documents} == {event_text(event)}
 
 

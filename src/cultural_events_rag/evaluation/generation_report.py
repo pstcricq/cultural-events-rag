@@ -1,5 +1,5 @@
-"""The report of the evaluation of the answers: a Markdown page to read, and a
-JSON file of every answer, to compare two runs question by question."""
+"""The report of the evaluation of the answers: a Markdown page, and a JSON
+file of every answer."""
 
 import json
 from collections.abc import Sequence
@@ -92,13 +92,13 @@ def _score(scores: dict[str, float], name: str) -> str:
 
 
 def _excerpt(answer: str) -> str:
-    """The answer on one line of a table, cut."""
+    """Return the answer on one line, cut."""
     text = " ".join(answer.split()).replace("|", "/")
     return text if len(text) <= ANSWER_WIDTH else text[: ANSWER_WIDTH - 1] + "…"
 
 
 def scores(results: list[GenerationResult]) -> list[str]:
-    """Each metric: its mean, and the questions it applies to."""
+    """Return the mean of each metric and the number of questions it applies to."""
     rows = [
         [LABELS[name], value, count]
         for name, (value, count) in summary(results).items()
@@ -107,12 +107,12 @@ def scores(results: list[GenerationResult]) -> list[str]:
 
 
 def _judged(results: list[GenerationResult]) -> tuple[str, ...]:
-    """The metrics of the judge, when it scored the answers."""
+    """Return the metrics of the judge, when it scored the answers."""
     return JUDGED if any(result.judged for result in results) else ()
 
 
 def by_category(results: list[GenerationResult]) -> list[str]:
-    """The metrics of the questions with relevant events, by category."""
+    """Return the metrics of the questions with relevant events, by category."""
     in_scope = [result for result in results if result.relevant]
     categories = list(dict.fromkeys(result.question.category for result in in_scope))
     names = (PRECISION, RECALL, *_judged(results))
@@ -130,8 +130,8 @@ def by_category(results: list[GenerationResult]) -> list[str]:
 
 
 def each_question(results: list[GenerationResult]) -> list[str]:
-    """For each question with relevant events: what the LLM was given, what
-    it recommends, and its scores."""
+    """Return, for each question with relevant events, the events given, those
+    recommended and the scores."""
     judged = _judged(results)
     rows = []
     for result in results:
@@ -163,7 +163,7 @@ def each_question(results: list[GenerationResult]) -> list[str]:
 
 
 def out_of_scope(results: list[GenerationResult]) -> list[str]:
-    """For each out-of-scope question: the events recommended, and the answer."""
+    """Return, for each out-of-scope question, the events recommended and the answer."""
     rows = [
         [result.question.question, len(result.recommended), _excerpt(result.answer)]
         for result in results
@@ -173,7 +173,7 @@ def out_of_scope(results: list[GenerationResult]) -> list[str]:
 
 
 def render(results: list[GenerationResult], context: Sequence[str]) -> str:
-    """The Markdown report."""
+    """Return the Markdown report."""
     in_scope = sum(1 for result in results if result.relevant)
     out = len(results) - in_scope
     lines = ["# Evaluation of the answers", "", *(f"- {line}" for line in context), ""]
@@ -205,8 +205,8 @@ def render(results: list[GenerationResult], context: Sequence[str]) -> str:
 
 
 def to_json(results: list[GenerationResult]) -> str:
-    """Every answer by question: its text, the events it recommends and those
-    the LLM was given."""
+    """Return every answer by question: its text, the events it recommends and
+    those the model was given."""
     answers = {
         result.question.id: {
             "answer": result.answer,

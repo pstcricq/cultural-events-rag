@@ -1,9 +1,5 @@
-"""The client of the REST API the web interface goes through.
-
-The interface never calls the RAG code: it asks the API, as any front end
-would. The answers are read with the schemas of the API, the one contract
-both sides keep to.
-"""
+"""The client of the REST API used by the web interface. The answers are read
+with the schemas of the API."""
 
 from datetime import date
 from typing import Any
@@ -16,15 +12,14 @@ from cultural_events_rag.api.schemas import (
     MetadataResponse,
 )
 
-# An answer waits its turn under the quota of the Mistral plan (30 s on the
-# free plan), behind the questions asked before it, then the reranking (about
-# 10 s under Docker): two minutes leave room for a short queue.
+# Answers are spaced by the quota of the Mistral plan, then reranked: two
+# minutes leave room for a short queue.
 TIMEOUT = 120.0
 
 
 class ApiError(Exception):
-    """The API refused the request (its status code and its detail), or did
-    not answer: unreachable (status_code None) or too slow (timed_out)."""
+    """The API refused the request (status code and detail), or did not answer:
+    unreachable (``status_code`` None) or too slow (``timed_out``)."""
 
     def __init__(
         self, status_code: int | None, detail: str, *, timed_out: bool = False
@@ -48,8 +43,8 @@ class ApiClient:
         )
 
     def ask(self, question: str, today: date | None = None) -> AskResponse:
-        """The answer to ``question``, asked on ``today`` (today in the city by
-        default)."""
+        """Return the answer to ``question`` asked on ``today`` (today in the
+        city by default)."""
         body: dict[str, Any] = {"question": question}
         if today is not None:
             body["today"] = today.isoformat()
@@ -60,8 +55,7 @@ class ApiClient:
         return MetadataResponse.model_validate(_json(self._send("GET", "/metadata")))
 
     def health(self) -> HealthResponse:
-        """Whether the assistant can answer: a 503 is an answer too, with its
-        reason."""
+        """Return whether the assistant can answer; a 503 carries the reason."""
         response = self._send("GET", "/health")
         if response.status_code == httpx.codes.SERVICE_UNAVAILABLE:
             return HealthResponse.model_validate(response.json())
@@ -81,14 +75,14 @@ class ApiClient:
 
 
 def _json(response: httpx.Response) -> Any:
-    """The body of a success, or the error the API gave."""
+    """Return the body of a success; raise the error the API gave."""
     if response.is_error:
         raise ApiError(response.status_code, error_detail(response))
     return response.json()
 
 
 def error_detail(response: httpx.Response) -> str:
-    """The ``detail`` of an error of the API: one message per field for a
+    """Return the ``detail`` of an API error: one message per field for a
     validation error (422)."""
     try:
         detail = response.json()["detail"]

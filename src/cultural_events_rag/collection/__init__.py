@@ -1,2 +1,2 @@
-"""The collection of the events: their sources, their download, and their
-processing into the common format."""
+"""The collection of the events: sources, download, and processing into the
+common format."""

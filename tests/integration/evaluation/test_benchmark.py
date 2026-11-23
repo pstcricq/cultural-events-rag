@@ -1,7 +1,6 @@
-"""The index of the benchmark against a real Elasticsearch, with a fake
-embedding model: built under its own alias when missing, then up to date, and
-rebuilt when built with other settings or on other events; the command end to
-end."""
+"""Tests of the benchmark index against a real Elasticsearch, with a fake
+embedding model: built when missing, kept when up to date, rebuilt when
+outdated or holding other events, and the command."""
 
 from pathlib import Path
 

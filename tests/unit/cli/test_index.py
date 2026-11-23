@@ -1,6 +1,5 @@
-"""cultural-events-rag index and status before any Elasticsearch: the progress
-lines, the failed requests left out of the logs, and what to do when a file
-or a setting is missing."""
+"""Tests of the ``index`` and ``status`` commands without Elasticsearch: the
+progress lines, the logs, and a missing file or setting."""
 
 import logging
 from pathlib import Path

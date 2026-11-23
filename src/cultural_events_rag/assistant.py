@@ -1,12 +1,5 @@
-"""The assistant served, put together from the pieces of each step: the search
-in the index, the reranker, the LLM that writes the answer.
-
-The choices come from the evaluation of the search (make eval-retrieval,
-reports/retrieval.md): the search offers every mode and the reranker, the
-assistant picks the configuration that came first on the benchmark. The
-commands that answer a question (make ask, the API, make eval-generation) load
-it here, all alike.
-"""
+"""The assistant: the search configuration, the reranker and the chat model,
+loaded together for every command that answers a question."""
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -39,16 +32,14 @@ from cultural_events_rag.retrieval.search import (
 )
 from cultural_events_rag.settings import Settings
 
-# The best configuration of reports/retrieval.md: both rankings fused, then the
-# first candidates sorted again by the reranker.
+# Hybrid search, then the first candidates reranked.
 SEARCH_MODE: SearchMode = "hybrid"
 RERANK = True
 
 
 def reranker_model(settings: Settings) -> str | None:
-    """The reranker the assistant runs: RERANK_MODEL when the assistant
-    reranks (RERANK) and the environment can run it (RERANK_AVAILABLE), else
-    None."""
+    """Return the name of the reranker model, or None when the assistant does
+    not rerank or the machine cannot run it (``RERANK_AVAILABLE``)."""
     if not RERANK:
         return None
     if settings.rerank_available is None:
@@ -61,14 +52,14 @@ class Assistant:
     """The clients and models a question needs, loaded once."""
 
     client: Elasticsearch
-    index: str  # the alias of the events searched
+    index: str  # alias of the index searched
     embeddings: Embeddings | None  # None for a lexical search
     reranker: Reranker | None
-    model: Runnable[Any, Any]  # a recommender
+    model: Runnable[Any, Any]  # the chain that writes the answer
 
     def search(self, question: str, today: date) -> Retrieval:
-        """The events of ``question`` asked on ``today``: its filters, then
-        the SEARCH_K events closest to it, reranked when it reranks."""
+        """Return the filters of ``question`` asked on ``today`` and the
+        ``SEARCH_K`` events closest to it, reranked when a reranker is loaded."""
         return retrieve(
             self.client,
             self.index,
@@ -81,11 +72,11 @@ class Assistant:
         )
 
     def answer(self, question: str, today: date, retrieval: Retrieval) -> Answer:
-        """The answer the LLM writes from the events of ``retrieval``."""
+        """Return the answer the chat model writes from the events of ``retrieval``."""
         return generate(self.model, question, today, retrieval)
 
     def ask(self, question: str, today: date) -> Answer:
-        """The events of ``question``, then the answer written from them."""
+        """Search the events of ``question``, then write the answer from them."""
         return self.answer(question, today, self.search(question, today))
 
 
@@ -97,10 +88,11 @@ def load_assistant(
     pacer: Pacer | None = None,
     load_reranker: Callable[[str], Reranker] = CrossEncoderReranker,
 ) -> Assistant:
-    """The assistant of the settings, searching ``index`` (the alias of the
-    settings by default) through ``client``. Without ``rerank``, no reranker
-    even where it could run. Its chat model keeps to the quota of the Mistral
-    plan, through ``pacer`` when the quota is shared (with the judge)."""
+    """Load the assistant of ``settings``, searching ``index`` (the alias of
+    the settings by default) through ``client``.
+
+    ``rerank=False`` loads no reranker. The chat model is paced by ``pacer``
+    when the quota is shared with another model."""
     model = reranker_model(settings) if rerank else None
     return Assistant(
         client=client or make_elastic_client(settings),

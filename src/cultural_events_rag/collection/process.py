@@ -1,5 +1,5 @@
-"""The raw events turned into the events of the common format: parsed by the
-parser of their source, cleaned, the sessions of one activity merged."""
+"""The processing of the raw events: parsed by the parser of their source,
+cleaned, and the sessions of one activity merged."""
 
 from collections import Counter
 from collections.abc import Sequence
@@ -13,8 +13,8 @@ from cultural_events_rag.models import Agenda, Event, RawEvents
 
 @dataclass
 class ProcessReport:
-    """The events kept, the raw events dropped for each reason, and the sessions
-    merged into the event of their activity."""
+    """The events kept, the raw events dropped for each reason, and the
+    sessions merged."""
 
     events: list[Event] = field(default_factory=list)
     dropped: Counter[str] = field(default_factory=Counter)
@@ -29,10 +29,10 @@ def process_events(
     since: datetime,
     now: datetime,
 ) -> ProcessReport:
-    """The events of ``raw``, fetched from ``source``: those in ``city`` and
-    not finished before ``since``, each activity once (``now`` tells which of
-    its sessions is the next one). An agenda left out of ``agendas`` since the
-    download is left out too."""
+    """Process the raw events of ``raw``, fetched from ``source``: keep those
+    in ``city`` not finished before ``since``, each activity once (``now``
+    tells which session is the next one). Agendas no longer in ``agendas`` are
+    dropped."""
     by_uid = {agenda.uid: agenda for agenda in agendas}
     items = (
         (by_uid[uid], data)

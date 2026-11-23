@@ -1,6 +1,5 @@
-"""cultural-events-rag benchmark before any Elasticsearch: invalid questions or
-relevant events missing refused, the summary shown, an index up to date left
-alone."""
+"""Tests of the ``benchmark`` command without Elasticsearch: invalid questions
+and missing relevant events refused, the summary, an up-to-date index kept."""
 
 import json
 from pathlib import Path

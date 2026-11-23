@@ -1,10 +1,6 @@
 """The analysis of a question: its constraints (period, free entry, place)
-turned into search filters by rules, without any model: the same question
-always gives the same filters, and each phrasing is tested. The places it knows
-are the districts and venues of the index.
-
-The rules read French, the language of the questions and of the events.
-"""
+turned into search filters by French rules, without a model. The known places
+are the districts and venues of the index."""
 
 import re
 import unicodedata
@@ -26,25 +22,24 @@ from cultural_events_rag.constants import (
 from cultural_events_rag.retrieval.filters import SearchFilters
 
 # --- Periods -----------------------------------------------------------------
-# A period under way starts at today, unless the question is about the past.
 
 Period = tuple[date | None, date | None]
 
 
 def _fold(question: str) -> str:
-    """Lower case, no accents, one spelling of "weekend" and of the
-    apostrophe."""
+    """Return ``text`` in lower case, without accents, with one spelling of
+    "weekend" and of the apostrophe."""
     text = unicodedata.normalize("NFKD", question.casefold().replace("’", "'"))
     text = "".join(c for c in text if not unicodedata.combining(c))
     text = re.sub(r"week[- ]?end", "weekend", text)
     return " ".join(text.split())
 
 
-# The calendar as the folded question writes it ("fevrier", "noel").
+# The calendar, folded ("fevrier", "noel").
 _MONTHS = {_fold(name): number for number, name in enumerate(MONTHS, 1)}
 _WEEKDAYS = {_fold(name): number for number, name in enumerate(WEEKDAYS)}
 _SEASONS = {_fold(name): days for name, days in SEASONS.items()}
-# The longest name first: "vacances de noel" before "noel".
+# Longest name first: "vacances de noel" before "noel".
 _HOLIDAYS = {
     _fold(name): HOLIDAYS[name] for name in sorted(HOLIDAYS, key=len, reverse=True)
 }
@@ -63,8 +58,8 @@ def _end_of_month(year: int, month: int) -> date:
 def _occurrence(
     start: DayMonth, end: DayMonth, today: date, past: bool
 ) -> tuple[date, date]:
-    """The next occurrence (the one under way from today), or the last one for
-    the past."""
+    """Return the next occurrence of a period (the one under way from today),
+    or the last one for the past."""
     candidates = []
     for year in (today.year - 1, today.year, today.year + 1):
         first = date(year, start[0], start[1])
@@ -79,8 +74,8 @@ def _occurrence(
 def _day(
     day: int, month: int, year: str | None, today: date, past: bool
 ) -> date | None:
-    """A date written without its year is the next one (the last one for the
-    past); None for an impossible date."""
+    """Return the date of a day written without its year: the next one, or the
+    last one for the past; None for an impossible date."""
     try:
         if year:
             return date(int(year), month, day)
@@ -111,14 +106,14 @@ def _range(text: str, today: date, past: bool) -> Period | None:
 
 
 def _weekend(today: date, offset: int) -> Period:
-    """The weekend under way or coming, or ``offset`` weeks after it."""
+    """Return the weekend under way or coming, or ``offset`` weeks after it."""
     # On a Sunday, the Saturday is the day before.
     saturday = today + timedelta(days=5 - today.weekday() + 7 * offset)
     return max(saturday, today), saturday + timedelta(days=1)
 
 
 def _relative(text: str, today: date) -> Period | None:
-    """Days, weeks, weekends and months counted from today."""
+    """Return a period counted from today in days, weeks, weekends or months."""
     one_day = timedelta(days=1)
     monday = today - timedelta(days=today.weekday())
     if re.search(r"\bhier\b", text):
@@ -156,8 +151,7 @@ def _relative(text: str, today: date) -> Period | None:
 
 
 def _named(text: str, today: date, past: bool) -> Period | None:
-    """Holidays, seasons, months and weekdays: their next (or last)
-    occurrence."""
+    """Return the next (or last) occurrence of a holiday, season, month or weekday."""
     for name, (start, end) in _HOLIDAYS.items():
         if re.search(rf"\b{name}\b", text):
             return _occurrence(start, end, today, past)
@@ -166,7 +160,7 @@ def _named(text: str, today: date, past: bool) -> Period | None:
         return _occurrence(*_SEASONS[match[1]], today, past)
     if match := re.search(rf"\b(?:en|au mois de|mois de) {_MONTH}\b", text):
         month = _MONTHS[match[1]]
-        last_day = _end_of_month(2001, month).day  # a common year: February has 28
+        last_day = _end_of_month(2001, month).day  # a common year: February has 28 days
         return _occurrence((month, 1), (month, last_day), today, past)
     weekdays = "|".join(_WEEKDAYS)
     if match := re.search(rf"\b({weekdays})(?: (prochain|dernier))?\b", text):
@@ -180,8 +174,8 @@ def _named(text: str, today: date, past: bool) -> Period | None:
 
 
 def extract_period(question: str, today: date) -> Period | None:
-    """The period a question asks for, as (first day, last day), either end
-    possibly open; None when it gives none ("un concert de harpe")."""
+    """Return the period a question asks for, as (first day, last day), either
+    end possibly open; None when it gives none."""
     text = _fold(question)
     past = bool(_PAST.search(text))
     if period := _range(text, today, past):
@@ -203,15 +197,14 @@ _FREE_REQUEST = re.compile(r"\bgratuit|\b(?:entree|acces) libre\b|\bsans payer\b
 
 
 def asks_for_free(question: str) -> bool:
-    """Whether the question asks for free events ("un concert gratuit", "en
-    entrée libre")."""
+    """Return whether the question asks for free events ("un concert gratuit",
+    "en entrée libre")."""
     return bool(_FREE_REQUEST.search(_fold(question)))
 
 
 # --- Place -------------------------------------------------------------------
 
-# The first words that give the type of a venue, not its name ("Couvent des
-# Jacobins").
+# Words that give the type of a venue, not its name ("Couvent des Jacobins").
 _VENUE_TYPES = {
     "auditorium",
     "basilique",
@@ -236,21 +229,21 @@ _PREPOSITIONS = {"de", "des", "du", "d"}
 
 
 def _words(text: str) -> str:
-    """Lower case, no accents, hyphens and apostrophes as spaces, padded with
-    a space to match whole words."""
+    """Return ``text`` in lower case, without accents, hyphens and apostrophes
+    as spaces, padded with spaces to match whole words."""
     folded = unicodedata.normalize("NFKD", text.casefold())
     folded = "".join(c for c in folded if not unicodedata.combining(c))
     return " " + " ".join(re.sub(r"[-'’]", " ", folded).split()) + " "
 
 
-# Too vague to name a place: the city, its département, "lieu" ("Quand a lieu
+# Words that name no place: the city, its département, "lieu" ("Quand a lieu
 # ...").
 _VAGUE = {_words(CITY).strip(), _words(DEPARTMENT).strip(), "lieu"}
 
 
 @dataclass(frozen=True)
 class Place:
-    """The place a question names, among those of the index."""
+    """A place of the index named by a question."""
 
     # As written in the index ("Capitole / Arnaud Bernard / Carmes").
     district: str | None = None
@@ -260,9 +253,9 @@ class Place:
 
 @dataclass(frozen=True)
 class _Venue:
-    key: str  # the distinctive part of the name, as written ("Jacobins")
-    full: str  # the whole name, folded, for a name a district also uses
-    alias: str | None  # a compound proper name ending a long name ("Paul-Dupuy")
+    key: str  # distinctive part of the name, as written ("Jacobins")
+    full: str  # whole name, folded, for a name a district also uses
+    alias: str | None  # compound proper name ending a long name ("Paul-Dupuy")
 
 
 def _venue(name: str, district_names: set[str]) -> _Venue | None:
@@ -293,16 +286,14 @@ def _venue(name: str, district_names: set[str]) -> _Venue | None:
 
 
 def _field_values(client: Elasticsearch, index: str, field: str) -> list[str]:
-    """The values of the keyword ``field`` in ``index``: up to 10,000, far more
-    than the venues of a city."""
+    """Return the values of the keyword ``field`` in ``index``, up to 10,000."""
     aggs = {"values": {"terms": {"field": field, "size": 10_000}}}
     response = client.search(index=index, size=0, aggs=aggs)
     return [bucket["key"] for bucket in response["aggregations"]["values"]["buckets"]]
 
 
 class PlaceMatcher:
-    """Finds the district or the venue a question names, among the known
-    ones."""
+    """Finds the district or the venue a question names, among the known ones."""
 
     def __init__(self, districts: Sequence[str], venues: Sequence[str]) -> None:
         self.districts = {
@@ -321,13 +312,13 @@ class PlaceMatcher:
 
     @classmethod
     def from_index(cls, client: Elasticsearch, index: str) -> "PlaceMatcher":
-        """Knows the districts and venues of the events in ``index``."""
+        """Return a matcher of the districts and venues of the events in ``index``."""
         districts = _field_values(client, index, "district")
         return cls(districts, _field_values(client, index, "venue"))
 
     def _venue_match(self, question: str, folded: str) -> tuple[str, str] | None:
-        """(the name to filter on, the words matched) of the longest venue the
-        question names."""
+        """Return the name to filter on and the words matched of the longest
+        venue the question names."""
         found = []
         for words, venue in self.venues.items():
             if venue.key.isupper() and len(venue.key) <= 4:  # acronym: capitals only
@@ -347,7 +338,7 @@ class PlaceMatcher:
         folded = _words(question)
         venue = self._venue_match(question, folded)
         if venue:
-            # Its words name no district ("Paul-Dupuy").
+            # its words name no district ("Paul-Dupuy")
             folded = folded.replace(venue[1], " ")
         district = max(
             (
@@ -365,8 +356,8 @@ class PlaceMatcher:
 
 
 def analyze(question: str, today: date, places: PlaceMatcher) -> SearchFilters:
-    """The constraints of a question, from today: period, free entry, district
-    and venue."""
+    """Return the constraints of a question asked on ``today``: period, free
+    entry, district and venue."""
     start, end = extract_period(question, today) or (None, None)
     place = places.match(question)
     filters = SearchFilters(

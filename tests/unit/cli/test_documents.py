@@ -1,5 +1,5 @@
-"""cultural-events-rag documents, on an events file written for the test: the
-summary, the documents of one event, the exit code."""
+"""Tests of the ``documents`` command on an events file: the summary, the
+documents of one event, the exit code."""
 
 from pathlib import Path
 

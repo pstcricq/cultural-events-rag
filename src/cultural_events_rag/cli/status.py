@@ -1,5 +1,4 @@
-"""The ``cultural-events-rag status`` command: the index the alias serves, and
-whether the code still builds it the same way."""
+"""The ``status`` command: the index the alias serves, and whether it is up to date."""
 
 import argparse
 import sys
@@ -51,7 +50,7 @@ def _status(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag status`` to the cultural-events-rag command."""
+    """Add the ``status`` command to the parser of ``cultural-events-rag``."""
     status = commands.add_parser(
         "status",
         help="the index served, and whether the code still builds it the same way",

@@ -1,6 +1,5 @@
-"""For every test: no test reads the variables of the machine it runs on, each
-sets its own. One raw event per source, in the format each API actually
-returns, and the event it makes."""
+"""Fixtures of every test: an environment without the variables of the machine,
+one raw event per source, and the event it makes."""
 
 from typing import Any
 
@@ -24,7 +23,7 @@ def agenda() -> Agenda:
 
 @pytest.fixture
 def ods_record() -> dict[str, Any]:
-    """OpenDataSoft record (JSON fields serialized as strings, HTML descriptions)."""
+    """An OpenDataSoft record: JSON fields serialized as strings, HTML descriptions."""
     return {
         "uid": "4154446",
         "canonicalurl": "https://openagenda.com/musee-des-augustins-toulouse/events/visite",
@@ -56,7 +55,8 @@ def ods_record() -> dict[str, Any]:
 
 @pytest.fixture
 def openagenda_event() -> dict[str, Any]:
-    """Official API v2 event (`detailed=1&monolingual=fr&longDescriptionFormat=HTML`)."""
+    """An event of the official API v2
+    (``detailed=1&monolingual=fr&longDescriptionFormat=HTML``)."""
     return {
         "uid": 56158955,
         "title": "Concert de jazz",
@@ -89,5 +89,5 @@ def openagenda_event() -> dict[str, Any]:
 
 @pytest.fixture
 def event(ods_record: dict[str, Any], agenda: Agenda) -> Event:
-    """A cleaned event (one timing, Sunday 21 June 2026 14:30-15:30 Paris time)."""
+    """A cleaned event: one timing, Sunday 21 June 2026 14:30-15:30 Paris time."""
     return parse_opendatasoft_record(ods_record, agenda)

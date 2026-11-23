@@ -1,5 +1,5 @@
-"""Transient errors retried with an exponential backoff, each retry logged;
-any other error raised at once."""
+"""Tests of the retry policy: transient errors retried with a backoff and
+logged, other errors raised at once."""
 
 import logging
 

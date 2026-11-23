@@ -1,11 +1,6 @@
 """The index of the benchmark: its frozen events written into Elasticsearch
-under an alias of their own, beside the index of the application, by the same
-build. The evaluation then measures the search on the very events the
-questions were judged on, whatever the application holds.
-
-The index is built only when missing, built otherwise than the code builds it
-now, or holding other events.
-"""
+under an alias of their own, by the same build as the application. It is
+rebuilt only when missing, outdated, or holding other events."""
 
 from collections.abc import Sequence
 
@@ -26,12 +21,12 @@ from cultural_events_rag.indexing.store import (
 from cultural_events_rag.models import Event
 from cultural_events_rag.settings import Settings
 
-# The alias of the benchmark index, beside that of the application.
+# The alias of the benchmark index.
 BENCHMARK_ALIAS = "events-benchmark"
 
 
 def benchmark_settings(settings: Settings, alias: str = BENCHMARK_ALIAS) -> Settings:
-    """The settings of the application, the index under ``alias``."""
+    """Return the settings of the application with the index alias ``alias``."""
     return settings.model_copy(update={"elasticsearch_index": alias})
 
 
@@ -41,8 +36,8 @@ def rebuild_reason(
     settings: Settings,
     alias: str = BENCHMARK_ALIAS,
 ) -> str | None:
-    """Why the index of ``alias`` must be built for ``events``: None when it
-    is up to date."""
+    """Return why the index of ``alias`` must be built for ``events``, or None
+    when it is up to date."""
     info = served_index(client, alias)
     if info is None:
         return "missing"

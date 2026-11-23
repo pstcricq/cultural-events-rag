@@ -1,5 +1,5 @@
-"""The ``cultural-events-rag analyze`` command: the filters a question gives,
-the districts and venues read from the index served."""
+"""The ``analyze`` command: the filters of a question, with the districts and
+venues of the index served."""
 
 import argparse
 import sys
@@ -49,7 +49,7 @@ def _analyze(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag analyze`` to the cultural-events-rag command."""
+    """Add the ``analyze`` command to the parser of ``cultural-events-rag``."""
     analyze_ = commands.add_parser(
         "analyze", help="the filters a question gives: period, free entry, place"
     )

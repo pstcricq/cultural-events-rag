@@ -1,8 +1,7 @@
-# The cultural_events_rag package and the environment of the repository: `uv sync`
-# installs both in .venv, the versions of uv.lock with `uv sync --locked`,
-# which fails when uv.lock no longer matches this file.
+# The cultural_events_rag package and the environment of the repository,
+# installed in .venv by `uv sync` at the versions of uv.lock.
 
-# uv's own backend builds cultural_events_rag from src/cultural_events_rag/.
+# uv's build backend, from src/cultural_events_rag/.
 [build-system]
 requires = ["uv_build>=0.12.5,<0.13.0"]
 build-backend = "uv_build"
@@ -18,7 +17,7 @@ authors = [
     { name = "Pierre St-Cricq" },
 ]
 
-# The oldest Python accepted; .python-version names the one uv installs.
+# The oldest Python supported; .python-version names the one uv installs.
 requires-python = ">=3.12"
 dependencies = [
     "elasticsearch>=9.5,<10",
@@ -41,7 +40,7 @@ Repository = "https://github.com/pstcricq/cultural-events-rag"
 GitHub = "https://github.com/pstcricq/"
 LinkedIn = "https://www.linkedin.com/in/pierre-st-cricq/"
 
-# The cultural-events-rag command, installed by `uv sync`.
+# The cultural-events-rag command.
 [project.scripts]
 cultural-events-rag = "cultural_events_rag.cli:main"
 
@@ -70,12 +69,11 @@ dev = [
     "types-pyyaml>=6.0.12.20261113",
 ]
 
-# Any other uv refuses to run on this project.
+# The only uv version allowed on the project.
 [tool.uv]
 required-version = "==0.12.5"
 
-# PyTorch for the CPU on Linux (Docker, CI): the default wheel of PyPI carries
-# CUDA, several GB. macOS has no CUDA: PyPI's wheel there.
+# PyTorch for the CPU on Linux; the PyPI wheel on macOS.
 [tool.uv.sources]
 torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
 
@@ -84,21 +82,19 @@ name = "pytorch-cpu"
 url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
-# pytest's cache inside .venv.
+# The pytest cache, inside .venv.
 [tool.pytest.ini_options]
 cache_dir = ".venv/.pytest_cache"
-# Ragas imports a module of langchain-community it does not use here, which
-# warns that the package is no longer maintained: not ours to fix.
+# A deprecation warning of langchain-community, imported by Ragas.
 filterwarnings = [
     "ignore:`langchain-community` is being sunset:DeprecationWarning",
 ]
 
-# The coverage of the package by every test (`make coverage`): below 95% of
-# its lines, the run fails. Its data inside .venv.
+# The coverage of the package by every test, failing under 95%; its data inside
+# .venv.
 [tool.coverage.run]
-# A folder rather than the package: coverage matches a package by the name of
-# its modules, and the page of the web interface runs as __main__ under
-# Streamlit's AppTest.
+# The source is a folder: the page of the web interface runs as __main__ under
+# AppTest.
 source = ["src/cultural_events_rag"]
 data_file = ".venv/.coverage"
 
@@ -107,8 +103,7 @@ fail_under = 95
 show_missing = true
 skip_covered = true
 
-# Every function typed, the settings checked by pydantic's plugin, the cache
-# inside .venv.
+# Strict typing, the pydantic plugin, the cache inside .venv.
 [tool.mypy]
 strict = true
 files = ["src", "tests"]

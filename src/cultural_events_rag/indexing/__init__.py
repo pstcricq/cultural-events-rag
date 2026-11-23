@@ -1,1 +1,1 @@
-"""The index of the events: their documents, the text and metadata searched."""
+"""The index of the events: documents, embeddings and the Elasticsearch index."""

@@ -1,4 +1,4 @@
-"""The bodies of the requests and responses of the API, documented at /docs."""
+"""The request and response bodies of the API."""
 
 from datetime import date, datetime
 from typing import Literal
@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from cultural_events_rag.retrieval.filters import SearchFilters
 
-# A question, not a document: it bounds the prompt, and its cost.
+# The maximum length of a question, in characters.
 MAX_QUESTION_LENGTH = 500
 
 
@@ -34,8 +34,7 @@ class AskRequest(BaseModel):
 
 
 class RecommendedEvent(BaseModel):
-    """An event the answer recommends: every detail from the index, never from
-    the generated text."""
+    """An event the answer recommends, every field from the index."""
 
     uid: str
     title: str

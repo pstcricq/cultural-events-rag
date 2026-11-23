@@ -1,5 +1,4 @@
-"""The raw file and the events file read back as written, sorted, the unicode
-line separators escaped."""
+"""Tests of the data files: read back as written, sorted, line separators escaped."""
 
 import json
 from pathlib import Path

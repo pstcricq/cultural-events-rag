@@ -1,6 +1,6 @@
-"""The answer written from the events found, the LLM replaced by a function:
-the prompt it reads, the events it recommends kept only when it was given
-them, a missing structured output asked again."""
+"""Tests of the generation, the chat model replaced: the prompt, the
+recommended events kept only when given, a missing structured output asked
+again."""
 
 from datetime import date
 from typing import Any

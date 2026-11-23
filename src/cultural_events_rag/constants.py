@@ -1,26 +1,19 @@
-"""The choices of the project tied to its city, that no setting changes: the
-city and its département, its timezone, its cultural agendas, its language
-and its calendar. Another city: another version of this file.
-
-The settings (``settings.py``) hold what a user changes, in ``.env``; the
-values tied to one piece of code (a batch size, the type of the vector index)
-stay next to it.
-"""
+"""The constants tied to the city: its name, département, timezone, cultural
+agendas, language and calendar."""
 
 from zoneinfo import ZoneInfo
 
 from cultural_events_rag.models import Agenda
 
-# The city whose events are collected, and its département: both too vague to
-# name a place in a question ("à Toulouse", "en Haute-Garonne").
+# The city whose events are collected, and its département: neither names a
+# place when read in a question.
 CITY = "Toulouse"
 DEPARTMENT = "Haute-Garonne"
-# Its timezone: the dates of its events are written and read in it.
+# The timezone the dates of the events are written and read in.
 TIMEZONE = ZoneInfo("Europe/Paris")
 
-# Its cultural agendas, picked by hand: agendas outside culture (France
-# Travail, local associations) are left out. Some agendas also publish
-# elsewhere, hence the filter on the city.
+# The cultural agendas collected, picked by hand. Only their events in CITY are
+# kept.
 CULTURAL_AGENDAS: tuple[Agenda, ...] = (
     Agenda(36779486, "Bibliothèques de Toulouse"),
     Agenda(20289708, "Musée des Augustins"),
@@ -35,9 +28,8 @@ CULTURAL_AGENDAS: tuple[Agenda, ...] = (
     Agenda(30183287, "Théâtre Jules-Julien"),
 )
 
-# Its language, that of its events and of the questions: the names of the days
-# and months, written in the documents and read in the questions, set here
-# rather than read from a system locale, often missing in a container.
+# The French names of the days and months, written in the documents and read in
+# the questions.
 WEEKDAYS = ("lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche")
 MONTHS = (
     "janvier",
@@ -54,22 +46,21 @@ MONTHS = (
     "décembre",
 )
 
-# Its calendar, read in the questions: each name with its first and last day,
-# as (month, day). A period whose last day comes before its first runs over
+# The named periods read in the questions: each name with its first and last
+# day, as (month, day). A period whose last day comes before its first spans
 # the new year.
 DayMonth = tuple[int, int]
-# The astronomical seasons of the northern hemisphere, rounded to the day.
+# Astronomical seasons of the northern hemisphere, rounded to the day.
 SEASONS: dict[str, tuple[DayMonth, DayMonth]] = {
     "printemps": ((3, 20), (6, 20)),
     "été": ((6, 21), (9, 22)),
     "automne": ((9, 23), (12, 20)),
     "hiver": ((12, 21), (3, 19)),
 }
-# The days that move from one year to the next are taken at their widest,
-# whatever the year: the Journées du patrimoine, the third weekend of
-# September; the school holidays of Toussaint and Noël, the same in every
-# zone, from the Saturday they start to the Sunday before school. Noël: the
-# weeks before it too, those of its markets and concerts.
+# Periods whose dates change every year, at their widest: the Journées du
+# patrimoine (third weekend of September); the Toussaint and Noël school
+# holidays, from their first Saturday to the Sunday before school; Noël also
+# covers the weeks before it.
 HOLIDAYS: dict[str, tuple[DayMonth, DayMonth]] = {
     "Halloween": ((10, 31), (10, 31)),
     "Toussaint": ((11, 1), (11, 1)),

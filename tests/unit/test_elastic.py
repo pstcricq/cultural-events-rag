@@ -1,5 +1,4 @@
-"""The client of the search engine made from the settings: their URL, user and
-password, a missing one refused; and the alias of the index."""
+"""Tests of the Elasticsearch client built from the settings, and of the alias."""
 
 import base64
 

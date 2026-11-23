@@ -1,4 +1,4 @@
-"""What the cultural-events-rag command prints."""
+"""The output of the ``cultural-events-rag`` command."""
 
 import argparse
 import logging
@@ -11,28 +11,26 @@ from cultural_events_rag.paths import ROOT
 
 
 def question(text: str) -> str:
-    """A question as typed, refused when it holds no word, as by the API."""
+    """Return a question as typed; refuse one without any word."""
     if not text.strip():
         raise argparse.ArgumentTypeError('empty: with make, Q="..."')
     return text
 
 
 def shown(path: Path) -> str:
-    """A path as a line names it, from the root of the checkout when it is
-    inside it."""
+    """Return a path relative to the root of the checkout when it is inside it."""
     path = Path(path).resolve()
     return str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
 
 
 def quiet_logs() -> None:
-    """The logs on stdout, those of the libraries kept quiet: the command
-    reports a failure itself."""
+    """Send the logs to stdout and quiet the libraries."""
     logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
     quiet_libraries()
 
 
 def duration(seconds: float) -> str:
-    """A duration as a person reads it: "40 s", "3 min", "2 h 40 min"."""
+    """Return a duration as a person reads it: "40 s", "3 min", "2 h 40 min"."""
     if seconds < 60:
         return f"{seconds:.0f} s"
     hours, minutes = divmod(round(seconds / 60), 60)
@@ -42,13 +40,12 @@ def duration(seconds: float) -> str:
 
 
 def aligned(table: Sequence[str], bold: bool = False) -> list[str]:
-    """A Markdown table as a terminal shows it: its columns aligned, the
-    numbers to the right, a line under the header; its cells in bold set in
-    bold (ANSI) when ``bold``, plain otherwise."""
+    """Return a Markdown table aligned for a terminal: numbers to the right, a
+    rule under the header, its bold cells in ANSI bold when ``bold``."""
     rows = [
         [cell.strip() for cell in line.strip().strip("|").split("|")]
         for line in table
-        if not set(line) <= set("|-: ")  # the rule under the header
+        if not set(line) <= set("|-: ")  # rule under the header
     ]
     texts = [[cell.strip("*") for cell in row] for row in rows]
     widths = [max(len(row[i]) for row in texts) for i in range(len(texts[0]))]
@@ -66,8 +63,8 @@ def aligned(table: Sequence[str], bold: bool = False) -> list[str]:
 
 
 def confirm(question: str) -> bool:
-    """The answer to a yes or no ``question`` asked on the terminal: no by
-    default, and no without a terminal to answer it."""
+    """Ask a yes or no ``question`` on the terminal; no by default, and without
+    a terminal."""
     try:
         answer = input(f"{question} [y/N] ")
     except EOFError:

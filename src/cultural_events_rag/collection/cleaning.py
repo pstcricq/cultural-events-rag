@@ -1,7 +1,6 @@
-"""The events of the common format cleaned, whatever their source: those
-outside the city or finished before the period dropped, each event once, the
-sessions of one activity published as separate events merged into one.
-"""
+"""The cleaning of the events of the common format: events outside the city or
+finished before the period dropped, duplicates dropped, and the sessions of one
+activity merged into one event."""
 
 from collections import Counter
 from collections.abc import Hashable, Iterable
@@ -13,8 +12,8 @@ from cultural_events_rag.models import Event
 def clean_events(
     events: Iterable[Event], city: str, since: datetime
 ) -> tuple[list[Event], Counter[str]]:
-    """The events in ``city`` and not finished before ``since``, each once, and
-    the number of events dropped for each reason."""
+    """Return the events in ``city`` not finished before ``since``, each once,
+    and the number of events dropped for each reason."""
     kept: list[Event] = []
     dropped: Counter[str] = Counter()
     seen: set[str] = set()
@@ -32,7 +31,8 @@ def clean_events(
 
 
 def _activity(event: Event) -> Hashable:
-    """What sessions of the same activity share: everything but their dates and links."""
+    """Return what the sessions of one activity share: every field but their
+    dates and links."""
     return (
         " ".join(event.title.casefold().split()),
         event.location.name,
@@ -46,8 +46,8 @@ def _activity(event: Event) -> Hashable:
 
 
 def _merge(sessions: list[Event], now: datetime) -> Event:
-    """One event for all the sessions of an activity: the next session (else the last one)
-    gives its uid and link, the others their dates."""
+    """Merge the sessions of one activity into one event: the next session,
+    else the last one, gives its uid and link, all of them their dates."""
     upcoming = [s for s in sessions if s.last_end >= now]
     if upcoming:
         main = min(upcoming, key=lambda s: s.first_begin)
@@ -65,9 +65,8 @@ def _merge(sessions: list[Event], now: datetime) -> Event:
 
 
 def merge_sessions(events: Iterable[Event], now: datetime) -> list[Event]:
-    """Merge the events that are sessions of the same activity (e.g. a guided tour published
-    once per date): otherwise they fill the search results with one activity, and repeat the
-    same text in the index. Order of first appearance is kept."""
+    """Merge the events that are sessions of the same activity, such as a
+    guided tour published once per date. The order of first appearance is kept."""
     activities: dict[Hashable, list[Event]] = {}
     for event in events:
         activities.setdefault(_activity(event), []).append(event)

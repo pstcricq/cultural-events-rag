@@ -1,5 +1,5 @@
-"""The annotated questions of the benchmark: their rules checked, and the
-committed ones valid, every relevant event among the frozen events."""
+"""Tests of the benchmark questions: their rules, and the versioned ones valid
+against the frozen events."""
 
 from datetime import date
 from typing import Any

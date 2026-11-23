@@ -1,6 +1,5 @@
-"""The prompt of the answer, in French, the language of the application: the
-rules of the assistant, the day of the question, and the events found, each
-whole and tagged with its uid so that the LLM can cite it."""
+"""The prompt of the answer, in French: the rules of the assistant, the day of
+the question, and the events found, each tagged with its uid."""
 
 import re
 from collections.abc import Sequence
@@ -61,22 +60,22 @@ _QUOTED = re.compile(r'"\s*([^"\n]+?)\s*"')
 
 
 def french_quotes(text: str) -> str:
-    """``text`` with French quotes instead of straight double quotes: the
-    model copies them, and a straight one in its JSON output closes the answer
-    in the middle of a sentence. A lone one becomes a closing quote."""
+    """Replace the straight double quotes of ``text`` with French quotes (a
+    straight quote in the JSON output ends the answer early). A lone quote
+    becomes a closing quote."""
     text = _QUOTED.sub("« \\1 »", text)
     return text.replace('"', "”")
 
 
 def event_text(match: EventMatch) -> str:
-    """The whole event, header and description, that its best chunk carries:
-    what the LLM reads."""
+    """Return the whole text of the event of ``match``: its header and its
+    description."""
     return str(match.chunk.metadata["event_text"])
 
 
 def format_context(matches: Sequence[EventMatch]) -> str:
-    """The events found as the LLM reads them: each whole, tagged with its
-    uid, with French quotes."""
+    """Return the events found as the model reads them: each whole, tagged with
+    its uid, with French quotes."""
     if not matches:
         return "(aucun événement)"
     return "\n\n".join(

@@ -1,10 +1,8 @@
-"""An Elasticsearch for the tests of this directory: a container of the
-version of .env.example, started by testcontainers once per session on a free
-port of this machine, and removed at the end, even when pytest is killed.
-Security on, as in compose.yaml: the client signs in with a password. Without
-docker the tests are skipped, under CI they fail. ``settings`` points at it,
-with an alias of its own per test, and ``client`` reaches it.
-"""
+"""The Elasticsearch of the integration tests: a container of
+``ELASTIC_VERSION``, started by testcontainers once per session on a free port,
+with security on, and removed at the end. Without Docker the tests are skipped,
+and fail under CI. ``settings`` points at it with an alias per test; ``client``
+reaches it."""
 
 import os
 import shutil
@@ -27,9 +25,8 @@ from tests import elastic_version
 IMAGE = f"docker.elastic.co/elasticsearch/elasticsearch:{elastic_version()}"
 PASSWORD = "integration-tests"
 
-# Ready once the cluster answers yellow to the elastic user (refused while it
-# starts, then 503 until its security index is up), and refuses a wrong
-# password: until its security index is green, that one gets a 503 too.
+# Ready once the cluster answers yellow to the elastic user and refuses a wrong
+# password with a 401.
 READY = CompositeWaitStrategy(
     HttpWaitStrategy(9200, "/_cluster/health?wait_for_status=yellow&timeout=1s")
     .with_basic_credentials("elastic", PASSWORD)
@@ -72,8 +69,7 @@ def elasticsearch_url() -> Iterator[str]:
 
 @pytest.fixture
 def settings(elasticsearch_url: str) -> Settings:
-    """The settings of the test Elasticsearch, an alias of its own per test, no
-    reranker."""
+    """Return the settings of the test Elasticsearch, an alias per test, no reranker."""
     return Settings(
         _env_file=None,
         elasticsearch_url=elasticsearch_url,

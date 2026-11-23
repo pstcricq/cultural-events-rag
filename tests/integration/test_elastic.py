@@ -1,5 +1,5 @@
-"""The client of the settings against a real Elasticsearch: the version of
-.env.example with the right password, a refusal with a wrong one."""
+"""Tests of the Elasticsearch client against a real Elasticsearch: signed in
+with the right password, refused with a wrong one."""
 
 import pytest
 from elasticsearch import AuthenticationException

@@ -1,9 +1,6 @@
-"""The settings of the application: what an environment sets (its secrets,
-where its services are, what its machine and its plans allow), read from the
-environment, then from ``.env``, unset otherwise: none has a default here,
-``.env.example`` gives each one its value. A variable of the environment wins
-over the same line of ``.env``.
-"""
+"""The settings, read from the environment, then from ``.env``. None has a
+default: an unset setting is None, and the code that needs it raises
+``MissingSettingError``."""
 
 from functools import lru_cache
 from typing import Literal
@@ -15,55 +12,47 @@ from cultural_events_rag.paths import ENV_FILE
 
 
 class Settings(BaseSettings):
-    """One field per variable, named after it in lower case."""
+    """One field per environment variable, named after it in lower case."""
 
     model_config = SettingsConfigDict(
         env_file=ENV_FILE,
         env_file_encoding="utf-8",
         extra="ignore",
-        # An empty variable, in .env or in the environment: unset.
+        # An empty variable is unset.
         env_ignore_empty=True,
     )
 
-    # The keys of the two APIs the assistant calls. SecretStr keeps them out of
-    # every repr and log line.
+    # The API keys of Mistral and Open Agenda, kept out of repr and logs.
     openagenda_api_key: SecretStr | None = None
     mistral_api_key: SecretStr | None = None
 
-    # The search engine holding the index, and the user the application signs
-    # in as, with its password: each environment chooses them (the port
-    # compose publishes and elastic, the built-in superuser of compose.yaml, on
-    # a laptop; a role-limited user elsewhere).
+    # The Elasticsearch URL, and the user and password the application signs in
+    # with.
     elasticsearch_url: str | None = None
     elastic_user: str | None = None
     elastic_password: SecretStr | None = None
-    # The alias the index of the events is served under: each build writes a
-    # new index and moves the alias onto it.
+    # The alias the index of the events is served under; each build moves it to
+    # a new index.
     elasticsearch_index: str | None = None
 
-    # How many events `fetch` and the rebuild collect from the agendas of CITY:
-    # a number (a sample while developing), or all. No default: the collection
-    # refuses to run without one, a forgotten cap is not a choice.
+    # The number of events to collect, or all.
     max_events: PositiveInt | Literal["all"] | None = None
 
-    # Whether this machine can run the reranker: its extra, its model and 2 to
-    # 3 GB of memory. false where it cannot: `models` then leaves its model out.
+    # Whether this machine can run the reranker.
     rerank_available: bool | None = None
 
-    # The requests per minute the Mistral plan allows its chat models: 2 on
-    # the free plan. The calls are spaced to keep to it, rather than refused
-    # and retried.
+    # The requests per minute the Mistral plan allows its chat models.
     llm_requests_per_minute: float | None = None
 
-    # The key the API asks to rebuild the index (POST /rebuild, header
-    # X-API-Key): unset, the rebuild is turned off.
+    # The key of POST /rebuild, in the X-API-Key header; unset, the rebuild is
+    # refused.
     admin_api_key: SecretStr | None = None
 
-    # Where the web interface (make ui) reaches the API.
+    # The URL of the API, for the web interface.
     api_url: str | None = None
 
 
 @lru_cache
 def get_settings() -> Settings:
-    """The settings, read once per process."""
+    """Return the settings, read once per process."""
     return Settings()

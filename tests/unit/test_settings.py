@@ -1,5 +1,5 @@
-"""The settings come from the environment, then from .env, none has a default,
-an empty one is unset, and a key never shows in a repr."""
+"""Tests of the settings: environment, then .env, no defaults, empty means
+unset, secrets masked."""
 
 from pathlib import Path
 

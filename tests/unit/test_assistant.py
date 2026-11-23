@@ -1,6 +1,6 @@
-"""The assistant served: the configuration chosen by the evaluation of the
-search, its reranker run only when chosen and the environment can run it,
-its pieces loaded from the settings, a question searched then answered."""
+"""Tests of the assistant: its configuration, its reranker loaded only when
+chosen and runnable, its pieces built from the settings, a question searched
+then answered."""
 
 from datetime import date
 from typing import Any

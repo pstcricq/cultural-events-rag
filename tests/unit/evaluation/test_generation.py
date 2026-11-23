@@ -1,4 +1,5 @@
-"""The exact checks of the answers on hand-made results, and their report."""
+"""Tests of the exact checks of the answers on hand-made results, and of their
+report."""
 
 import asyncio
 import json

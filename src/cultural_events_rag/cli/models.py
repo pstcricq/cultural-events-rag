@@ -1,9 +1,6 @@
-"""The ``cultural-events-rag models`` command: the models of Hugging Face the
-application runs on this machine, downloaded once into the cache of Hugging
-Face: the Mistral tokenizer, that counts the tokens of each embedding request,
-and the reranker, unless RERANK_AVAILABLE is false. Every other command runs
-Hugging Face offline (make sets HF_HUB_OFFLINE=1): a model missing is
-reported, never downloaded on the way."""
+"""The ``models`` command: the Hugging Face models run locally, downloaded into
+the Hugging Face cache: the Mistral tokenizer, and the reranker unless
+``RERANK_AVAILABLE`` is false."""
 
 import argparse
 import sys
@@ -42,7 +39,7 @@ def _models(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag models`` to the cultural-events-rag command."""
+    """Add the ``models`` command to the parser of ``cultural-events-rag``."""
     models = commands.add_parser(
         "models", help="download the models of Hugging Face run on this machine"
     )

@@ -1,12 +1,10 @@
-"""The index of the events in Elasticsearch: one entry per document, its French
-text for the lexical search (BM25) and its vector for the vector search (kNN)
-side by side, with the metadata the search filters on.
+"""The Elasticsearch index of the events: one entry per document, with its
+French text for the lexical search (BM25), its vector for the vector search
+(kNN) and the metadata filtered on.
 
-Each build writes a new index, named after the alias and its build time, then
-moves the alias onto it once complete: the alias always serves a whole index,
-and a failed build never touches it. The signature of a build, what it was made
-with, lives in the ``_meta`` of its index.
-"""
+Each build writes a new index named after the alias and the build time, then
+moves the alias onto it. The signature of a build is stored in the ``_meta`` of
+its index."""
 
 from collections.abc import Iterator, Sequence
 from dataclasses import dataclass
@@ -16,9 +14,8 @@ from typing import Any
 from elasticsearch import ApiError, Elasticsearch, NotFoundError, TransportError
 from langchain_core.documents import Document
 
-# One shard, no replica: one node, a few thousand documents. The folded
-# analyzer cuts a name into words, in lower case, without accents nor elisions
-# (l', d'): "Chapelle des Carmélites" is found by "carmelites".
+# One shard, no replica. The folded analyzer splits a name into lowercase words
+# without accents nor elisions: "Chapelle des Carmélites" matches "carmelites".
 INDEX_SETTINGS = {
     "number_of_shards": 1,
     "number_of_replicas": 0,
@@ -33,30 +30,28 @@ INDEX_SETTINGS = {
     },
 }
 
-# The version of the fields below, in the signature of each index: raised at
-# each change of them, so that status reports an index built with the former.
+# The version of the fields below, in the signature of each index; raised at
+# each change.
 MAPPING_VERSION = 1
 
-# The vector search is exact: the question compared with every vector, by
-# cosine. At a few thousand documents it is instant, and finds the true nearest
-# neighbors; an approximate graph (hnsw) only pays off at hundreds of thousands.
+# Exact vector search: the question compared with every vector, by cosine.
 VECTOR_INDEX = "flat"
 
 
 def index_mappings(dims: int, signature: dict[str, Any]) -> dict[str, Any]:
-    """The fields of an index whose vectors have ``dims`` dimensions; any other
-    field is refused."""
+    """Return the mappings of an index whose vectors have ``dims`` dimensions;
+    any other field is refused."""
     keyword = {"type": "keyword"}
-    stored = {"type": "keyword", "index": False}  # returned, never searched
+    stored = {"type": "keyword", "index": False}  # returned, not searched
     folded = {"type": "text", "analyzer": "folded"}
     return {
         "_meta": signature,
         "dynamic": "strict",
         "properties": {
-            # The French analyzer: elisions (l', d'), stop words, light stemming.
+            # French analyzer: elisions, stop words, light stemming.
             "text": {"type": "text", "analyzer": "french"},
-            # The whole event, the same in each of its chunks: what the LLM
-            # reads, never searched.
+            # The whole text of the event, the same in each of its chunks; not
+            # searched.
             "event_text": {"type": "text", "index": False},
             "vector": {
                 "type": "dense_vector",
@@ -77,7 +72,7 @@ def index_mappings(dims: int, signature: dict[str, Any]) -> dict[str, Any]:
             "location": {"type": "geo_point"},
             "first_begin": {"type": "date"},
             "last_end": {"type": "date"},
-            # Each slot as a range: a period matches the events with a slot in it.
+            # Each slot as a date range.
             "timings": {"type": "date_range"},
             "status": keyword,
             "age_min": {"type": "integer"},
@@ -91,13 +86,13 @@ def index_mappings(dims: int, signature: dict[str, Any]) -> dict[str, Any]:
 
 
 def index_name(alias: str, now: datetime) -> str:
-    """The name of the index a build at ``now`` writes, behind ``alias``."""
+    """Return the name of the index a build at ``now`` writes behind ``alias``."""
     return f"{alias}-{now:%Y%m%d-%H%M%S}"
 
 
 def to_source(document: Document, vector: list[float]) -> dict[str, Any]:
-    """What the index stores of a document: its text, its vector and its
-    metadata, the coordinates as a point and each slot as a date range."""
+    """Return the entry of a document: its text, its vector and its metadata,
+    the coordinates as a point and each slot as a date range."""
     metadata = dict(document.metadata)
     latitude, longitude = metadata.pop("latitude"), metadata.pop("longitude")
     location = None
@@ -115,7 +110,7 @@ def to_source(document: Document, vector: list[float]) -> dict[str, Any]:
 def bulk_actions(
     index: str, documents: Sequence[Document], vectors: Sequence[list[float]]
 ) -> Iterator[dict[str, Any]]:
-    """One bulk action per document, its id kept as the id of the entry."""
+    """Return one bulk action per document, its id as the id of the entry."""
     for document, vector in zip(documents, vectors, strict=True):
         yield {
             "_index": index,
@@ -125,7 +120,7 @@ def bulk_actions(
 
 
 def indexed_uids(client: Elasticsearch, index: str, expected: int) -> set[str]:
-    """The uids of the events with at least one entry in ``index``."""
+    """Return the uids of the events with at least one entry in ``index``."""
     response = client.search(
         index=index,
         size=0,
@@ -135,7 +130,7 @@ def indexed_uids(client: Elasticsearch, index: str, expected: int) -> set[str]:
 
 
 def served_indices(client: Elasticsearch, alias: str) -> list[str]:
-    """The indices ``alias`` points at: none before the first build."""
+    """Return the indices ``alias`` points at; none before the first build."""
     try:
         return sorted(client.indices.get_alias(name=alias))
     except NotFoundError:
@@ -143,8 +138,8 @@ def served_indices(client: Elasticsearch, alias: str) -> list[str]:
 
 
 def move_alias(client: Elasticsearch, alias: str, index: str) -> list[str]:
-    """Point ``alias`` at ``index`` alone, in one atomic step: the names of the
-    indices it served before."""
+    """Point ``alias`` at ``index`` alone, in one atomic request; return the
+    indices it pointed at before."""
     previous = [name for name in served_indices(client, alias) if name != index]
     actions: list[dict[str, Any]] = [
         {"remove": {"index": name, "alias": alias}} for name in previous
@@ -155,8 +150,8 @@ def move_alias(client: Elasticsearch, alias: str, index: str) -> list[str]:
 
 
 def delete_indices(client: Elasticsearch, names: Sequence[str]) -> list[str]:
-    """Delete the indices ``names``, each on its own: the names of those still
-    there after a failure."""
+    """Delete the indices ``names`` one by one; return those that are left
+    after a failure."""
     left = []
     for name in names:
         try:
@@ -168,7 +163,7 @@ def delete_indices(client: Elasticsearch, names: Sequence[str]) -> list[str]:
 
 @dataclass(frozen=True)
 class IndexInfo:
-    """The index an alias serves: its name, its entries and its signature."""
+    """The index an alias serves: its name, its entry count and its signature."""
 
     name: str
     count: int
@@ -176,7 +171,7 @@ class IndexInfo:
 
 
 def served_index(client: Elasticsearch, alias: str) -> IndexInfo | None:
-    """The index ``alias`` serves, None before the first build."""
+    """Return the index ``alias`` serves, None before the first build."""
     names = served_indices(client, alias)
     if not names:
         return None
@@ -187,8 +182,8 @@ def served_index(client: Elasticsearch, alias: str) -> IndexInfo | None:
 
 
 def signature_differences(meta: dict[str, Any], signature: dict[str, Any]) -> list[str]:
-    """What differs between the signature an index was built with and
-    ``signature``: nothing when the index is up to date."""
+    """Return the differences between the signature of an index and
+    ``signature``; none when the index is up to date."""
     return [
         f"{key}: {meta.get(key)!r} instead of {value!r}"
         for key, value in signature.items()

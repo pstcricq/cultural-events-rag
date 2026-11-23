@@ -1,6 +1,5 @@
-"""The events cleaned whatever their source: outside the city, finished before
-the period or seen twice, dropped and counted; the sessions of one activity
-merged into one event."""
+"""Tests of the cleaning: events outside the city, finished or duplicated
+dropped and counted; the sessions of one activity merged."""
 
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -48,7 +47,7 @@ NOW = datetime(2026, 10, 19, 12, tzinfo=UTC)
 
 
 def session(event: Event, uid: str, day: int, **changes: Any) -> Event:
-    """`event` (an activity) published for one session, on `day` October 2026 at 10h UTC."""
+    """``event`` published for one session, on ``day`` October 2026 at 10h UTC."""
     begin = datetime(2026, 10, day, 10, tzinfo=UTC)
     return event.model_copy(
         update={
@@ -74,7 +73,7 @@ def test_sessions_of_an_activity_become_one_event(event: Event) -> None:
 
 
 def test_merged_event_is_its_next_session(event: Event) -> None:
-    # Its uid and link: the card points to the session the user can still book
+    # Its uid and link: those of the next session.
     sessions = [
         session(event, "1", 25),
         session(event, "2", 10),

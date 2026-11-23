@@ -1,5 +1,5 @@
-"""The values of an event written in French: days, slots grouped by day in
-Paris time, a long series as a range, the place, the audience."""
+"""Tests of the French formatting: days, slots grouped by day in Paris time,
+long series as a range, the place, the audience."""
 
 from datetime import UTC, date, datetime, timedelta
 

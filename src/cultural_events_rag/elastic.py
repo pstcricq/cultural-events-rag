@@ -1,6 +1,4 @@
-"""How the application reaches Elasticsearch, the search engine holding the
-index of the events: the URL of the settings, their user and password, and the
-alias the index is served under. Used to write the index and to search it."""
+"""The Elasticsearch client and the alias the index of the events is served under."""
 
 from elasticsearch import Elasticsearch
 
@@ -9,8 +7,8 @@ from cultural_events_rag.settings import Settings
 
 
 def make_elastic_client(settings: Settings) -> Elasticsearch:
-    """A client of the Elasticsearch of the settings; it connects at its first
-    request."""
+    """Return a client of the Elasticsearch of ``settings``. It connects at its
+    first request."""
     if not settings.elasticsearch_url:
         raise MissingSettingError("ELASTICSEARCH_URL is not set: add it to .env")
     if not settings.elastic_user:
@@ -28,7 +26,7 @@ def make_elastic_client(settings: Settings) -> Elasticsearch:
 
 
 def index_alias(settings: Settings) -> str:
-    """The alias of the settings the index of the events is served under."""
+    """Return the alias the index of the events is served under."""
     if not settings.elasticsearch_index:
         raise MissingSettingError("ELASTICSEARCH_INDEX is not set: add it to .env")
     return settings.elasticsearch_index

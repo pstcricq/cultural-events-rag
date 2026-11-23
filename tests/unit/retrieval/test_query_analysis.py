@@ -1,6 +1,5 @@
-"""The analysis of a question: its period, computed from the day it is asked,
-whether it asks for free events, the district or the venue it names, and the
-filters they all make."""
+"""Tests of the query analysis: the period from the day asked, free entry, the
+district or venue named, and the filters."""
 
 from datetime import date
 

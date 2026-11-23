@@ -1,5 +1,4 @@
-"""cultural-events-rag search before any Elasticsearch: what to do when a
-setting is missing."""
+"""Tests of the ``search`` command without Elasticsearch: a missing setting."""
 
 import pytest
 from pydantic import SecretStr

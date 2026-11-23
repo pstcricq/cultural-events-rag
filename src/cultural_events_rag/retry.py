@@ -1,9 +1,6 @@
-"""The retry policy of the calls to an API, built on tenacity.
-
-A transient failure (rate limit, server error, network error) is retried with
-an exponential backoff, each retry logged. Any other error (invalid key, bad
-request) fails at once.
-"""
+"""The retry policy of the calls to an API, built on tenacity: transient
+failures (rate limit, server error, network error) are retried with an
+exponential backoff and logged; any other error is raised at once."""
 
 import logging
 import time
@@ -22,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 def is_transient(error: BaseException) -> bool:
-    """Rate limit (429), server error (5xx) or network error: worth retrying."""
+    """Return whether ``error`` is transient: a rate limit (429), a server
+    error (5xx) or a network error."""
     if isinstance(error, httpx.HTTPStatusError):
         status = error.response.status_code
         return status == 429 or status >= 500
@@ -30,7 +28,8 @@ def is_transient(error: BaseException) -> bool:
 
 
 def describe(error: BaseException) -> str:
-    """A short label of the error for the logs: ``HTTP 429``, ``ConnectError``."""
+    """Return a short label of ``error`` for the logs, such as ``HTTP 429`` or
+    ``ConnectError``."""
     if isinstance(error, httpx.HTTPStatusError):
         return f"HTTP {error.response.status_code}"
     return type(error).__name__
@@ -42,11 +41,11 @@ def make_retrying(
     backoff: float = 2.0,
     sleep: Callable[[float], None] = time.sleep,
 ) -> Retrying:
-    """Retry ``action`` up to ``retries`` times, waiting ``backoff`` seconds,
-    then twice as long each time. The last error is raised again as is.
+    """Return a tenacity ``Retrying`` for ``action``: up to ``retries``
+    retries, the first after ``backoff`` seconds, each wait twice the previous.
+    The last error is raised as is.
 
-    Usage: ``make_retrying("Request to api.openagenda.com")(function)``.
-    """
+    Usage: ``make_retrying("Request to api.openagenda.com")(function)``."""
 
     def log_retry(state: RetryCallState) -> None:
         error = state.outcome.exception() if state.outcome else None

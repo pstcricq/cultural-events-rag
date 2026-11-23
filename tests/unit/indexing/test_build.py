@@ -1,5 +1,5 @@
-"""The batches of documents sent to the embedding model, the signature of a
-build, and a build with no event refused before any request."""
+"""Tests of the build without Elasticsearch: the batches, the signature, and a
+build without events refused."""
 
 import pytest
 from langchain_core.documents import Document

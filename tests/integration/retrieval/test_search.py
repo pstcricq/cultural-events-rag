@@ -1,7 +1,5 @@
-"""The search against a real Elasticsearch, with a fake embedding model: each
-filter kept by the index (the days of the city, part of a venue name in any
-spelling, the price, the district), each mode, and an event split into chunks
-found once."""
+"""Tests of the search against a real Elasticsearch, with a fake embedding
+model: each filter, each mode, and an event of several chunks found once."""
 
 from collections.abc import Sequence
 from datetime import date, datetime

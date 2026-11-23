@@ -1,5 +1,5 @@
-"""The source chosen by the key, the quota of each agenda, the upcoming events
-first, an event shared by two agendas kept once."""
+"""Tests of the download: the source chosen by the key, the quota of each
+agenda, the upcoming events first, a shared event kept once."""
 
 from datetime import UTC, datetime
 from typing import Any

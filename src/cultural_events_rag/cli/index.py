@@ -1,5 +1,5 @@
-"""The ``cultural-events-rag index`` command: the documents of the events
-embedded and written into Elasticsearch, the alias moved onto the new index."""
+"""The ``index`` command: the documents of the events embedded and written into
+a new Elasticsearch index, then the alias moved onto it."""
 
 import argparse
 import sys
@@ -26,8 +26,7 @@ from cultural_events_rag.settings import get_settings
 
 
 class Progress:
-    """A line at each tenth of the documents embedded, readable in a terminal
-    as in the logs of a container."""
+    """Progress printed at each tenth of the documents embedded, one line each."""
 
     def __init__(self) -> None:
         self.step = 0
@@ -92,7 +91,7 @@ def _index(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag index`` to the cultural-events-rag command."""
+    """Add the ``index`` command to the parser of ``cultural-events-rag``."""
     index = commands.add_parser(
         "index", help="embed the documents of the events and write their index"
     )

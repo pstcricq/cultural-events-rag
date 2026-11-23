@@ -1,4 +1,4 @@
-"""The ``cultural-events-rag config`` commands: ``show``."""
+"""The ``config`` commands: ``show``."""
 
 import argparse
 
@@ -8,15 +8,15 @@ from cultural_events_rag.settings import Settings, get_settings
 
 
 def _shown(value: object) -> str:
-    """A value as ``config show`` prints it: a secret only says whether it is
-    set."""
+    """Return a value as ``config show`` prints it; a secret only shows whether
+    it is set."""
     if isinstance(value, SecretStr):
         return "set" if value.get_secret_value() else "not set"
     return "not set" if value is None else str(value)
 
 
 def lines(settings: Settings) -> list[str]:
-    """One line per setting: the variable that sets it, then its value."""
+    """Return one line per setting: its variable, then its value."""
     names = [name.upper() for name in type(settings).model_fields]
     width = max(len(name) for name in names)
     return [
@@ -31,7 +31,7 @@ def _show(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag config`` to the cultural-events-rag command."""
+    """Add the ``config`` command to the parser of ``cultural-events-rag``."""
     config = commands.add_parser("config", help="the settings of the application")
     steps = config.add_subparsers(dest="step", required=True)
     show = steps.add_parser("show", help="print the active settings, secrets masked")

@@ -9,23 +9,20 @@ $(info )
 # Its argument holds no comma: $(call) splits its arguments on commas.
 run = $(1); status=$$?; echo; exit $$status
 
-# A section per group of the cultural-events-rag command, named after it:
-# `uv run cultural-events-rag --help` lists the commands.
+# One section per group of commands of cultural-events-rag.
 
 UV  := uv
 RUN := $(UV) run
 
-# Hugging Face offline for every command: `make models` alone downloads the
-# models run on this machine; a command missing one says so.
+# Hugging Face offline for every command; `make models` downloads the models.
 export HF_HUB_OFFLINE := 1
 
-# docker compose reads .env on its own. On this machine: the image built from
-# this checkout (compose.dev.yaml), and Elasticsearch and Kibana run by compose
-# (the profile search). A server runs docker compose itself, on compose.yaml
-# alone.
+# docker compose on this machine: the image built from this checkout
+# (compose.dev.yaml), Elasticsearch and Kibana with the profile search. docker
+# compose reads .env itself.
 COMPOSE := docker compose -f compose.yaml -f compose.dev.yaml --profile search
 
-# The targets of a command take its options in ARGS: ARGS=--help lists them.
+# ARGS passes options to the command of a target; ARGS=--help lists them.
 help: ## Show this help
 	awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m [Q=...] [ARGS=...]\n"; \
 		printf "ARGS=--help after a target lists every option of its command\n\n"} \

@@ -1,10 +1,5 @@
-"""The annotated questions of the benchmark (``data/benchmark/questions.json``),
-shared by the evaluation of the search and that of the answers.
-
-For each question, a human listed the relevant events (their uids) and wrote a
-reference answer, both judged as of a reference date: "ce week-end" keeps the
-same meaning at each run.
-"""
+"""The annotated questions of the benchmark: for each question, the relevant
+events and a reference answer, judged as of a reference date."""
 
 import json
 from datetime import date
@@ -20,14 +15,14 @@ Status = Literal["draft", "validated"]
 
 
 class EvalQuestion(BaseModel):
-    """A question, the events relevant to it, and the answer expected."""
+    """A question, the events relevant to it, and the expected answer."""
 
     id: str
     question: str
     category: Category
     relevant: list[str] = Field(default_factory=list)  # uids of the events
     notes: str = ""
-    reference: str = ""  # the answer a well-informed human gives, in French
+    reference: str = ""  # in French
 
     @model_validator(mode="after")
     def _relevant_matches_category(self) -> "EvalQuestion":
@@ -39,12 +34,12 @@ class EvalQuestion(BaseModel):
 
 
 class EvalDataset(BaseModel):
-    """The questions, the day they are asked on, and how far they were checked."""
+    """The questions, their reference date, and the review status of the annotations."""
 
     reference_date: date  # the "today" of every question
     relevant_status: Status  # of the relevant events
     reference_status: Status = "draft"  # of the reference answers
-    notes: str = ""  # the rules of the annotation
+    notes: str = ""  # the annotation rules
     questions: list[EvalQuestion]
 
     @model_validator(mode="after")
@@ -55,8 +50,7 @@ class EvalDataset(BaseModel):
         return self
 
     def unknown_uids(self, uids: set[str]) -> list[str]:
-        """The relevant events missing from ``uids``, by question:
-        ``question-id: uid``."""
+        """Return the relevant events missing from ``uids``, as ``question-id: uid``."""
         return [
             f"{question.id}: {uid}"
             for question in self.questions
@@ -66,5 +60,5 @@ class EvalDataset(BaseModel):
 
 
 def load_dataset(path: Path) -> EvalDataset:
-    """The questions of ``path``, checked."""
+    """Load and check the questions of ``path``."""
     return EvalDataset.model_validate(json.loads(path.read_text(encoding="utf-8")))

@@ -1,5 +1,5 @@
-"""The ``cultural-events-rag documents`` command: the documents the events make,
-as the index will store them."""
+"""The ``documents`` command: the documents the events make, as the index
+stores them."""
 
 import argparse
 import json
@@ -61,7 +61,7 @@ def _documents(args: argparse.Namespace) -> int:
 
 
 def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[type-arg]
-    """Add ``cultural-events-rag documents`` to the cultural-events-rag command."""
+    """Add the ``documents`` command to the parser of ``cultural-events-rag``."""
     documents = commands.add_parser(
         "documents", help="the documents the events make, as the index will store them"
     )

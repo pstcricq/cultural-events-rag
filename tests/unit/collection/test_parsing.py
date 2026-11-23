@@ -1,6 +1,5 @@
-"""Each source parsed into the common format: the HTML turned into text,
-whether the event is free, the fields of each API, no personal data, and the
-raw events that make no valid event counted."""
+"""Tests of the parsing of each source: HTML to text, the price, the fields of
+each API, no personal data, invalid records counted."""
 
 from datetime import UTC, datetime
 from typing import Any
@@ -102,7 +101,7 @@ def test_parse_openagenda_event(
 def test_the_image_of_an_event_is_not_kept(
     ods_record: dict[str, Any], openagenda_event: dict[str, Any], agenda: Agenda
 ) -> None:
-    # Under the copyright of its author: neither kept nor shown.
+    # The image of an event is not kept.
     for event in (
         parse_opendatasoft_record(ods_record, agenda),
         parse_openagenda_event(openagenda_event, agenda),

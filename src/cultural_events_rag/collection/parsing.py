@@ -1,7 +1,6 @@
-"""The raw events of each source turned into the events of the common format:
-the fields kept, the HTML turned into text, whether the event is free read from
-its conditions. A record that does not make a valid event is counted, not kept.
-"""
+"""The parsing of the raw events of each source into events of the common
+format: fields mapped, HTML turned into text, price read from the conditions. A
+record that makes no valid event is counted and dropped."""
 
 import json
 import logging
@@ -20,8 +19,7 @@ logger = logging.getLogger(__name__)
 
 Parser = Callable[[dict[str, Any], Agenda], Event]
 
-# The Open Agenda status codes (`status` field), labelled in French as shown
-# to the end users.
+# The Open Agenda status codes, with their French labels.
 STATUS_LABELS = {
     1: "Programmé",
     2: "Reprogrammé",
@@ -36,7 +34,7 @@ _BLOCK_TAGS = {"p", "br", "div", "li", "ul", "ol", "tr"} | _HEADINGS
 
 _PRICE = re.compile(r"\d+(?:[.,]\d+)?\s*(?:€|euros?\b)")
 _FREE = ("gratuit", "entree libre", "acces libre")
-# A paid admission ticket is needed, even if the activity itself is free
+# a paid admission ticket is needed, even for a free activity
 _TICKET = (
     "billet d'entree",
     "entree musee",
@@ -59,17 +57,17 @@ class _TextExtractor(HTMLParser):
             self.parts.append("\n")
 
     def handle_data(self, data: str) -> None:
-        # In HTML a raw newline is just whitespace: only block tags produce line breaks.
+        # In HTML a raw newline is whitespace: only block tags break lines.
         self.parts.append(" ".join(data.splitlines()))
 
 
 def is_free(conditions: str | None) -> bool | None:
-    """Whether an event is free, read from its conditions ("Gratuit", "Tarif : 6€"...).
+    """Return whether an event is free, read from its conditions ("Gratuit",
+    "Tarif : 6€"...).
 
-    True: free for everyone. False: paid, at least for some visitors ("Gratuit - 6 ans / 5€")
-    or with a museum ticket. None: unknown (no conditions, "Sur inscription", "Participation
-    libre"): never presented as free, a visitor would find out on site.
-    """
+    True: free for everyone. False: paid, at least for some visitors ("Gratuit
+    - 6 ans / 5€") or with a museum ticket. None: unknown (no conditions, "Sur
+    inscription", "Participation libre")."""
     if not conditions:
         return None
     decomposed = unicodedata.normalize("NFKD", conditions.casefold().replace("’", "'"))
@@ -82,7 +80,8 @@ def is_free(conditions: str | None) -> bool | None:
 
 
 def html_to_text(value: str | None) -> str:
-    """Convert HTML to plain text: tags stripped, entities decoded, whitespace normalized."""
+    """Convert HTML to plain text: tags stripped, entities decoded, whitespace
+    normalized."""
     if not value:
         return ""
     extractor = _TextExtractor()
@@ -93,14 +92,15 @@ def html_to_text(value: str | None) -> str:
 
 
 def _fr(value: Any) -> Any:
-    """French value of a multilingual field (`{"fr": ...}`), or the value as is."""
+    """Return the French value of a multilingual field (``{"fr": ...}``), or
+    the value as is."""
     if isinstance(value, dict):
         return value.get("fr") or next(iter(value.values()), None)
     return value
 
 
 def _json_field(value: Any) -> Any:
-    """OpenDataSoft serializes some fields (timings, status...) as JSON strings."""
+    """Return a field OpenDataSoft serializes as a JSON string, decoded."""
     if isinstance(value, str):
         return json.loads(value)
     return value
@@ -119,7 +119,7 @@ def _registration(value: Any) -> list[str]:
 
 
 def parse_openagenda_event(data: dict[str, Any], agenda: Agenda) -> Event:
-    """Convert an event from the official Open Agenda API (v2)."""
+    """Convert an event of the official Open Agenda API (v2)."""
     location = data.get("location") or {}
     age = data.get("age") or {}
     uid = str(data["uid"])
@@ -156,10 +156,9 @@ def parse_openagenda_event(data: dict[str, Any], agenda: Agenda) -> Event:
 
 
 def parse_opendatasoft_record(data: dict[str, Any], agenda: Agenda) -> Event:
-    """Convert a record from the OpenDataSoft `evenements-publics-openagenda` dataset.
-
-    Contributors' personal data (contributor_* fields) is deliberately left out.
-    """
+    """Convert a record of the OpenDataSoft dataset
+    ``evenements-publics-openagenda``. The personal data of the contributors
+    (``contributor_*`` fields) is not kept."""
     coordinates = data.get("location_coordinates") or {}
     conditions = html_to_text(data.get("conditions_fr")) or None
     payload = {
@@ -192,7 +191,7 @@ def parse_opendatasoft_record(data: dict[str, Any], agenda: Agenda) -> Event:
     return Event.model_validate(payload)
 
 
-# The parser of each source, by the name its raw file carries.
+# The parser of each source, by source name.
 PARSERS: dict[str, Parser] = {
     OpenAgendaSource.name: parse_openagenda_event,
     OpenDataSoftSource.name: parse_opendatasoft_record,
@@ -202,8 +201,8 @@ PARSERS: dict[str, Parser] = {
 def parse_events(
     items: Iterable[tuple[Agenda, dict[str, Any]]], parse: Parser
 ) -> tuple[list[Event], int]:
-    """The events ``parse`` makes of the raw events of each agenda, and the
-    number of raw events that make no valid event (no title, no date...)."""
+    """Parse the raw events of each agenda with ``parse``; return the events
+    and the number of raw events that make no valid event."""
     events: list[Event] = []
     invalid = 0
     for agenda, data in items:

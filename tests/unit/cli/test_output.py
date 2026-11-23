@@ -1,6 +1,5 @@
-"""What the command prints: durations, tables aligned for the terminal, a
-question answered yes or no, an evaluation refused, and an empty question
-refused."""
+"""Tests of the command output: durations, aligned tables, yes or no questions,
+and empty questions refused."""
 
 import pytest
 

@@ -1,10 +1,7 @@
-"""The build of the index: the events turned into documents, the documents
-embedded batch by batch and written into a new index, the alias moved onto it
-once every event is in it.
-
-Each batch is one request to the embedding model, retried on a transient error,
-and the progress is reported batch after batch.
-"""
+"""The build of the index: the events turned into documents, embedded batch by
+batch and written into a new index, then the alias moved onto it once every
+event is in it. Each batch is one embedding request, retried on a transient
+error."""
 
 from collections.abc import Callable, Iterator, Sequence
 from dataclasses import dataclass
@@ -43,17 +40,15 @@ from cultural_events_rag.models import Event
 from cultural_events_rag.retry import make_retrying
 from cultural_events_rag.settings import Settings
 
-# Batches filled up to about 15k tokens (about 2.7 characters per token on our
-# French texts): each batch is a single request, nearly full (the Mistral
-# client sends up to 16k tokens per request).
+# Batches of about 15k tokens, about 2.7 characters per token on French text:
+# one request each, under the 16k tokens of the Mistral client.
 MAX_BATCH_CHARS = 40_000
 
 Progress = Callable[[int, int], None]  # (documents done, documents in all)
 
 
 def index_signature() -> dict[str, Any]:
-    """What an index depends on besides the events: an index built otherwise
-    is outdated."""
+    """Return the signature of the index: what it depends on besides the events."""
     return {
         "embedding_model": EMBEDDING_MODEL,
         "chunk_size": CHUNK_SIZE,
@@ -67,8 +62,8 @@ def index_signature() -> dict[str, Any]:
 def batches(
     documents: Sequence[Document], max_chars: int = MAX_BATCH_CHARS
 ) -> Iterator[list[Document]]:
-    """Consecutive groups of documents, each up to ``max_chars`` characters; a
-    longer document goes alone."""
+    """Split the documents into consecutive batches of up to ``max_chars``
+    characters; a longer document makes a batch of its own."""
     batch: list[Document] = []
     size = 0
     for document in documents:
@@ -84,8 +79,8 @@ def batches(
 
 @dataclass(frozen=True)
 class BuildReport:
-    """The index a build wrote, its documents, the indices it replaced, and
-    those of them that could not be deleted."""
+    """The index a build wrote, its document count, the indices it replaced and
+    those that could not be deleted."""
 
     index: str
     documents: int
@@ -104,11 +99,11 @@ def build_index(
     now: datetime | None = None,
 ) -> BuildReport:
     """Write the documents of ``events`` and their vectors into a new index,
-    then move the alias of the settings onto it, only once every document is
-    in it: on any failure until then the new index is deleted and the alias
-    left as it was. The indices the alias served are deleted afterwards, a
-    failure there leaving them in place without touching the new one.
-    """
+    then move the alias of the settings onto it once every document is in it.
+
+    On a failure before the move, the new index is deleted and the alias is
+    unchanged. The indices the alias served are deleted afterwards; a failure
+    there leaves them in place."""
     alias = index_alias(settings)
     split = make_splitter(CHUNK_SIZE, CHUNK_OVERLAP)
     documents = events_to_documents(events, split)

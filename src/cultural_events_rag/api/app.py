@@ -1,11 +1,9 @@
-"""The REST API of the assistant (FastAPI), its documentation at /docs.
+"""The FastAPI application: its routes, their errors, and its logging.
 
-    make api
     uv run uvicorn cultural_events_rag.api.app:create_app --factory
 
-The assistant is loaded once, at start. The routes stay thin: the service
-(``api.service``) holds the assistant, the packages of each step do the work.
-"""
+The assistant is loaded once at start by the service (``api.service``); the
+routes call it."""
 
 import logging
 import secrets
@@ -95,9 +93,8 @@ def _unavailable(detail: str) -> HTTPException:
 
 
 def _log_engine(exc: Exception) -> None:
-    """The cause of a failure of Elasticsearch, in the logs: its message (an
-    address that resolves to no host, a refused connection), which the text
-    of the exception leaves out."""
+    """Log the cause of an Elasticsearch failure, its message rather than the
+    text of the exception."""
     logger.error("Elasticsearch failed: %s", getattr(exc, "message", exc))
 
 
@@ -113,7 +110,7 @@ def _errors(*codes: int) -> dict[int | str, dict[str, Any]]:
 def require_admin(
     service: Service, key: Annotated[str | None, Security(admin_key)]
 ) -> None:
-    """The admin key, in the X-API-Key header."""
+    """Check the admin key of the X-API-Key header."""
     expected = service.settings.admin_api_key
     if expected is None or not expected.get_secret_value():
         raise HTTPException(
@@ -125,7 +122,7 @@ def require_admin(
 
 
 def recommended(match: EventMatch, filters: SearchFilters) -> RecommendedEvent:
-    """An event recommended, as the index stores it."""
+    """Return an event recommended, from its metadata in the index."""
     metadata = match.chunk.metadata
     timings = [
         Timing(
@@ -156,8 +153,7 @@ def recommended(match: EventMatch, filters: SearchFilters) -> RecommendedEvent:
 )
 def health(service: Service, response: Response) -> HealthResponse:
     """`ok` when the assistant is loaded and the index served is up to date;
-    503 otherwise, with the reason; the cause of a failing Elasticsearch in
-    the logs only."""
+    503 otherwise, with the reason."""
     try:
         problem = service.problem()
     except ENGINE_ERRORS as exc:
@@ -199,10 +195,11 @@ def metadata(service: Service) -> MetadataResponse:
     "/ask", summary="Ask the assistant a question", responses=_errors(502, 503)
 )
 def ask(body: AskRequest, service: Service) -> AskResponse:
-    """The answer to a question, and the events it recommends. 422: an empty
-    or too long question. 503: no assistant, no index, or an outdated one.
-    502: Mistral failed after its retries. An answer waits its turn under the
-    quota of the Mistral plan: 30 s per answer on the free plan."""
+    """Answer a question with the events it recommends.
+
+    422: an empty or too long question. 503: no assistant, no index, or an
+    outdated one. 502: Mistral failed after its retries. Answers are spaced by
+    the quota of the Mistral plan: 30 s each on the free plan."""
     today = body.today or datetime.now(TIMEZONE).date()
     try:
         problem = service.problem()
@@ -242,10 +239,9 @@ def ask(body: AskRequest, service: Service) -> AskResponse:
     responses=_errors(401, 403, 409, 503),
 )
 def rebuild(service: Service, tasks: BackgroundTasks) -> RebuildState:
-    """Fetch, process and index the events again, as make fetch, process and
-    index do: a few minutes, followed on /metadata. The questions keep their
-    answers from the index served until the new one is complete. 409: a
-    rebuild is already running."""
+    """Fetch, process and index the events again, in the background; its
+    progress is on /metadata. Questions are answered from the index served
+    until the new one is complete. 409: a rebuild is already running."""
     if service.unavailable is not None:
         raise _unavailable(f"assistant unavailable: {service.unavailable}")
     try:
@@ -257,7 +253,7 @@ def rebuild(service: Service, tasks: BackgroundTasks) -> RebuildState:
 
 
 def configure_logging() -> None:
-    """Our logs formatted as those of uvicorn, the libraries kept quiet."""
+    """Format the logs as those of uvicorn and quiet the libraries."""
     handler = logging.StreamHandler()
     handler.setFormatter(DefaultFormatter("%(levelprefix)s %(name)s: %(message)s"))
     logging.basicConfig(level=logging.INFO, handlers=[handler])
@@ -265,7 +261,8 @@ def configure_logging() -> None:
 
 
 def create_app(service: AssistantService | None = None) -> FastAPI:
-    """The application, around ``service``: that of the settings by default."""
+    """Return the application around ``service``, by default the service of the
+    settings."""
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:

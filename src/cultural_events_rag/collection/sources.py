@@ -1,6 +1,5 @@
 """The two sources of events: the official Open Agenda API (v2), and the
-OpenDataSoft dataset of the public agendas, a fallback that needs no key.
-"""
+OpenDataSoft dataset of the public agendas, which needs no key."""
 
 import time
 from collections.abc import Callable
@@ -27,13 +26,11 @@ class EventSource(Protocol):
         limit: int | None,
         upcoming: bool,
     ) -> list[dict[str, Any]]:
-        """The raw events of ``agenda`` in ``city``, up to ``limit``.
+        """Return up to ``limit`` raw events of ``agenda`` in ``city``.
 
         With ``upcoming``, the ongoing and upcoming events, the most recently
-        updated first, which spreads them over the coming months rather than
-        the next weeks only. Without, the events finished since ``since``, the
-        most recent first.
-        """
+        updated first. Without, the events finished since ``since``, the most
+        recent first."""
         ...
 
 
@@ -46,7 +43,7 @@ def get_json(
     backoff: float = 1.0,
     sleep: Callable[[float], None] = time.sleep,
 ) -> Any:
-    """GET a JSON document, a transient error (429, 5xx, network) retried."""
+    """GET a JSON document, transient errors retried."""
 
     def request() -> Any:
         response = client.get(url, params=params, headers=headers)
@@ -69,7 +66,7 @@ class OpenAgendaSource:
 
     name = "openagenda"
     url = "https://api.openagenda.com/v2/agendas/{uid}/events"
-    page_size = 300  # the API maximum
+    page_size = 300  # API maximum
 
     def __init__(self, client: httpx.Client, api_key: str) -> None:
         self.client = client
@@ -121,15 +118,15 @@ class OpenAgendaSource:
 
 
 class OpenDataSoftSource:
-    """The OpenDataSoft dataset gathering the public Open Agenda agendas,
-    paginated with ``offset``."""
+    """The OpenDataSoft dataset of the public Open Agenda agendas, paginated
+    with ``offset``."""
 
     name = "opendatasoft"
     url = (
         "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets/"
         "evenements-publics-openagenda/records"
     )
-    page_size = 100  # the API maximum
+    page_size = 100  # API maximum
 
     def __init__(self, client: httpx.Client) -> None:
         self.client = client

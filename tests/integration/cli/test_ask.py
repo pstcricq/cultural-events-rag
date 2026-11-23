@@ -1,6 +1,5 @@
-"""cultural-events-rag ask end to end against a real Elasticsearch, with a
-fake embedding model and a fake LLM: the answer, then the events it recommends
-with the details of the index."""
+"""Tests of the ``ask`` command against a real Elasticsearch, with a fake
+embedding model and a fake chat model."""
 
 from typing import Any
 

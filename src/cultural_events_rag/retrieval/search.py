@@ -1,15 +1,14 @@
 """The search of the events a question asks for, in the index served.
 
-1. The question is analyzed into filters (``query_analysis``), translated into
-   the filter clauses of each query (``filter_clauses``).
-2. Lexical: the question matched with the French text of the entries (BM25).
-   Vector: its vector compared with theirs, by cosine (exact kNN). Hybrid:
-   both, their rankings fused by Reciprocal Rank Fusion (RRF), in Python (the
-   RRF of Elasticsearch needs a paid licence).
-3. The entries are chunks: each list is grouped by event, an event at the rank
-   of its best chunk, before the fusion and the top ``k``.
-4. Optionally, a reranker sorts the first candidates again (``rerank``).
-"""
+1. The question is analyzed into filters (``query_analysis``), turned
+   into the filter clauses of each query (``filter_clauses``).
+2. Lexical search: BM25 on the French text of the entries. Vector
+   search: cosine with their vectors (exact kNN). Hybrid: both,
+   fused by Reciprocal Rank Fusion (RRF), in Python.
+3. Each ranking of chunks is grouped by event, an event at the rank of
+   its best chunk, before the fusion and the top ``k``.
+4. Optionally, a reranker sorts the first candidates again
+   (``rerank``)."""
 
 from collections import defaultdict
 from collections.abc import Sequence
@@ -32,21 +31,16 @@ from cultural_events_rag.retrieval.rerank import Reranker, rerank
 from cultural_events_rag.retry import make_retrying
 from cultural_events_rag.settings import Settings
 
-# How the events of a question can be searched: by the words of their text
-# (BM25), by the meaning of their vector (kNN), or both, fused. The assistant
-# picks one (assistant.py).
+# The search modes: BM25, kNN, or both fused.
 SearchMode = Literal["lexical", "vector", "hybrid"]
-# The events kept, given to the LLM and shown.
+# The events kept, given to the chat model and shown.
 SEARCH_K = 5
 
-# The entries each search ranks, before they are grouped by event: enough for
-# the k events even when they have several chunks each.
+# The entries each search ranks before they are grouped by event.
 CANDIDATES = 50
-# The constant of RRF, that of its paper and of Elasticsearch: the larger, the
-# less the first ranks weigh against the next ones.
+# The constant of RRF: the larger, the less the first ranks weigh.
 RRF_K = 60
-# The events of the search a reranker sorts again: the cost of the reranking
-# grows with them, one pass of its model per event.
+# The events of the search a reranker sorts again.
 RERANK_CANDIDATES = 20
 
 Hit = dict[str, Any]
@@ -54,27 +48,27 @@ Hit = dict[str, Any]
 
 @dataclass(frozen=True)
 class EventMatch:
-    """An event found, its score, its best chunk and its rank in each list."""
+    """An event found: its score, its best chunk and its rank in each list."""
 
     uid: str
     score: float  # BM25, cosine similarity or RRF, after the mode
     chunk: Document
-    # "lexical", "vector", and "hybrid" after their fusion: absent from a
-    # list, no rank.
+    # "lexical", "vector", and "hybrid" after the fusion; absent from a list,
+    # no rank.
     ranks: dict[str, int]
 
 
 @dataclass(frozen=True)
 class Retrieval:
-    """The filters of a question, and the events found with them, best first."""
+    """The filters of a question and the events found with them, best first."""
 
     filters: SearchFilters
     matches: list[EventMatch]
 
 
 def index_problem(client: Elasticsearch, settings: Settings) -> str | None:
-    """Why the index served cannot be searched: none behind the alias, or
-    built otherwise than the code builds it now; None when it can."""
+    """Return why the index served cannot be searched (no index behind the
+    alias, or an outdated one), or None."""
     alias = index_alias(settings)
     info = served_index(client, alias)
     if info is None:
@@ -86,9 +80,8 @@ def index_problem(client: Elasticsearch, settings: Settings) -> str | None:
 
 
 def filter_clauses(filters: SearchFilters) -> list[dict[str, Any]]:
-    """The filter clauses of an Elasticsearch query: none without any
-    constraint. Elasticsearch keeps the entries every clause accepts, then
-    ranks only those."""
+    """Return the filter clauses of an Elasticsearch query; none without any
+    constraint."""
     clauses: list[dict[str, Any]] = []
     if filters.date_from or filters.date_to:
         # Days of the city: a slot from 23:30 to 01:00 is on both days.
@@ -106,9 +99,8 @@ def filter_clauses(filters: SearchFilters) -> list[dict[str, Any]]:
     if filters.venue:
         clauses.append({"match_phrase": {"venue.folded": filters.venue}})
     if filters.free:
-        # Free, or a price the agenda does not give: many free events do not
-        # say so. Only the paid ones are left out; the answer tells which
-        # price is unknown.
+        # Free, or a price the agenda does not give: only the paid events are
+        # left out.
         unknown = {"bool": {"must_not": {"exists": {"field": "is_free"}}}}
         clauses.append(
             {
@@ -128,7 +120,7 @@ def lexical_hits(
     clauses: list[dict[str, Any]],
     size: int = CANDIDATES,
 ) -> list[Hit]:
-    """The entries the filters keep, ranked by BM25 on their French text."""
+    """Return the entries the filters keep, ranked by BM25 on their French text."""
     query = {"bool": {"must": [{"match": {"text": question}}], "filter": clauses}}
     response = client.search(
         index=index, size=size, query=query, source_excludes=["vector"]
@@ -144,8 +136,8 @@ def vector_hits(
     clauses: list[dict[str, Any]],
     size: int = CANDIDATES,
 ) -> list[Hit]:
-    """The entries the filters keep, ranked by the cosine of their vector with
-    ``vector``: every one compared (flat index)."""
+    """Return the entries the filters keep, ranked by the cosine of their
+    vector with ``vector`` (exact search)."""
     knn = {
         "field": "vector",
         "query_vector": vector,
@@ -161,8 +153,8 @@ def vector_hits(
 
 
 def by_event(hits: Sequence[Hit]) -> dict[str, Hit]:
-    """The events of a ranking of entries, in its order, each with its best
-    entry: the next ones are skipped."""
+    """Return the events of a ranking of entries, in its order, each with its
+    best entry."""
     best: dict[str, Hit] = {}
     for hit in hits:
         best.setdefault(hit["_source"]["uid"], hit)
@@ -170,8 +162,8 @@ def by_event(hits: Sequence[Hit]) -> dict[str, Hit]:
 
 
 def rrf(rankings: Sequence[Sequence[str]], k: int = RRF_K) -> dict[str, float]:
-    """The RRF score of each item: the sum, over the rankings it is in, of
-    1 / (k + its rank)."""
+    """Return the RRF score of each item: the sum, over the rankings it is in,
+    of 1 / (k + its rank)."""
     scores: dict[str, float] = defaultdict(float)
     for ranking in rankings:
         for rank, item in enumerate(ranking, 1):
@@ -180,7 +172,7 @@ def rrf(rankings: Sequence[Sequence[str]], k: int = RRF_K) -> dict[str, float]:
 
 
 def to_document(hit: Hit) -> Document:
-    """An entry as a document: its text, and the rest of what it stores."""
+    """Return an entry as a document: its text and its metadata."""
     metadata = dict(hit["_source"])
     return Document(id=hit["_id"], page_content=metadata.pop("text"), metadata=metadata)
 
@@ -194,9 +186,9 @@ def search_events(
     mode: SearchMode,
     k: int,
 ) -> list[EventMatch]:
-    """The ``k`` events of ``index`` closest to ``question`` among those the
-    filters keep, best first; ``vector`` is the one of the question, unused by
-    the lexical search."""
+    """Return the ``k`` events of ``index`` closest to ``question`` among those
+    the filters keep, best first. ``vector`` is the vector of the question,
+    unused by the lexical search."""
     clauses = filter_clauses(filters)
     lists: dict[str, dict[str, Hit]] = {}
     if mode in ("lexical", "hybrid"):
@@ -207,7 +199,7 @@ def search_events(
         lists["vector"] = by_event(vector_hits(client, index, vector, clauses))
 
     ranks: dict[str, dict[str, int]] = defaultdict(dict)
-    best: dict[str, tuple[int, Hit]] = {}  # the hit of its best rank, by uid
+    best: dict[str, tuple[int, Hit]] = {}  # hit of its best rank, by uid
     for name, events in lists.items():
         for rank, (uid, hit) in enumerate(events.items(), 1):
             ranks[uid][name] = rank
@@ -246,10 +238,12 @@ def retrieve(
     candidates: int = RERANK_CANDIDATES,
     retrying: Retrying | None = None,
 ) -> Retrieval:
-    """The filters of ``question`` asked on ``today``, and the ``k`` events of
-    ``index`` they keep that are closest to it; ``embeddings`` turns the
-    question into a vector, unused by the lexical search. With ``reranker``,
-    the first ``candidates`` events of the search are sorted again by it."""
+    """Analyze ``question`` asked on ``today`` and return its filters and the
+    ``k`` closest events of ``index`` they keep.
+
+    ``embeddings`` turns the question into a vector, unused by the lexical
+    search. With ``reranker``, the first ``candidates`` events are sorted again
+    by it."""
     filters = analyze(question, today, PlaceMatcher.from_index(client, index))
     vector = None
     if mode != "lexical":
@@ -265,14 +259,14 @@ def retrieve(
 
 
 def first_slot(match: EventMatch, filters: SearchFilters) -> datetime:
-    """The first slot of the event the period of the filters keeps, in the time
-    of the city: a series can have started long before."""
+    """Return the first slot of the event in the period of the filters, in the
+    timezone of the city."""
     slots = [
         (
             datetime.fromisoformat(slot["gte"]).astimezone(TIMEZONE),
             datetime.fromisoformat(slot["lte"]).astimezone(TIMEZONE),
         )
-        for slot in match.chunk.metadata["timings"]  # as the index stores them
+        for slot in match.chunk.metadata["timings"]  # as stored in the index
     ]
     for begin, end in slots:
         after = filters.date_from is None or end.date() >= filters.date_from
