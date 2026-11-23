@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install config fetch process documents test-unit coverage lint format typecheck pre-commit ci clean
+.PHONY: help install config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -14,6 +14,9 @@ run = $(1); status=$$?; echo; exit $$status
 
 UV  := uv
 RUN := $(UV) run
+
+# docker compose reads compose.yaml and .env on its own.
+COMPOSE := docker compose
 
 help: ## Show this help
 	awk 'BEGIN {FS = ":.*##"; printf "Usage: make \033[36m<target>\033[0m\n\n"} \
@@ -32,6 +35,24 @@ install: ## Install the locked environment and the git hooks
 config: ## Show the active settings, secrets masked
 	$(call run,$(RUN) cultural-events-rag config show)
 
+##@ Docker (compose.yaml, its values from .env)
+
+docker-up: ## Start every service (S=<service>: those only), wait until healthy
+	$(call run,$(COMPOSE) up -d --wait $(S))
+
+docker-down: ## Stop the services, keep their data
+	$(call run,$(COMPOSE) down)
+
+docker-ps: ## Show the containers and their health
+	$(call run,$(COMPOSE) ps -a)
+
+docker-logs: ## Follow the logs (S=<service>), or print the last N=<lines>
+	$(COMPOSE) logs $(if $(N),--no-color --tail $(N),-f) $(S)
+
+docker-reset: ## Stop the services and delete their volumes (the index)
+	printf 'Delete the volumes of the services, the index of the events? [y/N] ' && read ans && [ "$$ans" = y ]
+	$(call run,$(COMPOSE) down -v)
+
 ##@ Events (cultural-events-rag fetch, process)
 
 fetch: ## Download the raw events, MAX_EVENTS of them (ARGS="--max-events 200")
@@ -47,11 +68,16 @@ documents: ## Show the documents of the index (ARGS="--uid 123")
 
 ##@ Tests
 
+test-all: test-unit test-integration ## Run the unit, then integration tests
+
 test-unit: ## Run the tests that need only the repository
 	$(call run,$(RUN) pytest tests/unit -q)
 
-coverage: ## Run the unit tests, list the lines left uncovered, fail under 95%
-	$(call run,$(RUN) pytest tests/unit -q --cov $(ARGS))
+test-integration: ## Run the tests that need an Elasticsearch (docker)
+	$(call run,$(RUN) pytest tests/integration -q)
+
+coverage: ## Run the unit and integration tests, list the lines left uncovered, fail under 95%
+	$(call run,$(RUN) pytest tests/unit tests/integration -q --cov $(ARGS))
 
 ##@ Quality
 

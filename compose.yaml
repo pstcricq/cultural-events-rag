@@ -1,0 +1,77 @@
+# The services of the application, the same file in every environment: their
+# values from the environment, then from .env (.env.example lists them), none
+# written here, every one required: a value forgotten stops compose, and
+# names itself, rather than leave the code to its default. The ports are
+# published on 127.0.0.1, this machine only (a proxy in front elsewhere).
+# `make docker-up` starts them and waits until they are healthy.
+
+name: cultural-events-rag
+
+services:
+  # The search engine: the vector and lexical index of the events. One node,
+  # with the elastic user and ELASTIC_PASSWORD, over plain HTTP inside the
+  # network of compose: TLS and a dedicated user in production.
+  # ELASTIC_PASSWORD is only read at the first start: to change it later, run
+  # make docker-reset (the index is lost, make index builds it again).
+  # ELASTIC_VERSION is the version of every Elastic image: the Python client in
+  # pyproject.toml must stay on the same major version.
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:?set ELASTIC_VERSION in .env or in the environment}
+    environment:
+      discovery.type: single-node
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:?set ELASTIC_PASSWORD in .env or in the environment}
+      xpack.security.enabled: "true"
+      xpack.security.http.ssl.enabled: "false"
+      # Machine learning is not used, and reserves memory.
+      xpack.ml.enabled: "false"
+      ES_JAVA_OPTS: -Xms1g -Xmx1g
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    # Reached by make index, make search and the tests from this machine.
+    ports:
+      - "127.0.0.1:9200:9200"
+    healthcheck:
+      # The password is read from the variable of the container, not written.
+      test: ["CMD-SHELL", "curl -fsS -u \"elastic:$$ELASTIC_PASSWORD\" 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s'"]  # gitleaks:allow
+      interval: 10s
+      timeout: 10s
+      start_period: 60s
+      retries: 10
+
+  # The web interface of Elasticsearch, to browse the index and try queries:
+  # http://127.0.0.1:5601, signed in as elastic with ELASTIC_PASSWORD. Kibana
+  # itself reaches Elasticsearch as its built-in user kibana_system, whose
+  # password kibana-setup sets to KIBANA_PASSWORD at each start.
+  kibana-setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:${ELASTIC_VERSION:?set ELASTIC_VERSION in .env or in the environment}
+    environment:
+      ELASTIC_PASSWORD: ${ELASTIC_PASSWORD:?set ELASTIC_PASSWORD in .env or in the environment}
+      KIBANA_PASSWORD: ${KIBANA_PASSWORD:?set KIBANA_PASSWORD in .env or in the environment}
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    # The passwords are read from the variables of the container, not written.
+    command: ["bash", "-c", "until curl -fsS -o /dev/null -u \"elastic:$$ELASTIC_PASSWORD\" -H 'Content-Type: application/json' -X POST http://elasticsearch:9200/_security/user/kibana_system/_password -d \"{\\\"password\\\":\\\"$$KIBANA_PASSWORD\\\"}\"; do sleep 2; done; echo 'kibana_system password set'"]  # gitleaks:allow
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:${ELASTIC_VERSION:?set ELASTIC_VERSION in .env or in the environment}
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: kibana_system
+      ELASTICSEARCH_PASSWORD: ${KIBANA_PASSWORD:?set KIBANA_PASSWORD in .env or in the environment}
+      TELEMETRY_OPTIN: "false"
+    depends_on:
+      kibana-setup:
+        condition: service_completed_successfully
+    ports:
+      - "127.0.0.1:5601:5601"
+    healthcheck:
+      # The login page answers once Kibana is ready.
+      test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:5601/login"]
+      interval: 10s
+      timeout: 10s
+      start_period: 90s
+      retries: 12
+
+volumes:
+  elasticsearch-data:

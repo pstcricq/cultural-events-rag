@@ -1,5 +1,5 @@
-"""The settings come from the environment, then from .env, then from their
-defaults, an empty one is unset, and a key never shows in a repr."""
+"""The settings come from the environment, then from .env, none has a default,
+an empty one is unset, and a key never shows in a repr."""
 
 from pathlib import Path
 
@@ -9,6 +9,9 @@ from pydantic import ValidationError
 from cultural_events_rag.settings import Settings, get_settings
 from tests import ROOT
 
+# The variables only compose reads, never the application.
+COMPOSE_ONLY = {"ELASTIC_VERSION", "KIBANA_PASSWORD"}
+
 
 def _env_file(tmp_path: Path, text: str) -> Path:
     path = tmp_path / ".env"
@@ -16,10 +19,9 @@ def _env_file(tmp_path: Path, text: str) -> Path:
     return path
 
 
-def test_without_env_file_nor_variable_no_key_is_set(tmp_path: Path) -> None:
+def test_without_env_file_nor_variable_nothing_is_set(tmp_path: Path) -> None:
     settings = Settings(_env_file=tmp_path / "missing.env")
-    assert settings.openagenda_api_key is None
-    assert settings.mistral_api_key is None
+    assert all(value is None for value in settings.model_dump().values())
 
 
 def test_a_key_is_read_from_the_env_file(tmp_path: Path) -> None:
@@ -80,4 +82,4 @@ def test_the_example_lists_the_same_variables_as_the_settings() -> None:
         for line in example.splitlines()
         if "=" in line
     }
-    assert variables == {name.upper() for name in Settings.model_fields}
+    assert variables == {name.upper() for name in Settings.model_fields} | COMPOSE_ONLY

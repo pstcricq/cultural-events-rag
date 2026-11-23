@@ -1,7 +1,8 @@
 """The settings of the application: what an environment sets (its secrets,
 where its services are, what its machine and its plans allow), read from the
-environment, then from ``.env``, then from their defaults. A variable of the
-environment wins over the same line of ``.env``.
+environment, then from ``.env``, unset otherwise: none has a default here,
+``.env.example`` gives each one its value. A variable of the environment wins
+over the same line of ``.env``.
 """
 
 from functools import lru_cache
@@ -28,6 +29,14 @@ class Settings(BaseSettings):
     # every repr and log line.
     openagenda_api_key: SecretStr | None = None
     mistral_api_key: SecretStr | None = None
+
+    # The search engine holding the index, and the user the application signs
+    # in as, with its password: each environment chooses them (the port
+    # compose publishes and elastic, the built-in superuser of compose.yaml, on
+    # a laptop; a role-limited user elsewhere).
+    elasticsearch_url: str | None = None
+    elastic_user: str | None = None
+    elastic_password: SecretStr | None = None
 
     # How many events `fetch` collects from the agendas of CITY: a number (a
     # sample while developing), or all. No default: the collection refuses to

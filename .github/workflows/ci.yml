@@ -1,7 +1,7 @@
 # One job per make target of the same name, in parallel. Every job installs
 # with `uv sync --locked`, which fails when uv.lock no longer matches
 # pyproject.toml, and UV_LOCKED keeps every `uv run` on uv.lock. No secret is
-# needed: each test sets its own settings and fakes Open Agenda.
+# needed: the tests fake Open Agenda, and start their own Elasticsearch.
 name: CI
 
 on:
@@ -78,8 +78,10 @@ jobs:
       - name: The unit tests
         run: make test-unit
 
-  # Every test and the coverage of the package, the coverage of each file also
-  # written in the summary of the run.
+  # Every test, unit and integration, and the coverage of the package: the
+  # integration tests start their Elasticsearch container with the runner's
+  # docker. The coverage of each file is also written in the summary of the
+  # run.
   coverage:
     runs-on: ubuntu-latest
     timeout-minutes: 10

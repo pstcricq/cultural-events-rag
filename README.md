@@ -24,7 +24,17 @@ cp .env.example .env
 make config
 ```
 
-The settings are what an environment sets: its secrets, where its services are, what its machine and its plans allow. They come from the environment, then from `.env`, then from their defaults; `.env.example` lists them all. `.env` holds the API keys and is never committed. `make config` (`cultural-events-rag config show`) prints the active settings, a key only shown as set or not.
+The settings are what an environment sets: its secrets, where its services are, what its machine and its plans allow. They come from the environment, then from `.env`; none has a default in the code: `.env.example` lists them all, with their values. `.env` holds the API keys and is never committed. `make config` (`cultural-events-rag config show`) prints the active settings, a key only shown as set or not.
+
+## Search engine
+
+```bash
+make docker-up
+```
+
+The index of the events lives in [Elasticsearch](https://www.elastic.co/elasticsearch), run by docker compose: one node, with the `elastic` user and `ELASTIC_PASSWORD` from `.env`, over plain HTTP. `compose.yaml` holds the services as they run in every environment, and writes none of the values an environment sets: it takes them from the environment, then from `.env`, and refuses to start without any of them, naming the one missing: the passwords and the version of every Elastic image `ELASTIC_VERSION`, all listed in `.env.example`. The ports are published on 127.0.0.1, this machine only. `make docker-up` starts the services and waits until they are healthy (`S=elasticsearch`: Elasticsearch alone); `make docker-down` stops them and keeps their data, `make docker-ps` shows their health, `make docker-logs` their logs, `make docker-reset` deletes their data: the only way to change `ELASTIC_PASSWORD`, read at the first start alone.
+
+`make docker-up` also starts [Kibana](https://www.elastic.co/kibana), the web interface of Elasticsearch, on http://127.0.0.1:5601: sign in as `elastic` with `ELASTIC_PASSWORD`, then browse the index in Discover, or try queries in Dev Tools. Kibana reaches Elasticsearch as its built-in user `kibana_system`, with `KIBANA_PASSWORD` from `.env`; the application never goes through it.
 
 ## Events
 
@@ -47,16 +57,17 @@ make documents
 
 ## CI
 
-GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: each test sets its own settings and fakes Open Agenda. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
+GitHub Actions runs one job per make target of the same name: `lint`, `typecheck`, `pre-commit`, `test-unit` and `coverage`, the coverage of each file written in the summary of the run. `make ci` runs every check of the CI on this machine. The CI needs no secret: the tests fake Open Agenda, and start their own Elasticsearch. The packages of uv and the hooks of pre-commit are cached between runs; a new push stops the run still going on the same branch.
 
 ## Test
 
 ```bash
 make test-unit
+make test-integration
 make coverage
 ```
 
-`make test-unit` runs the tests that need only the repository, also before each `git push`. `make coverage` runs them and measures the lines of the package they run: it lists those left out, and fails below 95%. `make lint` checks the Python, `make format` fixes what it can, `make typecheck` checks the types, `make pre-commit` runs every hook on every file.
+`make test-unit` runs the tests that need only the repository, also before each `git push`. `make test-integration` runs those that need an Elasticsearch: [testcontainers](https://testcontainers.com) starts their own container of the image of `compose.yaml` on a free port, with its security on, and removes it at the end, even when the tests are killed. `make test-all` runs the unit and integration tests. `make coverage` runs them and measures the lines of the package they run: it lists those left out, and fails below 95%. `make lint` checks the Python, `make format` fixes what it can, `make typecheck` checks the types, `make pre-commit` runs every hook on every file.
 
 ## Licence
 

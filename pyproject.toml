@@ -21,6 +21,7 @@ authors = [
 # The oldest Python accepted; .python-version names the one uv installs.
 requires-python = ">=3.12"
 dependencies = [
+    "elasticsearch>=9.5,<10",
     "httpx>=0.28",
     "langchain-core>=1.8",
     "langchain-text-splitters>=1.1",
@@ -45,7 +46,10 @@ dev = [
     "mypy>=2.4.1",
     "ruff>=0.17.5",
     "pre-commit>=4.7.0",
+    "testcontainers>=4.15.0",
     "pytest-cov>=7.1.0",
+    "pyyaml>=6.0.3",
+    "types-pyyaml>=6.0.12.20261113",
 ]
 
 # Any other uv refuses to run on this project.
