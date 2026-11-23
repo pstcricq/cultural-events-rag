@@ -29,26 +29,32 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-      # The packages uv downloads, kept between runs, one cache per job,
-      # keyed on uv.lock.
+      # The packages uv downloads, kept between runs, one cache per job (the
+      # typecheck installs the rerank extra), keyed on uv.lock. Not pruned:
+      # PyTorch, the largest, would be downloaded again at each run.
       - &setup-uv
         uses: astral-sh/setup-uv@v10.3.3
         with:
           enable-cache: true
           cache-suffix: ${{ github.job }}
+          prune-cache: false
       - &install
         name: Install the locked environment
         run: uv sync --locked
       - name: Lint the Python
         run: make lint
 
+  # With the rerank extra (PyTorch for the CPU): mypy checks the calls of the
+  # reranker against sentence-transformers. The tests replace it: they need
+  # no extra.
   typecheck:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
       - *setup-uv
-      - *install
+      - name: Install the locked environment and the rerank extra
+        run: uv sync --locked --extra rerank
       - name: Check the types
         run: make typecheck
 

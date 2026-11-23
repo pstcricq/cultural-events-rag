@@ -30,11 +30,11 @@ help: ## Show this help
 
 ##@ Environment
 
-install: ## Install the locked environment and the git hooks
-	$(call run,$(UV) sync)
+install: ## Install the locked environment, the reranker and the git hooks
+	$(call run,$(UV) sync --extra rerank)
 	$(call run,$(RUN) pre-commit install)
 
-models: ## Download the models run on this machine (Mistral tokenizer)
+models: ## Download the models run on this machine (Mistral tokenizer, reranker)
 	$(call run,HF_HUB_OFFLINE=0 $(RUN) cultural-events-rag models)
 
 ##@ Config (cultural-events-rag config)
@@ -84,7 +84,7 @@ status: ## Show the index served, and whether the code still builds it the same 
 analyze: ## Show the filters of a question (Q="concert gratuit ce week-end")
 	$(call run,$(RUN) cultural-events-rag analyze "$(Q)" $(ARGS))
 
-search: ## Search the events of a question (Q="...", ARGS="--mode hybrid")
+search: ## Search the events of a question (Q="...", ARGS="--mode hybrid --rerank")
 	$(call run,$(RUN) cultural-events-rag search "$(Q)" $(ARGS))
 
 ##@ Tests

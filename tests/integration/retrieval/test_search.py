@@ -3,6 +3,7 @@ filter kept by the index (the days of the city, part of a venue name in any
 spelling, the price, the district), each mode, and an event split into chunks
 found once."""
 
+from collections.abc import Sequence
 from datetime import date, datetime
 
 import pytest
@@ -192,3 +193,30 @@ def test_retrieve_analyzes_then_searches_in_both(
     )
     assert {match.uid for match in retrieval.matches} == {"jazz", "dessin"}
     assert set(retrieval.matches[0].ranks) == {"lexical", "vector", "hybrid"}
+
+
+class Reversed:
+    """Scores the candidates in the reverse of their order: the last one first."""
+
+    def __init__(self) -> None:
+        self.texts: list[str] = []
+
+    def scores(self, question: str, texts: Sequence[str]) -> list[float]:
+        self.texts = list(texts)
+        return [float(rank) for rank in range(len(texts))]
+
+
+def test_retrieve_reranks_the_first_candidates(
+    client: Elasticsearch, index: str
+) -> None:
+    reranker = Reversed()
+
+    today = date(2026, 11, 1)
+    plain = retrieve(client, index, "atelier", today, "vector", 3, FAKE)
+    reranked = retrieve(
+        client, index, "atelier", today, "vector", 2, FAKE, reranker, candidates=3
+    )
+
+    # Three candidates read by the reranker, the last two of the search kept.
+    assert len(reranker.texts) == len(plain.matches) == 3
+    assert [m.uid for m in reranked.matches] == [m.uid for m in plain.matches][::-1][:2]

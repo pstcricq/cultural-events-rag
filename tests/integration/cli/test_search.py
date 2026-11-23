@@ -1,6 +1,9 @@
 """cultural-events-rag search end to end against a real Elasticsearch, with a
-fake embedding model: the events found, and an index built otherwise
-refused."""
+fake embedding model and a fake reranker: the events found, reranked, and an
+index built otherwise or a missing rerank extra refused."""
+
+import sys
+from collections.abc import Sequence
 
 import pytest
 from elasticsearch import Elasticsearch
@@ -72,3 +75,65 @@ def test_search_refuses_an_index_built_otherwise(
     assert main(["search", "Un concert", "--mode", "lexical"]) == 1
 
     assert "outdated index: embedding_model" in capsys.readouterr().err
+
+
+class Constant:
+    """Scores every candidate alike."""
+
+    def __init__(self, model: str) -> None:
+        self.model = model
+
+    def scores(self, question: str, texts: Sequence[str]) -> list[float]:
+        return [0.5] * len(texts)
+
+
+def test_search_reranks_with_the_model_of_the_code(
+    indexed: None,
+    settings: Settings,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setattr(
+        "cultural_events_rag.cli.search.RERANK_MODEL", "a/cross-encoder"
+    )
+    monkeypatch.setattr("cultural_events_rag.cli.search.CrossEncoderReranker", Constant)
+
+    assert (
+        main(
+            [
+                "search",
+                "Une visite guidée",
+                "--mode",
+                "hybrid",
+                "--rerank",
+                "--today",
+                "2026-06-01",
+            ]
+        )
+        == 0
+    )
+
+    out = capsys.readouterr().out
+    assert "Reranker: a/cross-encoder, loaded in " in out
+    assert "hybrid search reranked by a/cross-encoder (20 candidates)" in out
+    assert "score 0.5, before reranking: hybrid 1 (lexical 1, vector 1), event" in out
+
+
+def test_search_names_the_missing_extra(
+    indexed: None,
+    settings: Settings,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    monkeypatch.setattr(
+        "cultural_events_rag.cli.search.RERANK_MODEL", "a/cross-encoder"
+    )
+
+    monkeypatch.setitem(sys.modules, "sentence_transformers", None)  # not installed
+
+    assert main(["search", "Une visite guidée", "--mode", "hybrid", "--rerank"]) == 1
+
+    assert (
+        "the reranking needs the rerank extra: run make install"
+        in capsys.readouterr().err
+    )

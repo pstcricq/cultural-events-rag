@@ -46,6 +46,10 @@ class Settings(BaseSettings):
     # run without one, a forgotten cap is not a choice.
     max_events: PositiveInt | Literal["all"] | None = None
 
+    # Whether this machine can run the reranker: its extra, its model and 2 to
+    # 3 GB of memory. false where it cannot: `models` then leaves its model out.
+    rerank_available: bool | None = None
+
 
 @lru_cache
 def get_settings() -> Settings:

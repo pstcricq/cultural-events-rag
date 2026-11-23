@@ -8,6 +8,7 @@
    RRF of Elasticsearch needs a paid licence).
 3. The entries are chunks: each list is grouped by event, an event at the rank
    of its best chunk, before the fusion and the top ``k``.
+4. Optionally, a reranker sorts the first candidates again (``rerank``).
 """
 
 from collections import defaultdict
@@ -27,6 +28,7 @@ from cultural_events_rag.indexing.build import index_signature
 from cultural_events_rag.indexing.store import served_index, signature_differences
 from cultural_events_rag.retrieval.filters import SearchFilters
 from cultural_events_rag.retrieval.query_analysis import PlaceMatcher, analyze
+from cultural_events_rag.retrieval.rerank import Reranker, rerank
 from cultural_events_rag.retry import make_retrying
 from cultural_events_rag.settings import Settings
 
@@ -43,6 +45,9 @@ CANDIDATES = 50
 # The constant of RRF, that of its paper and of Elasticsearch: the larger, the
 # less the first ranks weigh against the next ones.
 RRF_K = 60
+# The events of the search a reranker sorts again: the cost of the reranking
+# grows with them, one pass of its model per event.
+RERANK_CANDIDATES = 20
 
 Hit = dict[str, Any]
 
@@ -237,11 +242,14 @@ def retrieve(
     mode: SearchMode,
     k: int,
     embeddings: Embeddings | None = None,
+    reranker: Reranker | None = None,
+    candidates: int = RERANK_CANDIDATES,
     retrying: Retrying | None = None,
 ) -> Retrieval:
     """The filters of ``question`` asked on ``today``, and the ``k`` events of
     ``index`` they keep that are closest to it; ``embeddings`` turns the
-    question into a vector, unused by the lexical search."""
+    question into a vector, unused by the lexical search. With ``reranker``,
+    the first ``candidates`` events of the search are sorted again by it."""
     filters = analyze(question, today, PlaceMatcher.from_index(client, index))
     vector = None
     if mode != "lexical":
@@ -249,7 +257,10 @@ def retrieve(
             raise ValueError(f"the {mode} search needs an embedding model")
         retrying = retrying or make_retrying("Embedding")
         vector = retrying(embeddings.embed_query, question)
-    matches = search_events(client, index, question, vector, filters, mode, k)
+    size = max(candidates, k) if reranker else k
+    matches = search_events(client, index, question, vector, filters, mode, size)
+    if reranker:
+        matches = rerank(reranker, question, matches, k)
     return Retrieval(filters=filters, matches=matches)
 
 

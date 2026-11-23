@@ -14,12 +14,22 @@ from elasticsearch import ConnectionError as EngineConnectionError
 from cultural_events_rag.cli.output import question, quiet_logs
 from cultural_events_rag.constants import TIMEZONE
 from cultural_events_rag.elastic import index_alias, make_elastic_client
-from cultural_events_rag.errors import MissingModelError, MissingSettingError
+from cultural_events_rag.errors import (
+    MissingModelError,
+    MissingSettingError,
+    RerankerError,
+)
 from cultural_events_rag.indexing.documents import PRICE_LABELS
 from cultural_events_rag.indexing.formatting import format_day, format_time
 from cultural_events_rag.mistral import make_embeddings
 from cultural_events_rag.retrieval.filters import SearchFilters
+from cultural_events_rag.retrieval.rerank import (
+    RERANK_MODEL,
+    CrossEncoderReranker,
+    Reranker,
+)
 from cultural_events_rag.retrieval.search import (
+    RERANK_CANDIDATES,
     SEARCH_K,
     EventMatch,
     Retrieval,
@@ -37,6 +47,7 @@ def _block(
     match: EventMatch,
     filters: SearchFilters,
     mode: SearchMode,
+    reranked: bool,
 ) -> str:
     """Three lines per event: its title; its place, slot and price, as a user
     reads them; what ranked it."""
@@ -47,8 +58,14 @@ def _block(
         for name, position in match.ranks.items()
         if name != "hybrid"
     )
+    ranking = lists
+    if reranked:
+        before = f"{mode} {match.ranks[mode]}"
+        ranking = f"before reranking: {before}" + (
+            f" ({lists})" if mode == "hybrid" else ""
+        )
     trace = (
-        f"score {match.score:.3g}, {lists}, "
+        f"score {match.score:.3g}, {ranking}, "
         f"event {match.uid}, chunk {metadata['chunk_index']}"
     )
     return f"{rank:>2}. {metadata['title']}\n    {place}\n    {trace}\n"
@@ -65,6 +82,14 @@ def where_and_when(match: EventMatch, filters: SearchFilters) -> str:
     return ", ".join(part for part in (metadata["venue"], when, price) if part)
 
 
+def load_reranker(model: str) -> Reranker:
+    """The cross-encoder ``model``, loaded once, the time it took shown."""
+    start = time.perf_counter()
+    reranker = CrossEncoderReranker(model)
+    print(f"Reranker: {model}, loaded in {time.perf_counter() - start:.1f} s")
+    return reranker
+
+
 def _search(args: argparse.Namespace) -> int:
     settings = get_settings()
     quiet_logs()
@@ -72,6 +97,7 @@ def _search(args: argparse.Namespace) -> int:
     mode: SearchMode = args.mode
     k: int = args.k or SEARCH_K
     today: date = args.today or datetime.now(TIMEZONE).date()
+    model = RERANK_MODEL if args.rerank else None
     try:
         alias = index_alias(settings)
         client = make_elastic_client(settings)
@@ -80,12 +106,17 @@ def _search(args: argparse.Namespace) -> int:
         if problem:
             print(f"FAIL {problem}", file=sys.stderr)
             return 1
+        # Loaded once the index is known good: a few seconds.
+        reranker = load_reranker(model) if model else None
         start = time.perf_counter()
         retrieval: Retrieval = retrieve(
-            client, alias, args.question, today, mode, k, embeddings
+            client, alias, args.question, today, mode, k, embeddings, reranker
         )
         elapsed = time.perf_counter() - start
-    except (MissingSettingError, MissingModelError) as exc:
+    except (RerankerError, MissingModelError) as exc:
+        print(f"FAIL {exc}", file=sys.stderr)
+        return 1
+    except MissingSettingError as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1
     except EngineConnectionError:
@@ -101,6 +132,8 @@ def _search(args: argparse.Namespace) -> int:
         return 1
 
     search = f"{mode} search"
+    if model:
+        search += f" reranked by {model} ({RERANK_CANDIDATES} candidates)"
     print(f"Question: {args.question}")
     events = f"{k} event" + ("s" if k > 1 else "")
     print(f"Asked on {today}, {search}, {events} at most, {elapsed:.1f} s")
@@ -108,7 +141,7 @@ def _search(args: argparse.Namespace) -> int:
     if not retrieval.matches:
         print("No event")
     for rank, match in enumerate(retrieval.matches, 1):
-        print(_block(rank, match, retrieval.filters, mode))
+        print(_block(rank, match, retrieval.filters, mode, reranked=bool(model)))
     return 0
 
 
@@ -125,6 +158,9 @@ def add_commands(commands: argparse._SubParsersAction) -> None:  # type: ignore[
         help="how to rank the events: by their words, their vector, or both",
     )
     search.add_argument("--k", type=int, help="events kept, default: SEARCH_K (5)")
+    search.add_argument(
+        "--rerank", action="store_true", help=f"sorted again by {RERANK_MODEL}"
+    )
     search.add_argument(
         "--today",
         type=date.fromisoformat,

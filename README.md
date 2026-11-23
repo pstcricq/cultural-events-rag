@@ -16,7 +16,7 @@ make install
 make models
 ```
 
-`make install` sets up the locked environment in `.venv`, the `cultural-events-rag` command and the git hooks. `make models` (`cultural-events-rag models`) downloads once, into the cache of Hugging Face, the models run on this machine: the Mistral tokenizer (about 2 MB), that counts the tokens of each embedding request. Every other target runs Hugging Face offline (`HF_HUB_OFFLINE=1`): a model missing is reported, never downloaded on the way. `make help` lists every target, `uv run cultural-events-rag --help` every command.
+`make install` sets up the locked environment in `.venv`, with the `rerank` extra (sentence-transformers and PyTorch for the reranker, about 1 GB), the `cultural-events-rag` command and the git hooks. Without the reranker, `uv sync` installs the rest alone. `make models` (`cultural-events-rag models`) downloads once, into the cache of Hugging Face, the models run on this machine: the Mistral tokenizer (about 2 MB), that counts the tokens of each embedding request, and the reranker, `RERANK_MODEL` (about 2.3 GB, unless `RERANK_AVAILABLE=false`). Every other target runs Hugging Face offline (`HF_HUB_OFFLINE=1`): a model missing is reported, never downloaded on the way. `make help` lists every target, `uv run cultural-events-rag --help` every command.
 
 ## Configuration
 
@@ -64,12 +64,14 @@ make status
 
 ```bash
 make analyze Q="Un concert gratuit ce week-end à Saint-Cyprien ?"
-make search Q="Un concert gratuit ce week-end à Saint-Cyprien ?" ARGS="--mode hybrid"
+make search Q="Un concert gratuit ce week-end à Saint-Cyprien ?" ARGS="--mode hybrid --rerank"
 ```
 
 `make analyze` (`cultural-events-rag analyze`) shows the filters the search will apply to a question, read by rules, without any model: the period ("ce week-end", "en décembre", "du 20 au 25 octobre", "Noël", "les vacances de la Toussaint", taken at their widest whatever the year), free entry ("gratuit", "entrée libre": the free events and those whose price the agenda does not give, many free ones not saying so; the answer tells which price is unknown), the district or the venue, among those of the index served. A question without a period, or with one under way, looks for events from today; past events only for a question about the past ("le mois dernier"). `ARGS="--today 2026-10-15"` asks it on another day.
 
 `make search` (`cultural-events-rag search`) gives the events of the index closest to the question, among those its filters keep: Elasticsearch applies the filters first, then ranks only the entries left. `make search` is a tool to explore: it has no choice of its own, the mode is always given. `--mode` picks the ranking: `lexical`, the words of the question against the French text of the entries (BM25); `vector`, its vector (`mistral-embed`) against theirs, by cosine; `hybrid`, both, their two rankings fused by Reciprocal Rank Fusion. An event split into several chunks counts once, at the rank of its best chunk; the `SEARCH_K` best events (5) are kept, each with its rank in each ranking, `--k 10` for more. The search refuses an index the code builds otherwise now: `make status` tells what differs.
+
+With `--rerank`, a cross-encoder, `RERANK_MODEL` (`BAAI/bge-reranker-v2-m3`), sorts the first 20 events of the search again: it reads the question and the best chunk of each event together, and scores how well the chunk answers it, more exactly than the comparison of their vectors, too slowly for the whole index. It runs on this machine (the `rerank` extra, the model downloaded by `make models`): about 2.3 GB on disk, 2 to 3 GB of memory, a few seconds to load, under a second per search.
 
 ## CI
 
