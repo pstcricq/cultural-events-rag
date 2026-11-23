@@ -41,9 +41,9 @@ class Settings(BaseSettings):
     # new index and moves the alias onto it.
     elasticsearch_index: str | None = None
 
-    # How many events `fetch` collects from the agendas of CITY: a number (a
-    # sample while developing), or all. No default: the collection refuses to
-    # run without one, a forgotten cap is not a choice.
+    # How many events `fetch` and the rebuild collect from the agendas of CITY:
+    # a number (a sample while developing), or all. No default: the collection
+    # refuses to run without one, a forgotten cap is not a choice.
     max_events: PositiveInt | Literal["all"] | None = None
 
     # Whether this machine can run the reranker: its extra, its model and 2 to
@@ -54,6 +54,10 @@ class Settings(BaseSettings):
     # the free plan. The calls are spaced to keep to it, rather than refused
     # and retried.
     llm_requests_per_minute: float | None = None
+
+    # The key the API asks to rebuild the index (POST /rebuild, header
+    # X-API-Key): unset, the rebuild is turned off.
+    admin_api_key: SecretStr | None = None
 
 
 @lru_cache

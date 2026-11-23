@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status analyze search ask benchmark eval-retrieval eval-generation test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
+.PHONY: help install models config docker-up docker-down docker-ps docker-logs docker-reset fetch process documents index status rebuild analyze search ask benchmark eval-retrieval eval-generation api test-all test-unit test-integration coverage lint format typecheck pre-commit ci clean
 .SILENT:
 
 # Blank line once at the top of the output, then one after each command.
@@ -81,6 +81,8 @@ index: ## Embed the documents and write their index into Elasticsearch
 status: ## Show the index served, and whether the code still builds it the same way
 	$(call run,$(RUN) cultural-events-rag status)
 
+rebuild: fetch process index ## Download, process and index the events again, as POST /rebuild (ARGS go to fetch)
+
 ##@ Retrieval (cultural-events-rag analyze, search)
 
 analyze: ## Show the filters of a question (Q="concert gratuit ce week-end", ARGS="--today 2026-10-15")
@@ -104,6 +106,11 @@ eval-retrieval: ## Compare the configurations of the search on the benchmark (AR
 
 eval-generation: ## Answer the benchmark questions and judge them (ARGS="--no-judge")
 	$(call run,$(RUN) cultural-events-rag evaluate generation $(ARGS))
+
+##@ API (FastAPI)
+
+api: ## Serve the API on http://127.0.0.1:8000, its documentation at /docs
+	$(call run,$(RUN) uvicorn cultural_events_rag.api.app:create_app --factory --host 127.0.0.1 --port 8000)
 
 ##@ Tests
 

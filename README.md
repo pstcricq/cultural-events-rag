@@ -58,7 +58,7 @@ make status
 
 `make documents` (`cultural-events-rag documents`) shows the documents the events of `data/processed/events.jsonl` make, as the index will store them: a summary of them all, or with `ARGS="--uid 123"` every document of one event. Each event gives one document per chunk of its description, up to `CHUNK_SIZE` characters (1000), the last `CHUNK_OVERLAP` (150) repeated at the start of the next. Every chunk starts with the header of the event, its title, dates in Paris time, place, price, audience, so that each one stays tied to its event. The metadata (dates in UTC, district, age, price) will filter the search.
 
-`make index` (`cultural-events-rag index`) sends these documents to `mistral-embed` (`MISTRAL_API_KEY`) in batches of about 15k tokens, a batch retried on a rate limit or a server error, and writes them into Elasticsearch: each one with its text, analyzed in French for the lexical search (BM25), its vector, for the vector search (kNN, exact: the question is compared with every vector by cosine), and its metadata, as fields to filter on. Each build writes a new index, then moves the alias `events` (`ELASTICSEARCH_INDEX`) onto it once every event is in it, and deletes the one it served: a failed build leaves the served index as it was. The index records what it was built with, the embedding model, the chunking, the document format and the vector index type: `make status` (`cultural-events-rag status`) shows the index served, its documents, when it was built, and whether the code still builds it the same way.
+`make index` (`cultural-events-rag index`) sends these documents to `mistral-embed` (`MISTRAL_API_KEY`) in batches of about 15k tokens, a batch retried on a rate limit or a server error, and writes them into Elasticsearch: each one with its text, analyzed in French for the lexical search (BM25), its vector, for the vector search (kNN, exact: the question is compared with every vector by cosine), and its metadata, as fields to filter on. Each build writes a new index, then moves the alias `events` (`ELASTICSEARCH_INDEX`) onto it once every event is in it, and deletes the one it served: a failed build leaves the served index as it was. The index records what it was built with, the embedding model, the chunking, the document format and the vector index type: `make status` (`cultural-events-rag status`) shows the index served, its documents, when it was built, and whether the code still builds it the same way. `make rebuild` refreshes the events served: `make fetch`, `make process` and `make index` in a row, as `POST /rebuild` does (`ARGS` go to `make fetch`).
 
 ## Retrieval
 
@@ -80,6 +80,23 @@ make ask Q="Un concert de jazz ?"
 ```
 
 `make ask` (`cultural-events-rag ask`) answers the question from the events the search found: the LLM, `LLM_MODEL` (`ministral-14b-latest`, the most capable model of the free Mistral plan), reads each of them whole, its header and its whole description, not only its best chunk, which can leave out its sessions or its prices. Each event is a few hundred tokens: five make a context of about 2,000. The prompt, in French, holds it to those events: nothing invented, every event that fits recommended, and no event at all when none fits ("Un bon restaurant italien"), since the score of the reranker alone cannot tell such a question apart (`reports/retrieval.md`). The LLM returns its answer and the uids of the events it recommends; only the events it was given are kept, and their details (place, slot, price, link) are shown from the index, never from the generated text. It searches as the assistant does (`assistant.py`); `ARGS="--today 2026-10-15 --no-rerank"` for a day of your choice, or without the reranker.
+
+## API
+
+```bash
+make api
+```
+
+`make api` serves the assistant as a REST API (FastAPI, uvicorn) on http://127.0.0.1:8000, its interactive documentation at http://127.0.0.1:8000/docs. The assistant is loaded once, at start (Elasticsearch, the embedding model, the reranker, the LLM), then shared by every question:
+
+| Route | What it does |
+|---|---|
+| `POST /ask` | `{"question": "Un concert de jazz ?", "today": "2026-10-19"}` (`today` optional, today in Toulouse by default): the answer, the filters read in the question, and the events it recommends, each with its title, venue, address, district, ages (`age_min`, `age_max`, when the agenda gives them), dates in French, first slot in the period, price (free, paid, or `null` when unknown), and link, all from the index, never from the generated text. |
+| `GET /health` | `ok` when the assistant is loaded and the index served is up to date with the settings; 503 with the reason otherwise. |
+| `GET /metadata` | The index served (events, documents, build time), the models and the search, and the state of the last rebuild. |
+| `POST /rebuild` | Fetches, processes and indexes the events again, as `make rebuild` (`make fetch process index`), in the background: 202 at once, its progress on `/metadata`, 409 while one runs. It needs the `ADMIN_API_KEY` of `.env` in the `X-API-Key` header, and is turned off without it. The questions keep their answers from the index served until the new one is complete. |
+
+A failure has its code: 422 for an empty or too long question (500 characters), 503 when Elasticsearch or the index is missing, 502 when Mistral fails after its retries. The answers share the quota of the Mistral plan: on the free plan, two questions asked at once wait 30 s more each.
 
 ## Evaluation
 

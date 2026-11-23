@@ -7,6 +7,7 @@ import pytest
 
 from cultural_events_rag.indexing.formatting import (
     format_age,
+    format_dates,
     format_day,
     format_location,
     format_timings,
@@ -53,6 +54,18 @@ def test_long_series_summarized_as_range() -> None:
 
     assert format_timings(timings) == (
         "Dates : du samedi 3 janvier 2026 au lundi 12 janvier 2026 (10 créneaux)"
+    )
+
+
+def test_the_dates_alone_on_one_line() -> None:
+    days = [slot(2026, 9, 20, 8), slot(2026, 9, 19, 8)]
+    series = [slot(2026, 1, 3 + i, 18) for i in range(10)]
+
+    assert format_dates(days) == (
+        "samedi 19 septembre 2026, 10h00-11h00; dimanche 20 septembre 2026, 10h00-11h00"
+    )
+    assert format_dates(series) == (
+        "du samedi 3 janvier 2026 au lundi 12 janvier 2026 (10 créneaux)"
     )
 
 

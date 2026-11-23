@@ -22,6 +22,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "elasticsearch>=9.5,<10",
+    "fastapi>=0.165.0",
     "httpx>=0.28",
     "huggingface-hub>=2.4.0",
     "langchain-core>=1.8",
@@ -31,6 +32,7 @@ dependencies = [
     "pydantic-settings>=2.16",
     "tenacity>=9.1",
     "tokenizers>=0.23.3",
+    "uvicorn>=0.54.0",
 ]
 
 # The links of the project and of its author.

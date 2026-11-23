@@ -65,6 +65,13 @@ def format_timings(timings: list[Timing]) -> str:
     return "Dates :\n" + "\n".join(f"- {part}" for part in parts)
 
 
+def format_dates(timings: list[Timing]) -> str:
+    """The dates alone, on one line: the days and their slots, or the range of
+    a long series."""
+    parts, _ = _date_parts(timings)
+    return "; ".join(parts)
+
+
 def format_location(location: Location) -> str | None:
     parts = [
         part for part in (location.name, location.address or location.city) if part
